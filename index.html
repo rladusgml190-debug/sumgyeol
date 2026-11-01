@@ -1,0 +1,1253 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="근심은 모래에 쓰고, 파도에 숨을 실어 보내요. 1분 한숨 호흡.">
+<meta property="og:title" content="숨결">
+<meta property="og:description" content="근심은 모래에 쓰고, 파도에 숨을 실어 보내요. 1분 한숨 호흡.">
+<meta property="og:image" content="https://rladusgml190-debug.github.io/sumgyeol/og.png">
+<meta property="og:url" content="https://rladusgml190-debug.github.io/sumgyeol/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#e7eedf">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23fbf6ee'/%3E%3Ccircle cx='40' cy='25' r='7' fill='%23f4c8a8'/%3E%3Cpath d='M8 37 Q16 32 24 37 T40 37 T56 37' fill='none' stroke='%234f8a8b' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+</head>
+<body>
+<title>숨결</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Pen+Script&display=swap">
+<style>
+/* 한 화면: 캔버스 바닷가 전체, 하늘 위에 호흡 안내, 모래는 그대로 손글씨 캔버스 */
+:root {
+  --ink: #34474a;
+  --ink-soft: #5d6f70;
+  --sage: #e7eedf;
+  --line: #c9d8c4;
+  --cream: #fbf6ee;
+  --accent: #4f8a8b;
+  --accent-ink: #ffffff;
+  --f-display: 'Gowun Batang', 'Nanum Myeongjo', serif;
+  --f-body: 'Gowun Dodum', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --f-hand: 'Nanum Pen Script', 'Gowun Dodum', cursive;
+  color-scheme: light;
+}
+html, body { height: 100%; overflow: hidden; }
+[hidden] { display: none !important; }
+body { word-break: keep-all; background: var(--sage); color: var(--ink); font-family: var(--f-body); -webkit-tap-highlight-color: transparent; }
+#sea { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
+#app {
+  position: relative; height: 100%; pointer-events: none;
+  display: flex; flex-direction: column;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 12px 16px; box-sizing: border-box;
+}
+#app button, #app input, #app form { pointer-events: auto; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { font-family: var(--f-display); font-weight: 700; font-size: 15px; text-shadow: 0 1px 8px rgba(255,248,240,.7); }
+.brand small { display: block; font-family: var(--f-body); font-weight: 400; font-size: 11px; color: var(--ink-soft); letter-spacing: .06em; }
+.chip {
+  font: inherit; font-size: 12.5px; color: var(--ink);
+  background: rgba(251,246,238,.78); border: 1px solid var(--line); border-radius: 999px;
+  padding: 7px 13px; cursor: pointer; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.chip.solid { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.chip:focus-visible, .btn:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.guide { margin-top: 5vh; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; text-shadow: 0 1px 10px rgba(255,246,236,.85); }
+.time-chip { font-size: 12px; color: var(--ink-soft); background: rgba(251,246,238,.7); border-radius: 999px; padding: 4px 12px; font-variant-numeric: tabular-nums; text-shadow: none; }
+.cue { font-family: var(--f-display); font-size: clamp(30px, 8vw, 44px); margin: 0; text-wrap: balance; }
+.count { font-size: 15px; color: var(--ink); margin: 0; min-height: 1.4em; font-variant-numeric: tabular-nums; text-wrap: balance; max-width: 30ch; line-height: 1.5; }
+.bar { width: min(220px, 60vw); height: 3px; border-radius: 3px; background: rgba(251,246,238,.6); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0%; background: var(--accent); transition: width .5s linear; }
+
+.bottom { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.kbd { display: flex; gap: 8px; width: min(380px, 100%); }
+.kbd input {
+  flex: 1; min-width: 0; font-family: var(--f-hand); font-size: 26px; color: #6d5139;
+  border: 1px solid var(--line); border-radius: 14px; padding: 2px 12px; background: rgba(255,252,246,.92);
+}
+.btn { font: inherit; font-size: 14px; border: 0; border-radius: 14px; padding: 10px 15px; cursor: pointer; background: var(--accent); color: var(--accent-ink); white-space: nowrap; }
+
+#intro {
+  position: fixed; inset: 0; z-index: 5; display: flex; justify-content: center;
+  background: linear-gradient(to bottom, rgba(236,232,226,.5) 0%, rgba(236,232,226,0) 30%, rgba(236,232,226,0) 55%, rgba(244,236,222,.55) 78%, rgba(244,236,222,.85) 100%);
+  padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px));
+  transition: opacity 1.2s ease;
+}
+body.at-intro #app { opacity: 0; pointer-events: none; }
+#app { transition: opacity 1s ease; z-index: 3; }
+.door-top { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; animation: drift 1.6s ease both; }
+.door-top h1 { font-family: var(--f-display); font-size: clamp(32px, 9vw, 46px); margin: 0; letter-spacing: -.01em; text-shadow: 0 2px 18px rgba(255,244,232,.9); }
+.door-top .lede { margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink); text-shadow: 0 1px 10px rgba(255,244,232,.95); }
+.door-bottom { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; animation: drift 1.6s .5s ease both; }
+.snd { font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; color: var(--ink); background: rgba(251,246,238,.8); border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px 7px 10px; cursor: pointer; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.snd .eq { display: inline-flex; gap: 2px; align-items: flex-end; height: 14px; width: 16px; }
+.snd .eq i { width: 3px; background: var(--accent); border-radius: 2px; height: 4px; }
+.snd[aria-pressed="true"] .eq i { animation: eq 1.1s ease-in-out infinite; }
+.snd[aria-pressed="true"] .eq i:nth-child(2) { animation-delay: .25s; }
+.snd[aria-pressed="true"] .eq i:nth-child(3) { animation-delay: .5s; }
+@keyframes eq { 0%, 100% { height: 4px; } 50% { height: 14px; } }
+@keyframes drift { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .door-top, .door-bottom { animation: none; } .snd .eq i { animation: none !important; } }
+#intro.leaving { opacity: 0; pointer-events: none; }
+.door { max-width: 340px; text-align: center; display: flex; flex-direction: column; gap: 16px; align-items: center; }
+.door .mark { width: 56px; height: 56px; flex: none; }
+.door h1 { font-family: var(--f-display); font-size: 28px; margin: 0; }
+.door .opening { font-size: 13px; color: var(--ink-soft); margin: 0; }
+.door p.how { margin: 0; font-size: 14.5px; line-height: 1.75; }
+.door .btn { padding: 13px 22px; font-size: 15px; opacity: 0; transform: translateY(6px); transition: opacity .6s ease, transform .6s ease; }
+.door.ready .btn { opacity: 1; transform: none; }
+.door .note { font-size: 11.5px; color: var(--ink-soft); line-height: 1.6; }
+.study { text-align: center !important; width: 100%; box-sizing: border-box; text-align: left; background: rgba(251,246,238,.85); border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; display: grid; gap: 6px; }
+.study .eyebrow { font-size: 11px; letter-spacing: .08em; color: var(--accent); font-weight: 700; }
+.study p { margin: 0; font-size: 13.5px; line-height: 1.7; color: var(--ink); }
+.study .cite { font-size: 11px; color: var(--ink-soft); }
+.steps { margin: 0; padding: 0; list-style: none; display: flex; gap: 6px; width: 100%; counter-reset: s; }
+.steps li { flex: 1; min-width: 0; font-size: 12px; line-height: 1.45; background: rgba(251,246,238,.6); border-radius: 12px; padding: 8px 6px; counter-increment: s; }
+.steps li::before { content: counter(s); display: block; font-family: var(--f-display); font-size: 16px; color: var(--accent); }
+.dur { display: inline-flex; background: rgba(251,246,238,.8); border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; }
+.dur button { font: inherit; font-size: 13px; border: 0; background: transparent; color: var(--ink-soft); border-radius: 999px; padding: 6px 16px; cursor: pointer; }
+.dur button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.mood { display: flex; flex-direction: column; align-items: center; gap: 6px; width: min(380px, 100%); margin-top: 6px; text-shadow: none; }
+.mood > span { font-size: 12.5px; color: var(--ink); background: rgba(251,246,238,.75); border-radius: 999px; padding: 3px 10px; }
+.mood .row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.mood button { font: inherit; font-size: 12.5px; color: var(--ink); background: rgba(251,246,238,.82); border: 1px solid var(--line); border-radius: 999px; padding: 6px 11px; cursor: pointer; }
+.mood button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.together { font-size: 12.5px; color: var(--ink); background: rgba(251,246,238,.7); border-radius: 999px; padding: 4px 12px; text-shadow: none; }
+.spark { position: fixed; width: 8px; height: 8px; border-radius: 50%; background: radial-gradient(circle, #fff 0, rgba(255,240,220,.9) 35%, rgba(255,230,200,0) 70%); pointer-events: none; z-index: 2; animation: spark 3.2s ease-out forwards; }
+@keyframes spark { 0% { opacity: 0; transform: translateY(0) scale(.6); } 15% { opacity: 1; transform: translateY(-4px) scale(1.6); } 100% { opacity: 0; transform: translateY(-46px) scale(.8); } }
+@media (prefers-reduced-motion: reduce) { .spark { animation-duration: 1.2s; } }
+.ob-card { width: min(320px, 100%); background: rgba(251,246,238,.94); border: 1px solid var(--line); border-radius: 22px; padding: 22px 20px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; animation: drift .8s ease both; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.ob-card p { margin: 0; font-family: var(--f-display); font-size: 17px; line-height: 1.65; color: var(--ink); }
+.ob-art { width: 120px; height: 40px; }
+#onboard { position: fixed; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; background: rgba(40,60,62,.18); padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+#onboard[hidden] { display: none; }
+body.night .cue, body.night .count, body.night .brand, body.night .door-top h1, body.night .door-top .lede { color: #eef3f1; text-shadow: 0 1px 14px rgba(5,12,28,.9); }
+body.night .brand small { color: #b8c6c8; }
+body.night #intro { background: linear-gradient(to bottom, rgba(5,10,25,.35) 0%, rgba(5,10,25,0) 30%, rgba(5,10,25,0) 60%, rgba(20,24,38,.5) 100%); }
+body.sunset .door-top h1, body.sunset .cue { text-shadow: 0 2px 18px rgba(255,226,196,.95); }
+.unlock { width: min(340px, 100%); box-sizing: border-box; background: rgba(251,246,238,.9); border: 1px solid var(--line); border-radius: 18px; padding: 12px 16px; display: grid; justify-items: center; gap: 8px; text-shadow: none; animation: drift .8s ease both; }
+.unlock p { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--ink); text-align: center; text-wrap: balance; }
+.pebbles { display: flex; gap: 14px; align-items: flex-end; }
+.pebbles .pb { display: grid; justify-items: center; gap: 2px; font-size: 10.5px; color: var(--ink-soft); }
+.pebbles svg { width: 50px; height: 38px; display: block; overflow: visible; }
+.pebbles .new svg { animation: pop .8s ease; }
+@keyframes pop { 0% { transform: scale(.4); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.waves { width: min(360px, 100%); box-sizing: border-box; background: rgba(251,246,238,.9); border: 1px solid var(--line); border-radius: 18px; padding: 12px 14px 10px; text-shadow: none; display: grid; gap: 6px; }
+.waves h3 { margin: 0; font-family: var(--f-display); font-size: 14px; font-weight: 700; color: var(--ink); text-align: left; }
+.waves svg { width: 100%; height: auto; display: block; overflow: visible; }
+.waves .cap { font-size: 11.5px; color: var(--ink-soft); text-align: left; }
+.modes { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.mode { font: inherit; text-align: left; border: 1px solid var(--line); background: rgba(251,246,238,.8); border-radius: 16px; padding: 10px 14px; cursor: pointer; color: var(--ink); display: grid; gap: 2px; }
+.mode b { font-family: var(--f-display); font-size: 15px; }
+.mode span { font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
+.mode[aria-pressed="true"] { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 1px var(--accent) inset; }
+details.why { width: 100%; text-align: left; font-size: 12.5px; line-height: 1.65; color: var(--ink-soft); }
+details.why summary { cursor: pointer; color: var(--ink); text-align: center; list-style: none; text-decoration: underline; text-underline-offset: 3px; }
+details.why summary::-webkit-details-marker { display: none; }
+details.why ul { margin: 10px 0 0; padding-left: 18px; display: grid; gap: 6px; }
+.door { max-width: 400px !important; width: 100%; height: 100%; justify-content: space-between; padding-block: 9vh 22px; box-sizing: border-box; gap: 0 !important; }
+.door .btn { width: 100%; max-width: 300px; }
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+</style>
+
+<canvas id="sea" aria-label="바닷가 모래. 손가락이나 마우스로 모래 위에 글씨를 쓸 수 있어요"></canvas>
+
+<div id="intro">
+  <div class="door" id="door">
+    <div class="door-top">
+      <h1>숨결</h1>
+      <p class="lede">근심은 모래에 쓰고,<br>파도에 숨을 실어 보내요.</p>
+    </div>
+    <div class="door-bottom">
+      <div class="study">
+        <span class="eyebrow">스탠퍼드 연구 · 2023</span>
+        <p>효과가 확인된 ‘한숨 호흡’으로 숨을 골라요.</p>
+      </div>
+      <div class="dur" role="group" aria-label="시간">
+        <button data-min="1" aria-pressed="true">1분 · 가볍게</button>
+        <button data-min="3" aria-pressed="false">3분 · 충분히</button>
+      </div>
+      <button class="btn" id="enter">바닷가로 들어가기</button>
+      <button class="snd" id="introSound" aria-pressed="false"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span id="introSoundLabel">파도 소리 켜기</span></button>
+    </div>
+  </div>
+</div>
+
+<div id="onboard" hidden>
+  <div class="ob-card" role="dialog" aria-labelledby="obText">
+    <svg viewBox="0 0 120 40" aria-hidden="true" class="ob-art"><path d="M8 26 Q20 14 32 26 T56 26" fill="none" stroke="#7a5c3e" stroke-width="3" stroke-linecap="round"/><path d="M62 30 Q74 22 86 30 T112 30" fill="none" stroke="#4f8a8b" stroke-width="3" stroke-linecap="round"/><path d="M70 20 Q80 14 90 20 T110 20" fill="none" stroke="#8fb9b8" stroke-width="2" stroke-linecap="round"/></svg>
+    <p id="obText">모래에 마음을 쓰고, 숨을 내쉴 때마다<br>파도가 조금씩 가져가요.</p>
+    <button class="btn" id="obOk">해볼게요</button>
+  </div>
+</div>
+
+<div id="app">
+  <header class="top">
+    <div class="brand">숨결<small id="modeName">한숨 호흡 · 1분</small></div>
+    <button class="chip" id="sound" aria-pressed="true">파도 소리 끄기</button>
+  </header>
+
+  <section class="guide" aria-live="polite">
+    <span class="time-chip" id="timeChip">1:00 남았어요</span>
+    <p class="cue" id="cue">편하게 앉아요</p>
+    <p class="count" id="count"></p>
+    <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
+    <span class="together" id="together" hidden></span>
+    <div class="unlock" id="unlock" hidden>
+      <div class="pebbles" id="pebbles" aria-hidden="true"></div>
+      <p id="unlockText">3일 내내 숨을 고르면, 마음의 물결 그래프를 볼 수 있어요</p>
+    </div>
+    <div class="waves" id="waves" hidden>
+      <h3>지난 3일, 마음의 물결</h3>
+      <svg id="wavesSvg" viewBox="0 0 320 92" role="img" aria-label="최근 3일 마음의 파도 변화"></svg>
+      <span class="cap">숨 고르기 전과 후의 마음이에요. 아래로 갈수록 잔잔해요</span>
+    </div>
+    <div class="mood" id="mood" hidden>
+      <span id="moodQ">지금 마음의 파도는 어때요?</span>
+      <div class="row">
+        <button data-v="1" aria-pressed="false">잔잔해요</button><button data-v="2" aria-pressed="false">출렁여요</button><button data-v="3" aria-pressed="false">거칠어요</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="bottom">
+    <div class="tools">
+      <button class="chip solid" id="start" hidden>숨 고르기 시작</button>
+      <button class="chip" id="stop" hidden>여기까지 할게요</button>
+      <button class="chip solid" id="again" hidden>한 번 더 숨 고르기</button>
+    </div>
+  </section>
+</div>
+
+<script>
+document.body.classList.add('at-intro');
+(() => {
+  const cv = document.getElementById('sea');
+  const ctx = cv.getContext('2d');
+  const $ = id => document.getElementById(id);
+  const cueEl = $('cue'), countEl = $('count'), timeEl = $('timeChip'), barEl = $('barFill');
+
+  let TOTAL = 60; const CYC = 10, PRE = 4;
+  // 파도 묶음: 작게 → 조금 더 → 한 번에 크게 (3번의 숨이 한 묶음)
+  const REACH = [0.42, 0.66, 1], SET = CYC * REACH.length;
+  // 처음 여섯 번의 숨: 살살 닿다가 점점 깊이, 여섯 번째에 시원하게 끝까지
+  const RAMP = [0.3, 0.46, 0.6, 0.74, 0.88, 1], RAMP_T = CYC * RAMP.length, PRE_REACH = 0.2;
+  const reachAt = n => n < RAMP.length ? RAMP[n] : REACH[(n - RAMP.length) % REACH.length];
+  const prevReachAt = n => n <= 0 ? PRE_REACH : reachAt(n - 1);
+  const WAVE_CUE = ['파도가 살며시 다가와요', '근심의 끝자락을 적셔요', '조금씩 가져가요', '더 많이 데려가요', '거의 다 데려갔어요', '마지막 파도가 모두 씻어가요'];
+  const ease = x => 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, Math.max(0, x)));
+  let W = 0, H = 0, DPR = 1;
+  let skyC, sandC, seaTexC;
+  const foamSeed = Array.from({ length: 2000 }, () => Math.random());
+  // p = 0 이면 물이 멀리 물러나 모래가 다 드러나고, p = 1 이면 파도가 화면 끝까지 덮어요
+  const geo = () => ({ horizon: H * 0.34, out: H * 0.47, inn: H + 70 });
+
+  /* ---------- 호흡 방법 (모두 10초 = 1분에 6번) ---------- */
+  const MODES = {
+    long: { name: '길게 내쉬기', segs: [{ k: 'in', d: 4, cue: '들이쉬어요' }, { k: 'out', d: 6, cue: '길게 내쉬어요' }] },
+    reso: { name: '공명 호흡', segs: [{ k: 'in', d: 5, cue: '들이쉬어요' }, { k: 'out', d: 5, cue: '내쉬어요' }] },
+    sigh: { name: '한숨 호흡', segs: [{ k: 'in', d: 2.5, cue: '코로 들이쉬어요' }, { k: 'in2', d: 1, cue: '코로 한 번 더' }, { k: 'out', d: 6.5, cue: '입으로 길게 내쉬어요' }] },
+  };
+  let modeKey = 'sigh';
+  const inDur = m => m.segs.filter(s => s.k !== 'out').reduce((a, s) => a + s.d, 0);
+  function phase(c, m = MODES[modeKey]) {
+    let acc = 0;
+    for (const s of m.segs) { if (c < acc + s.d) return { seg: s, x: (c - acc) / s.d, left: acc + s.d - c, start: acc }; acc += s.d; }
+    const s = m.segs[m.segs.length - 1]; return { seg: s, x: 1, left: 0, start: acc - s.d };
+  }
+  // 들숨: 물이 물러나요(1→0) · 날숨: 파도가 부서져 끝까지 밀려와요(0→1)
+  function waterAt(c, m = MODES[modeKey]) {
+    const ph = phase(c, m);
+    if (ph.seg.k === 'out') return 1 - Math.pow(1 - ph.x, 1.6);
+    if (ph.seg.k === 'in2') return 0.22 * (1 - ease(ph.x));
+    const two = m.segs.some(s => s.k === 'in2');
+    return 1 - (two ? 0.78 : 1) * ease(ph.x);
+  }
+
+  function offscreen(w, h) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w * DPR)); c.height = Math.max(1, Math.round(h * DPR)); const x = c.getContext('2d'); x.setTransform(DPR, 0, 0, DPR, 0, 0); return [c, x]; }
+
+  function buildSky() {
+    const g = geo();
+    const [c, x] = offscreen(W, g.horizon + 2);
+    let gr = x.createLinearGradient(0, 0, 0, g.horizon);
+    gr.addColorStop(0, '#a7bfcb'); gr.addColorStop(0.45, '#dcd6cf'); gr.addColorStop(0.8, '#f1d6c2'); gr.addColorStop(1, '#f7cdb0');
+    x.fillStyle = gr; x.fillRect(0, 0, W, g.horizon + 2);
+    // 옅은 구름
+    for (let i = 0; i < 26; i++) {
+      const cx = Math.random() * W, cy = g.horizon * (0.15 + Math.random() * 0.6), rx = 40 + Math.random() * 110, ry = 6 + Math.random() * 12;
+      const rg = x.createRadialGradient(cx, cy, 0, cx, cy, rx);
+      rg.addColorStop(0, `rgba(255,244,236,${0.18 + Math.random() * 0.2})`); rg.addColorStop(1, 'rgba(255,244,236,0)');
+      x.save(); x.translate(cx, cy); x.scale(1, ry / rx); x.translate(-cx, -cy);
+      x.fillStyle = rg; x.beginPath(); x.arc(cx, cy, rx, 0, Math.PI * 2); x.fill(); x.restore();
+    }
+    // 해
+    const sx = W * 0.68, sy = g.horizon - H * 0.03, sr = Math.min(W, H) * 0.045;
+    const glow = x.createRadialGradient(sx, sy, sr * 0.5, sx, sy, sr * 5);
+    glow.addColorStop(0, 'rgba(255,224,196,0.85)'); glow.addColorStop(1, 'rgba(255,224,196,0)');
+    x.fillStyle = glow; x.fillRect(0, 0, W, g.horizon + 2);
+    x.fillStyle = '#fbe0c8'; x.beginPath(); x.arc(sx, sy, sr, 0, Math.PI * 2); x.fill();
+    // 수평선 안개
+    gr = x.createLinearGradient(0, g.horizon - 18, 0, g.horizon);
+    gr.addColorStop(0, 'rgba(240,220,205,0)'); gr.addColorStop(1, 'rgba(240,220,205,0.7)');
+    x.fillStyle = gr; x.fillRect(0, g.horizon - 18, W, 20);
+    skyC = c;
+  }
+
+  function buildSand() {
+    const g = geo(); const h = H - g.horizon;
+    const [c, x] = offscreen(W, h);
+    let gr = x.createLinearGradient(0, 0, 0, h);
+    gr.addColorStop(0, '#c9ae86'); gr.addColorStop(0.35, '#dcc39d'); gr.addColorStop(1, '#ecdbbd');
+    x.fillStyle = gr; x.fillRect(0, 0, W, h);
+    // 얼룩
+    for (let i = 0; i < 260; i++) {
+      const cx = Math.random() * W, cy = Math.random() * h, r = 15 + Math.random() * 70;
+      const rg = x.createRadialGradient(cx, cy, 0, cx, cy, r);
+      const light = Math.random() < 0.5;
+      rg.addColorStop(0, light ? 'rgba(255,246,228,0.10)' : 'rgba(150,115,78,0.07)'); rg.addColorStop(1, 'rgba(0,0,0,0)');
+      x.fillStyle = rg; x.fillRect(cx - r, cy - r, r * 2, r * 2);
+    }
+    // 바람 물결 자국 (원근감: 아래로 갈수록 넓게)
+    for (let i = 0; i < 70; i++) {
+      const v = Math.random(); const y = h * (0.25 + 0.75 * v);
+      const amp = 2 + v * 4, len = 60 + v * 220, x0 = Math.random() * W - 40;
+      const k = 0.015 + Math.random() * 0.02, ph = Math.random() * 6;
+      x.lineWidth = 0.8 + v * 1.6;
+      x.strokeStyle = `rgba(150,116,80,${0.07 + v * 0.06})`;
+      x.beginPath(); for (let xx = 0; xx <= len; xx += 4) { const yy = y + Math.sin(xx * k + ph) * amp; xx === 0 ? x.moveTo(x0 + xx, yy) : x.lineTo(x0 + xx, yy); } x.stroke();
+      x.strokeStyle = `rgba(255,248,234,${0.08 + v * 0.07})`;
+      x.beginPath(); for (let xx = 0; xx <= len; xx += 4) { const yy = y + 1.6 + Math.sin(xx * k + ph) * amp; xx === 0 ? x.moveTo(x0 + xx, yy) : x.lineTo(x0 + xx, yy); } x.stroke();
+    }
+    // 작은 조개 조각, 자갈
+    for (let i = 0; i < 40; i++) {
+      const v = Math.random(); const cx = Math.random() * W, cy = h * (0.3 + 0.7 * v), r = 0.8 + v * 2.2;
+      x.fillStyle = Math.random() < 0.5 ? 'rgba(255,250,240,0.7)' : 'rgba(130,100,72,0.45)';
+      x.beginPath(); x.ellipse(cx, cy, r * 1.4, r, Math.random() * 3, 0, Math.PI * 2); x.fill();
+    }
+    // 모래알
+    const id = x.getImageData(0, 0, c.width, c.height), d = id.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const n = (Math.random() - 0.5) * 34;
+      d[i] += n; d[i + 1] += n * 0.92; d[i + 2] += n * 0.8;
+      if (Math.random() < 0.012) { const s = Math.random() < 0.5 ? 40 : -45; d[i] += s; d[i + 1] += s; d[i + 2] += s * 0.9; }
+    }
+    x.putImageData(id, 0, 0);
+    sandC = c;
+  }
+
+  function buildSeaTex() {
+    const g = geo(); const h = H * 0.75 - g.horizon;
+    const [c, x] = offscreen(W + 60, h);
+    for (let i = 0; i < 900; i++) {
+      const v = Math.pow(Math.random(), 1.6); const y = v * h;
+      const len = 8 + v * 90 + Math.random() * 30, th = 0.4 + v * 2.2;
+      const light = Math.random() < 0.55;
+      x.fillStyle = light ? `rgba(225,242,240,${0.06 + Math.random() * 0.14})` : `rgba(30,80,95,${0.05 + Math.random() * 0.1})`;
+      x.beginPath(); x.ellipse(Math.random() * (W + 60), y, len / 2, th, 0, 0, Math.PI * 2); x.fill();
+    }
+    seaTexC = c;
+  }
+
+  function resize() {
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    const oldW = W, oldH = H;
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    buildSky(); buildSand(); buildSeaTex();
+    if (oldW && oldH) { const sx = W / oldW, sy = H / oldH; strokes.forEach(s => s.pts.forEach(p => { p.x *= sx; p.y *= sy; })); words.forEach(w => { w.x *= sx; w.y *= sy; }); }
+  }
+
+
+  /* ---------- 파도 소리 (화면이 소리 시계를 따라가요) ---------- */
+  const SR = 22050;
+  function norm(arr, pk) { let m = 0; for (const v of arr) m = Math.max(m, Math.abs(v)); const g = pk / (m || 1); for (let i = 0; i < arr.length; i++) arr[i] *= g; return arr; }
+  function seamless(gen, secs) {
+    const n = Math.round(SR * secs), fade = Math.round(SR * 0.3), raw = gen(n + fade), out = raw.slice(0, n);
+    for (let i = 0; i < fade; i++) { const a = i / fade; out[i] = raw[i] * a + raw[n + i] * (1 - a); }
+    return out;
+  }
+  // 한 주기의 파도 소리: 들숨 동안 물러나며 '사르르' + 너울이 차오르고, 날숨 시작에 '쏴아' 부서져 밀려와요
+  function genCycle(m, rf, noCue) {
+    const Din = inDur(m), Dout = CYC - Din;
+    const twoStep = m.segs.find(s => s.k === 'in2');
+    return n => {
+      const o = new Float32Array(n); let br = 0, mid = 0, prev = 0;
+      for (let i = 0; i < n; i++) {
+        const T = i / SR, k = Math.floor(T / CYC), tt = T - k * CYC, [R, Rp] = rf(k), w = Math.random() * 2 - 1;
+        br = br * 0.994 + w * 0.05; mid += (w - mid) * 0.25; const hi = w - prev; prev = w;
+        let bA, mA, hA;
+        if (tt < Din) {
+          const x = tt / Din;
+          bA = 0.3 + 0.5 * R * ease(x);
+          mA = 0.12 * Math.exp(-tt / 0.8);
+          hA = 0.6 * Rp * Math.exp(-tt / (0.8 + 0.8 * Rp)) + 0.05;
+          if (twoStep) { const t2 = tt - twoStep.d; hA += t2 > 0 ? 0.25 * Math.exp(-t2 / 0.4) : 0; }
+        } else {
+          const te = tt - Din, x = te / Dout;
+          const crash = Math.exp(-Math.pow((te - 0.25) / 0.38, 2));
+          bA = 0.35 + 0.55 * R * (1 - x);
+          mA = crash * Math.pow(R, 1.6) * 1.15 + 0.55 * R * Math.pow(1 - x, 1.4 - 0.6 * R) * Math.min(1, te / 0.15);
+          hA = 0.08 + 0.32 * R * Math.sin(Math.PI * Math.min(1, x * 1.2));
+        }
+        o[i] = br * bA * 1.5 + mid * mA * 0.5 + hi * hA * 0.17;
+        // 물방울 신호: 들이쉴 때 낮게 '똑', 한 번 더 들이쉴 때 높게 '똑'
+        const cue = (t0, base, amp) => { const u = tt - t0; if (u < 0 || u > 0.45) return 0; const ph = 2 * Math.PI * (base * u + base * 0.9 * (u - (1 - Math.exp(-28 * u)) / 28)); return Math.sin(ph) * amp * Math.exp(-u * 11) * Math.min(1, u * 300); };
+        if (!noCue) o[i] += cue(0.02, 430, 0.22) + (twoStep ? cue(twoStep.d, 620, 0.3) : 0);
+      }
+      return o;
+    };
+  }
+  const genBed = n => {
+    const o = new Float32Array(n); let br = 0, br2 = 0;
+    for (let i = 0; i < n; i++) { const w = Math.random() * 2 - 1; br = br * 0.996 + w * 0.04; br2 += (br - br2) * 0.08; const tt = i / SR; o[i] = br2 * (0.85 + 0.15 * Math.sin(tt * 0.9)); }
+    return o;
+  };
+  function toWav(data) {
+    const buf = new ArrayBuffer(44 + data.length * 2), v = new DataView(buf);
+    const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+    w(0, 'RIFF'); v.setUint32(4, 36 + data.length * 2, true); w(8, 'WAVE'); w(12, 'fmt ');
+    v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, SR, true);
+    v.setUint32(28, SR * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, data.length * 2, true);
+    for (let i = 0; i < data.length; i++) v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, data[i])) * 32767, true);
+    return buf;
+  }
+  let ac = null, vol = null, master = null, loopSrc = null, loopGain = null, loopStartAt = null, soundOn = true, silentEl = null;
+  const cycleBufs = {};
+  const mkBuf = arr => { const b = ac.createBuffer(1, arr.length, SR); b.getChannelData(0).set(arr); return b; };
+  function startSound() {
+    if (ac) return;
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+    try { silentEl = new Audio(URL.createObjectURL(new Blob([toWav(new Float32Array(SR))], { type: 'audio/wav' }))); silentEl.loop = true; silentEl.setAttribute('playsinline', ''); silentEl.play().catch(() => {}); } catch (e) {}
+    try {
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      ac.resume && ac.resume();
+      vol = ac.createGain(); vol.gain.value = soundOn ? 1 : 0; vol.connect(ac.destination);
+      master = ac.createBiquadFilter(); master.type = 'lowpass'; master.frequency.value = 5200; master.connect(vol);
+      const bed = ac.createBufferSource(); bed.buffer = mkBuf(norm(seamless(genBed, 7.3), 0.28)); bed.loop = true; bed.connect(master); bed.start();
+    } catch (e) { ac = null; }
+  }
+  function waveBufs() {
+    if (cycleBufs[modeKey]) return cycleBufs[modeKey];
+    const m = MODES[modeKey];
+    const intro = genCycle(m, k => [RAMP[k] ?? 1, k ? RAMP[k - 1] : PRE_REACH])(Math.round(SR * RAMP_T));
+    const loop = seamless(genCycle(m, k => [REACH[k % 3], REACH[(k + 2) % 3]]), SET);
+    let pk = 0; for (const v of intro) pk = Math.max(pk, Math.abs(v)); for (const v of loop) pk = Math.max(pk, Math.abs(v));
+    const g = 0.85 / pk; for (let i = 0; i < intro.length; i++) intro[i] *= g; for (let i = 0; i < loop.length; i++) loop[i] *= g;
+    // 이어지는 지점에서 튀지 않게 끝을 살짝 겹쳐요
+    const f = Math.round(SR * 0.2); for (let i = 0; i < f; i++) intro[intro.length - f + i] *= 1 - i / f;
+    return (cycleBufs[modeKey] = { intro: mkBuf(intro), loop: mkBuf(loop) });
+  }
+  // 모래 위를 긁는 '사각사각' 소리: 손가락 속도만큼 커져요
+  let scrGain = null, scrFilter = null;
+  function initScratch() {
+    if (!ac || scrGain) return;
+    const n = SR * 2, o = new Float32Array(n); let prev = 0, burst = 0;
+    for (let i = 0; i < n; i++) {
+      const w = Math.random() * 2 - 1, hi = w - prev * 0.85; prev = w;
+      if (Math.random() < 0.004) burst = 1 + Math.random() * 2;
+      burst *= 0.93;
+      o[i] = hi * (0.35 + 0.25 * Math.random()) + (Math.random() * 2 - 1) * burst * 0.6;
+    }
+    const src = ac.createBufferSource(); src.buffer = mkBuf(norm(o, 0.9)); src.loop = true;
+    scrFilter = ac.createBiquadFilter(); scrFilter.type = 'bandpass'; scrFilter.frequency.value = 3200; scrFilter.Q.value = 0.7;
+    scrGain = ac.createGain(); scrGain.gain.value = 0;
+    src.connect(scrFilter).connect(scrGain).connect(vol); src.start();
+  }
+  function scratch(speed, start) {
+    if (!ac) return;
+    initScratch();
+    const now = ac.currentTime;
+    if (start) { scrGain.gain.setTargetAtTime(0.12, now, 0.01); scrGain.gain.setTargetAtTime(0.0, now + 0.06, 0.05); return; }
+    const v = Math.min(1, speed / 900);
+    scrGain.gain.cancelScheduledValues(now);
+    scrGain.gain.setTargetAtTime(v > 0.02 ? 0.08 + 0.42 * v : 0, now, v > 0.02 ? 0.02 : 0.06);
+    scrFilter.frequency.setTargetAtTime(2200 + 2600 * v, now, 0.05);
+  }
+  let introSrc = null;
+  // 첫 화면·쓰는 동안의 잔잔한 파도 (화면 파도와 같은 시계)
+  let calmSrc = null, calmGain = null, calmAt = null, calmBuf = null;
+  function startCalm() {
+    if (!ac || calmSrc) return;
+    if (!calmBuf) calmBuf = mkBuf(norm(seamless(genCycle(MODES[modeKey], () => [0.38, 0.38], true), CYC), 0.5));
+    const at = ac.currentTime + 0.05;
+    calmGain = ac.createGain(); calmGain.gain.value = 0; calmGain.gain.setTargetAtTime(1, at, 0.4); calmGain.connect(master);
+    calmSrc = ac.createBufferSource(); calmSrc.buffer = calmBuf; calmSrc.loop = true; calmSrc.connect(calmGain); calmSrc.start(at);
+    calmAt = at;
+  }
+  function stopCalm() {
+    if (!calmSrc) return;
+    const now = ac.currentTime; calmGain.gain.setTargetAtTime(0, now, 0.5);
+    try { calmSrc.stop(now + 3); } catch (e) {}
+    calmSrc = null; calmAt = null;
+  }
+  function calmClock() {
+    if (!ac || calmAt === null || ac.state !== 'running') return null;
+    return Math.max(0, ac.currentTime - calmAt - ((ac.outputLatency || 0) + (ac.baseLatency || 0)));
+  }
+  function startWaveLoop() {
+    loopStartAt = null;
+    if (!ac) return;
+    const now = ac.currentTime, at = now + 0.1, b = waveBufs(), f = 0.2;
+    if (loopSrc) { loopGain.gain.setTargetAtTime(0, now, 0.15); try { loopSrc.stop(now + 1); introSrc && introSrc.stop(now + 1); } catch (e) {} }
+    loopGain = ac.createGain(); loopGain.connect(master);
+    introSrc = ac.createBufferSource(); introSrc.buffer = b.intro; introSrc.connect(loopGain); introSrc.start(at);
+    const lg = ac.createGain(); lg.gain.setValueAtTime(0, at + RAMP_T - f); lg.gain.linearRampToValueAtTime(1, at + RAMP_T); lg.connect(loopGain);
+    loopSrc = ac.createBufferSource(); loopSrc.buffer = b.loop; loopSrc.loop = true; loopSrc.connect(lg);
+    loopSrc.start(at + RAMP_T - f, SET - f);
+    loopStartAt = at;
+  }
+  // 소리 시계 기준 경과 시간 (스피커 지연까지 반영)
+  function audioClock() {
+    if (!ac || loopStartAt === null || ac.state !== 'running') return null;
+    const lat = (ac.outputLatency || 0) + (ac.baseLatency || 0);
+    return Math.max(0, ac.currentTime - loopStartAt - lat);
+  }
+  function syncSoundUI() {
+    const sb = $('sound'); sb.textContent = soundOn ? '파도 소리 끄기' : '파도 소리 켜기'; sb.setAttribute('aria-pressed', String(soundOn));
+    const playing = soundOn && !!ac;
+    $('introSound').setAttribute('aria-pressed', String(playing));
+    $('introSoundLabel').textContent = playing ? '파도 소리 끄기' : '파도 소리 켜기';
+  }
+  function setSound(on) {
+    soundOn = on;
+    if (on && !ac) { startSound(); startCalm(); }
+    if (vol) vol.gain.setTargetAtTime(on ? 1 : 0, ac.currentTime, 0.1);
+    if (on && ac) { ac.resume && ac.resume(); silentEl && silentEl.play().catch(() => {}); }
+    syncSoundUI();
+  }
+  $('sound').addEventListener('click', () => setSound(!soundOn));
+  $('introSound').addEventListener('click', () => setSound(!(soundOn && ac)));
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && ac) ac.resume && ac.resume(); });
+
+  /* ---------- 상태 ---------- */
+  let hadInk = false, inkTotal = 0, prevOut = false, aliveStart = 0, lastMoveT = 0;
+  let mode = 'intro', modeT = 0, breathT = 0, t = 0, p = 0.3, wet = 0, lastInput = 0, foamAmt = 0, clockBase = 0;
+  const strokes = [], words = [];
+  let drawing = null;
+  const setMode = m => { mode = m; modeT = 0; try { renderTogether(); } catch (e) {} };
+  let lastCue = '', lastCount = '';
+  function say(c, n) { if (c !== lastCue) { cueEl.textContent = c; lastCue = c; } n = String(n); if (n !== lastCount) { countEl.textContent = n; lastCount = n; } }
+  const fmt = s => { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  const hasInk = () => strokes.some(s => s.pts.some(q => q.a > 0.02)) || words.some(w => w.a > 0.02);
+
+  document.querySelectorAll('.mode').forEach(b => b.addEventListener('click', () => {
+    modeKey = b.dataset.mode;
+    document.querySelectorAll('.mode').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  }));
+  document.querySelectorAll('.dur button').forEach(b => b.addEventListener('click', () => {
+    TOTAL = +b.dataset.min * 60;
+    document.querySelectorAll('.dur button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    $('modeName').textContent = '한숨 호흡 · ' + b.dataset.min + '분';
+  }));
+  setTimeout(() => { $('door').classList.add('ready'); }, 900);
+  $('enter').addEventListener('click', () => {
+    if (soundOn) { startSound(); startCalm(); }
+    syncSoundUI();
+    document.body.classList.remove('at-intro');
+    $('intro').classList.add('leaving');
+    setTimeout(() => { $('intro').hidden = true; }, 1200);
+    toWrite();
+    let seen = false; try { seen = localStorage.getItem('beach-onboarded') === '1'; } catch (e) {}
+    if (!seen) setTimeout(() => { $('onboard').hidden = false; $('obOk').focus(); }, 700);
+  });
+  let moodBefore = 0, moodAfter = 0;
+  const moodEl = $('mood'), moodBtns = [...moodEl.querySelectorAll('button')];
+  const moodWord = v => ['', '잔잔', '출렁', '거친'][v];
+  function showMood(q) { $('moodQ').textContent = q; moodBtns.forEach(b => b.setAttribute('aria-pressed', 'false')); moodEl.hidden = false; }
+  moodBtns.forEach(b => b.addEventListener('click', () => {
+    moodBtns.forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    const v = +b.dataset.v;
+    if (mode === 'end') {
+      moodAfter = v;
+      saveMood(moodBefore, moodAfter);
+      const d = moodBefore ? moodBefore - moodAfter : 0;
+      say('잘 했어요', d > 0 ? `마음의 파도가 ${d}칸 잔잔해졌어요 (${moodWord(moodBefore)} → ${moodWord(moodAfter)})` : d === 0 && moodBefore ? '마음의 파도를 그대로 지켜봐 준 것도 충분해요' : '오늘도 숨을 골라줘서 고마워요');
+      setTimeout(() => { moodEl.hidden = true; if (rec.unlocked) { $('unlock').hidden = true; drawWaves(); } }, 600);
+    } else moodBefore = v;
+  }));
+  // 하루에 한 번 이상 오면 '연속 n일째'
+  // 나의 기록: 숨 고른 날짜, 전후 마음, 그래프가 열렸는지. 이 기기와, 로그인했다면 나만 보는 공간에 함께 저장해요
+  const key = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  let rec = { days: [], moods: [], unlocked: false };
+  try { const r = JSON.parse(localStorage.getItem('beach-rec') || 'null'); if (r) rec = Object.assign(rec, r); } catch (e) {}
+  let recRef = null;
+  function mergeRec(o) {
+    if (!o) return;
+    rec.days = [...new Set([...(rec.days || []), ...(o.days || [])])].sort().slice(-60);
+    const seen = new Set(rec.moods.map(m => m.ts)); (o.moods || []).forEach(m => { if (!seen.has(m.ts)) rec.moods.push(m); });
+    rec.moods.sort((a, b) => a.ts - b.ts); rec.moods = rec.moods.slice(-90);
+    rec.unlocked = rec.unlocked || !!o.unlocked;
+  }
+  async function saveRec() {
+    try { localStorage.setItem('beach-rec', JSON.stringify(rec)); } catch (e) {}
+    if (recRef) try { await recRef.set(rec); } catch (e) {}
+  }
+  function streak() {
+    const today = key(new Date()); if (!rec.days.includes(today)) rec.days.push(today);
+    let n = 0; const d = new Date();
+    while (rec.days.includes(key(d))) { n++; d.setDate(d.getDate() - 1); }
+    if (n >= 3) rec.unlocked = true;
+    saveRec();
+    return n;
+  }
+  // 파도에 둥글게 닳은 바다유리: 하루에 하나씩 모아요
+  const GLASS = [
+    { name: '초록 바다유리', light: '#e3f5ea', base: '#8cc7a7', dark: '#3f8a68', d: 'M8 20 C6 11 14 5 24 5 C35 4 44 10 43 19 C42 28 33 33 22 32 C12 32 9 27 8 20 Z' },
+    { name: '하늘 바다유리', light: '#e6f5fb', base: '#8fc6d9', dark: '#3d84a0', d: 'M6 18 C7 9 17 6 26 7 C37 8 45 14 42 23 C40 30 30 33 20 31 C10 30 5 25 6 18 Z' },
+    { name: '호박 바다유리', light: '#fff0d6', base: '#e3b071', dark: '#a76c2c', d: 'M9 17 C10 9 19 4 28 6 C38 8 44 15 41 23 C38 31 27 33 18 31 C10 29 8 24 9 17 Z' },
+  ];
+  function seaGlass(i, on) {
+    const G = GLASS[i];
+    if (!on) return `<svg viewBox="0 0 50 38"><path d="${G.d}" fill="rgba(122,92,62,.10)" stroke="rgba(122,92,62,.38)" stroke-width="1.2" stroke-dasharray="3 3"/></svg>`;
+    return `<svg viewBox="0 0 50 38" role="img" aria-label="${G.name}">
+      <defs>
+        <radialGradient id="sg${i}" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="${G.light}"/><stop offset=".55" stop-color="${G.base}"/><stop offset="1" stop-color="${G.dark}"/></radialGradient>
+        <radialGradient id="sgr${i}" cx="50%" cy="50%" r="50%"><stop offset=".7" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".45"/></radialGradient>
+        <filter id="sf${i}" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="${i + 3}"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 -.12"/><feComposite in2="SourceGraphic" operator="in"/></filter>
+      </defs>
+      <ellipse cx="26" cy="33.5" rx="17" ry="3.2" fill="rgba(70,50,30,.22)"/>
+      <path d="${G.d}" fill="url(#sg${i})" opacity=".93"/>
+      <path d="${G.d}" fill="url(#sgr${i})"/>
+      <path d="${G.d}" fill="#fff" filter="url(#sf${i})"/>
+      <path d="M15 12 C18 9 23 8 27 9" fill="none" stroke="#fff" stroke-opacity=".85" stroke-width="2.4" stroke-linecap="round"/>
+      <ellipse cx="33" cy="25" rx="4" ry="1.6" fill="#fff" opacity=".22" transform="rotate(-18 33 25)"/>
+      <path d="${G.d}" fill="none" stroke="${G.dark}" stroke-opacity=".35" stroke-width=".8"/>
+    </svg>`;
+  }
+  function showUnlock(n, justNow) {
+    const k = Math.min(3, n);
+    $('pebbles').innerHTML = [0, 1, 2].map(i => `<span class="pb${justNow && i === k - 1 ? ' new' : ''}">${seaGlass(i, i < k)}<span>${i + 1}일</span></span>`).join('');
+    $('unlockText').textContent = k >= 3 ? '3일을 채웠어요! 마음의 물결 그래프가 열렸어요'
+      : k === 2 ? '하루만 더! 내일도 오면 마음의 물결 그래프가 열려요'
+      : '3일 내내 숨을 고르면, 마음의 물결 그래프를 볼 수 있어요';
+    $('unlock').hidden = false;
+  }
+  /* ---------- 지난 3일 마음의 물결 ---------- */
+  const dk = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  function loadMoods() { return rec.moods; }
+  function saveMood(b, a) { rec.moods.push({ d: dk(new Date()), b: b || 0, a, ts: Date.now() }); saveRec(); }
+  function drawWaves() {
+    const list = loadMoods(), days = [];
+    for (let i = 2; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); days.push(dk(d)); }
+    const pts = []; // {x, v, label}
+    const L = 40, R = 314, colW = (R - L) / 3;
+    days.forEach((day, di) => {
+      const seq = []; list.filter(r => r.d === day).forEach(r => { if (r.b) seq.push(r.b); seq.push(r.a); });
+      seq.forEach((v, k) => pts.push({ x: L + colW * di + colW * (k + 1) / (seq.length + 1), v }));
+    });
+    const svg = $('wavesSvg'), mid = 44, ns = 'http://www.w3.org/2000/svg';
+    svg.textContent = '';
+    const el = (tag, at) => { const e = document.createElementNS(ns, tag); for (const k in at) e.setAttribute(k, at[k]); svg.appendChild(e); return e; };
+    const Y = v => 70 - (v - 1) * 24;
+    ['잔잔', '출렁', '거친'].forEach((t, i) => {
+      el('line', { x1: L, x2: R, y1: Y(i + 1), y2: Y(i + 1), stroke: 'rgba(93,111,112,.22)', 'stroke-width': 1, 'stroke-dasharray': '2 4' });
+      const tx = el('text', { x: L - 8, y: Y(i + 1) + 4, 'text-anchor': 'end', 'font-size': 10.5, fill: '#5d6f70' }); tx.textContent = t;
+    });
+    ['그제', '어제', '오늘'].forEach((t, i) => { const tx = el('text', { x: L + colW * i + colW / 2, y: 90, 'text-anchor': 'middle', 'font-size': 11, fill: '#5d6f70' }); tx.textContent = t; });
+    if (!pts.length) { const tx = el('text', { x: (L + R) / 2, y: 50, 'text-anchor': 'middle', 'font-size': 12, fill: '#5d6f70' }); tx.textContent = '숨을 고르면 여기에 물결이 그려져요'; $('waves').hidden = false; return; }
+    const amp = x => {
+      if (x <= pts[0].x) return pts[0].v; if (x >= pts[pts.length - 1].x) return pts[pts.length - 1].v;
+      for (let i = 1; i < pts.length; i++) if (x <= pts[i].x) { const a = pts[i - 1], b = pts[i], u = (x - a.x) / (b.x - a.x); return a.v + (b.v - a.v) * (0.5 - 0.5 * Math.cos(Math.PI * u)); }
+    };
+    const x0 = pts[0].x, x1 = pts[pts.length - 1].x;
+    let d = '';
+    for (let x = x0; x <= x1 + 0.1; x += 2) { const y = Y(amp(x)) + Math.sin(x * 0.3) * 1.4; d += (x === x0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1); }
+    if (pts.length > 1) {
+      el('path', { d: d + `L${x1} 76 L${x0} 76 Z`, fill: 'rgba(79,138,139,.13)' });
+      el('path', { d, fill: 'none', stroke: '#4f8a8b', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+    }
+    const word = v => ['', '잔잔', '출렁', '거친'][v];
+    pts.forEach(pt => {
+      const c = el('circle', { cx: pt.x, cy: Y(pt.v), r: 4.5, fill: '#4f8a8b', stroke: '#fbf6ee', 'stroke-width': 2 });
+      const tt = document.createElementNS(ns, 'title'); tt.textContent = word(pt.v); c.appendChild(tt);
+    });
+    $('waves').hidden = false;
+  }
+  function toWrite() {
+    $('waves').hidden = true; $('unlock').hidden = true;
+    strokes.length = 0; words.length = 0; hadInk = false; moodBefore = 0; moodAfter = 0;
+    showMood('지금 마음의 파도는 어때요?');
+    timeEl.hidden = true; barEl.style.width = '0%';
+    $('start').hidden = false; $('stop').hidden = true; $('again').hidden = true;
+    setMode('write');
+  }
+  function beginBreathing() {
+    stopCalm();
+    $('start').hidden = true; $('stop').hidden = false; moodEl.hidden = true;
+    timeEl.textContent = fmt(TOTAL) + ' 남았어요';
+    timeEl.hidden = false; barEl.style.width = '0%';
+    setMode('pre');
+  }
+  function finish() {
+    const wasUnlocked = rec.unlocked, n = streak();
+    timeEl.hidden = true; $('stop').hidden = true; $('again').hidden = false; barEl.style.width = '100%';
+    spark(10);
+    say('오늘의 숨 고르기 완료!', n > 1 ? `${n}일째 바다에 왔어요. 근심을 잘 보내줬어요` : '근심을 바다에 잘 보내줬어요');
+    if (!wasUnlocked || n < 3) showUnlock(n, true);
+    if (wasUnlocked) drawWaves();
+    showMood('지금 마음의 파도는 어때요?');
+    setMode('end');
+  }
+  $('obOk').addEventListener('click', () => { $('onboard').hidden = true; try { localStorage.setItem('beach-onboarded', '1'); } catch (e) {} });
+  $('start').addEventListener('click', beginBreathing);
+  $('stop').addEventListener('click', finish);
+  $('again').addEventListener('click', toWrite);
+
+  /* ---------- 함께: 글은 저장하지 않고, '데려간 근심의 수'와 지금 함께 있는 사람 수만 ---------- */
+  const togetherEl = $('together');
+  let shareDb = null, myId = null, myDoc = null, allTotal = 0, herePeople = 0;
+  const dayKey = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  function renderTogether() {
+    const parts = [];
+    if (allTotal > 0) parts.push(`지금까지 바다가 근심 ${allTotal.toLocaleString()}개를 데려갔어요`);
+    if (herePeople > 1) parts.push(`지금 ${herePeople}명이 함께 숨 고르는 중`);
+    togetherEl.textContent = parts.join(' · ');
+    togetherEl.hidden = parts.length === 0 || mode === 'intro';
+  }
+  function spark(n = 1) {
+    const g = geo();
+    for (let i = 0; i < n; i++) setTimeout(() => {
+      const el = document.createElement('span'); el.className = 'spark';
+      el.style.left = (8 + Math.random() * 84) + '%'; el.style.top = (g.horizon - 6 - Math.random() * 10) + 'px';
+      document.body.appendChild(el); setTimeout(() => el.remove(), 3400);
+    }, i * 180);
+  }
+  // 내 주소(GitHub Pages)로 열었을 때: Supabase로 함께 기능을 이어요
+  const SB_URL = 'https://phnvyoqmsgpomczmhiwj.supabase.co';
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBobnZ5b3Ftc2dwb21jem1oaXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0Njg0MjQsImV4cCI6MjEwOTA0NDQyNH0.39zhuX7_Zy5AqXeHLKb_xnkwhmIq8HHBH_XtY4aZGk8';
+  let sbRelease = null, mineInFlight = 0;
+  async function initSupabase() {
+    try {
+      if (!window.supabase || !window.supabase.createClient) return;
+      const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: false } });
+      const { data } = await sb.from('sea').select('total').eq('id', 1).maybeSingle();
+      if (data) { allTotal = +data.total || 0; renderTogether(); }
+      sb.channel('sea-total').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sea' }, msg => {
+        const n = +(msg.new && msg.new.total) || 0;
+        if (n > allTotal) { if (mineInFlight > 0) mineInFlight--; else spark(Math.min(5, (n - allTotal) * 2)); }
+        allTotal = Math.max(allTotal, n); renderTogether();
+      }).subscribe();
+      const here = sb.channel('sumgyeol-here', { config: { presence: { key: Math.random().toString(36).slice(2) } } });
+      here.on('presence', { event: 'sync' }, () => { herePeople = Object.keys(here.presenceState()).length; renderTogether(); })
+        .subscribe(st => { if (st === 'SUBSCRIBED') here.track({ at: Date.now() }).catch(() => {}); });
+      sbRelease = async () => {
+        mineInFlight++;
+        try {
+          const { data: n, error } = await sb.rpc('release_worry');
+          if (!error && typeof n === 'number') { allTotal = Math.max(allTotal, n); renderTogether(); }
+          else { mineInFlight = Math.max(0, mineInFlight - 1); allTotal++; renderTogether(); }
+        } catch (e) { mineInFlight = Math.max(0, mineInFlight - 1); }
+      };
+    } catch (e) {}
+  }
+  async function released() {
+    spark(3);
+    if (sbRelease) { sbRelease(); return; }
+    if (!shareDb || !myId) { allTotal++; renderTogether(); return; }
+    myDoc = { total: (myDoc && +myDoc.total || 0) + 1, last: Date.now() };
+    try { await shareDb.doc('sea/' + myId).set(myDoc); } catch (e) {}
+  }
+  (async () => {
+    try {
+      if (!window.claude || !window.claude.use) { initSupabase(); return; }
+      const [db, user, room] = await Promise.all([claude.use('db'), claude.use('user'), claude.use('room')]);
+      if (room) {
+        room.presence({ here: true }).catch(() => {});
+        room.onPeers(ch => { herePeople = ch.peers.filter(x => x.kind === 'viewer').length; renderTogether(); });
+      }
+      if (!db || !user) return;
+      myId = await user.id();
+      if (!myId) return;
+      shareDb = db;
+      try {
+        recRef = db.doc('data/users/' + myId + '/beach');
+        const snap = await recRef.get();
+        if (snap.exists) { mergeRec(snap.data()); try { localStorage.setItem('beach-rec', JSON.stringify(rec)); } catch (e) {} }
+      } catch (e) { recRef = null; }
+      const seen = new Map();
+      db.collection('sea').onSnapshot(snap => {
+        let sum = 0, fresh = 0;
+        for (const d of snap.docs) {
+          const v = d.data() || {}, n = +v.total || 0; sum += n;
+          if (d.id === myId) myDoc = v;
+          else if (seen.has(d.id) && n > seen.get(d.id)) fresh++;
+          seen.set(d.id, n);
+        }
+        allTotal = sum; renderTogether();
+        if (fresh) spark(Math.min(5, fresh * 2));
+      }, () => {});
+    } catch (e) {}
+  })();
+
+  /* ---------- 모래에 손가락으로 쓰기 ---------- */
+  const curEdge = () => { const g = geo(); return g.out + (g.inn - g.out) * p; };
+  cv.addEventListener('pointerdown', e => {
+    if (!['write', 'breathe', 'end'].includes(mode) || e.clientY < curEdge() + 14) return;
+    try { cv.setPointerCapture(e.pointerId); } catch (err) {}
+    drawing = { pts: [{ x: e.clientX, y: e.clientY, a: 1 }] }; strokes.push(drawing); lastInput = t; aliveStart++; scratch(0, true);
+  });
+  cv.addEventListener('pointermove', e => {
+    if (!drawing) return;
+    const l = drawing.pts[drawing.pts.length - 1];
+    const dd = Math.hypot(e.clientX - l.x, e.clientY - l.y);
+    if (dd > 2.5) { drawing.pts.push({ x: e.clientX, y: e.clientY, a: 1 }); aliveStart++; scratch(dd / Math.max(0.008, t - lastMoveT)); lastMoveT = t; }
+  });
+  const endStroke = () => { drawing = null; scratch(0); };
+  cv.addEventListener('pointerup', endStroke); cv.addEventListener('pointercancel', endStroke);
+
+  /* ---------- 업데이트 ---------- */
+  const wob = (x, k = 1) => Math.sin(x * 0.011 + t * 0.9) * 5 * k + Math.sin(x * 0.029 - t * 1.3) * 2.5 * k + Math.sin(x * 0.07 + t * 2.1) * 1 * k;
+  function update(dt) {
+    const g = geo();
+    if (mode === 'intro' || mode === 'write') {
+      // 잔잔한 물결: 글씨 쓰는 자리까지는 오지 않아요
+      const ck = calmClock(), c = (ck !== null ? ck : t) % CYC, ph = phase(c);
+      p = 0.04 + 0.34 * waterAt(c);
+      foamAmt = ph.seg.k === 'out' ? 0.3 * (1 - ph.x) : Math.max(0, foamAmt - dt);
+      if (mode === 'write') say('내려놓고 싶은 마음을 써요', hasInk() ? '다 썼으면 ‘숨 고르기 시작’을 눌러요' : '손가락으로 쓰면 돼요. 여기 쓴 글은 어디에도 저장되지 않아요');
+    } else if (mode === 'pre') {
+      p += (PRE_REACH - p) * Math.min(1, dt * 0.8);
+      say('편하게 앉아요', '어지러우면 언제든 평소대로 쉬어도 괜찮아요');
+      timeEl.textContent = fmt(TOTAL) + ' 남았어요';
+      if (modeT >= PRE) { setMode('breathe'); startWaveLoop(); breathT = 0; prevOut = false; inkTotal = strokes.reduce((a, s) => a + s.pts.length, 0); }
+    } else {
+      // 소리가 있으면 소리의 시계를, 없으면 화면 시계를 따라가요
+      const ck = audioClock();
+      if (ck !== null) breathT = ck; else breathT += dt;
+      const c = breathT % CYC, ph = phase(c);
+      const n = Math.floor(breathT / CYC), R = reachAt(n), Rp = prevReachAt(n);
+      p = ph.seg.k === 'out' ? R * waterAt(c) : Rp * waterAt(c);
+      const big = R >= 1, k = n < RAMP.length ? -1 : (n - RAMP.length) % REACH.length;
+      const out = ph.seg.k === 'out';
+      foamAmt = out ? Math.pow(R, 1.5) * Math.max(0.15, 1 - ph.x * 0.85) : Math.max(0, foamAmt - dt * 1.2);
+      // 날숨이 시작될 때 남은 글씨를 세고, 그 날숨 동안 정해진 만큼만 가져가요
+      if (out && !prevOut) { aliveStart = 0; for (const st of strokes) for (const q of st.pts) if (!q.e) aliveStart++; }
+      if (out && (mode === 'breathe' || mode === 'end')) {
+        // 처음엔 다섯 번에 나눠 가져가고(1/5, 1/4, 1/3, 1/2, 전부), 그 뒤엔 작은·중간·큰 파도가 조금씩·더·많이
+        const frac = n < RAMP.length ? (n >= 1 ? 1 / (RAMP.length - n) : 0) : [0.18, 0.3, 0.55][k];
+        if (frac > 0) erodeTo(aliveStart * (1 - frac * ease(Math.min(1, ph.x * 1.3))));
+      }
+      prevOut = out;
+      if (mode === 'breathe') {
+        const ink = hasInk();
+        let sub;
+        if (n < RAMP.length && inkTotal > 0) sub = out ? WAVE_CUE[n] : (n === RAMP.length - 1 ? '마지막 큰 파도가 와요' : '파도가 다시 다가와요');
+        else sub = out ? (big ? '큰 파도와 함께 모두 내보내요' : '파도에 숨을 실어 보내요') : (ink ? '파도가 다시 다가와요' : '물러난 모래에 또 써도 좋아요');
+        say(ph.seg.cue, sub);
+        const left = TOTAL - breathT;
+        timeEl.textContent = fmt(left) + ' 남았어요';
+        barEl.style.width = Math.min(100, 100 * breathT / TOTAL).toFixed(1) + '%';
+        if (left <= 0) finish();
+      }
+    }
+    const edge = g.out + (g.inn - g.out) * p;
+    wet = Math.max(edge, (wet || edge) - dt * H * 0.03);
+    updateObj(dt, edge, g);
+    if (drawing && t - lastMoveT > 0.09 && scrGain) scratch(0);
+    // 지워지기 시작한 모래알은 부드럽게 사라져요
+    for (const s of strokes) for (const q of s.pts) if (q.e && q.a > 0) q.a = Math.max(0, q.a - dt * 2.4);
+    for (let i = strokes.length - 1; i >= 0; i--) if (strokes[i].pts.every(q => q.a <= 0)) strokes.splice(i, 1);
+    // 썼던 글이 파도에 모두 씻겨 나간 순간 = 근심 하나를 바다가 데려간 순간
+    if (hadInk && strokes.length === 0 && mode !== 'write') { hadInk = false; released(); }
+    if (strokes.length > 0) hadInk = true;
+  }
+
+  // 파도가 덮은 자리부터 덩어리째 쓸어가요. 남은 글씨가 target 이하가 될 때까지
+  function erodeTo(target) {
+    const g = geo(), edge = g.out + (g.inn - g.out) * p;
+    let alive = 0; const covered = [];
+    for (const s of strokes) s.pts.forEach((q, i) => { if (!q.e) { alive++; if (q.y < edge + wob(q.x) - 2) covered.push([s, i]); } });
+    let guard = 200;
+    while (alive > target && covered.length && guard--) {
+      const [s, i] = covered.splice(Math.floor(Math.random() * covered.length), 1)[0];
+      const span = 2 + Math.floor(Math.random() * 4);
+      for (let j = -span; j <= span; j++) { const q = s.pts[i + j]; if (q && !q.e && (j === 0 || Math.random() < 0.8)) { q.e = 1; alive--; } }
+    }
+  }
+  function shorePath(edge, k = 1, dy = 0) {
+    const g = geo(); const path = new Path2D();
+    path.moveTo(-10, g.horizon); path.lineTo(W + 10, g.horizon);
+    for (let x = W + 10; x >= -10; x -= 6) path.lineTo(x, edge + dy + wob(x, k));
+    path.closePath(); return path;
+  }
+  // 모래 위 글씨: 파인 홈(어두운 골 + 밝은 턱)
+  /* ---------- 가끔 파도가 조개껍데기나 불가사리를 데려왔다가 다시 가져가요 ---------- */
+  let obj = null, objTimer = 10 + Math.random() * 10, prevEdge = 0;
+  function updateObj(dt, edge, g) {
+    const dEdge = edge - prevEdge; prevEdge = edge;
+    if (!obj) {
+      objTimer -= dt;
+      if (objTimer <= 0 && dEdge > 0.3 && edge > g.out + 30 && mode !== 'pre')
+        obj = { x: W * (0.18 + Math.random() * 0.64), y: edge - 6, rot: Math.random() * 6.28, kind: Math.random() < 0.55 ? 'shell' : 'star', ph: 'arrive', a: 0, rest: 0, s: 0.95 + Math.random() * 0.3 };
+      return;
+    }
+    const o = obj;
+    o.a = Math.min(1, o.a + dt * 1.5);
+    if (o.ph === 'arrive') {
+      if (dEdge > 0) { o.y = Math.max(o.y, edge - 10); o.rot += dt * 1.8; o.x += Math.sin(t * 1.7) * 0.25; }
+      else if (dEdge < -0.2) o.ph = 'rest';
+    } else if (o.ph === 'rest') {
+      o.rest += dt;
+      if (o.rest > 12 && edge > o.y + 8) o.ph = 'cover';
+      if (o.rest > 45) o.ph = 'fade';
+    } else if (o.ph === 'cover') {
+      o.rot += dt * 0.4;
+      if (dEdge < -0.2) o.ph = 'leave';
+    } else if (o.ph === 'leave') {
+      if (dEdge < 0) { o.y = Math.min(o.y, edge - 10); o.rot -= dt * 1.4; o.x += Math.sin(t * 1.3) * 0.2; }
+      if (o.y < g.out + 25) o.a -= dt * 0.9;
+      if (o.a <= 0) { obj = null; objTimer = 25 + Math.random() * 30; }
+    } else { o.a -= dt * 0.5; if (o.a <= 0) { obj = null; objTimer = 25 + Math.random() * 30; } }
+  }
+  function drawObj(x) {
+    if (!obj || obj.a <= 0) return;
+    const o = obj, g = geo(), sc = o.s * 1.35 * (0.75 + 0.5 * (o.y - g.horizon) / (H - g.horizon));
+    x.save(); x.globalAlpha = Math.max(0, Math.min(1, o.a));
+    x.translate(o.x, o.y);
+    x.fillStyle = 'rgba(70,50,30,.22)'; x.beginPath(); x.ellipse(2, 5 * sc, 15 * sc, 5 * sc, 0, 0, 6.283); x.fill();
+    x.rotate(o.rot); x.scale(sc, sc * 0.82);
+    if (o.kind === 'shell') {
+      const gr = x.createRadialGradient(-3, -8, 2, 0, -4, 18); gr.addColorStop(0, '#fff6ec'); gr.addColorStop(0.55, '#f2cfb4'); gr.addColorStop(1, '#d99a7a');
+      x.fillStyle = gr; x.beginPath(); x.moveTo(0, 8);
+      for (let i = 0; i <= 36; i++) { const a = -1.15 + 2.3 * i / 36, r = 16 + Math.cos(i * Math.PI * 0.5) * 1.1; x.lineTo(Math.sin(a) * r, 6 - Math.cos(a) * r); }
+      x.closePath(); x.fill();
+      x.strokeStyle = 'rgba(160,96,70,.42)'; x.lineWidth = 0.9;
+      for (let i = 0; i <= 9; i++) { const a = -1.05 + 2.1 * i / 9; x.beginPath(); x.moveTo(0, 7); x.lineTo(Math.sin(a) * 15.5, 6 - Math.cos(a) * 15.5); x.stroke(); }
+      x.strokeStyle = 'rgba(190,120,90,.25)'; for (let r = 6; r < 16; r += 3.2) { x.beginPath(); x.arc(0, 6, r, -Math.PI / 2 - 1.1, -Math.PI / 2 + 1.1); x.stroke(); }
+      x.fillStyle = '#e4b495'; x.beginPath(); x.moveTo(-6, 5); x.lineTo(6, 5); x.lineTo(4, 10); x.lineTo(-4, 10); x.closePath(); x.fill();
+      x.fillStyle = 'rgba(255,255,255,.45)'; x.beginPath(); x.ellipse(-4, -6, 3.5, 1.6, -0.5, 0, 6.283); x.fill();
+    } else {
+      const gr = x.createRadialGradient(0, 0, 1, 0, 0, 16); gr.addColorStop(0, '#f6b07d'); gr.addColorStop(0.7, '#e2865a'); gr.addColorStop(1, '#c86a45');
+      x.fillStyle = gr; x.beginPath();
+      for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 6 : 16; const px = Math.cos(a) * r, py = Math.sin(a) * r; i ? x.lineTo(px, py) : x.moveTo(px, py); }
+      x.closePath(); x.lineJoin = 'round'; x.strokeStyle = '#d27a52'; x.lineWidth = 3; x.stroke(); x.fill();
+      x.fillStyle = 'rgba(255,236,214,.75)';
+      for (let k = 0; k < 5; k++) { const a = -Math.PI / 2 + k * Math.PI * 2 / 5; for (let j = 1; j <= 3; j++) { x.beginPath(); x.arc(Math.cos(a) * j * 3.6, Math.sin(a) * j * 3.6, 0.9, 0, 6.283); x.fill(); } }
+    }
+    x.restore();
+  }
+  function drawInk(x) {
+    drawObj(x);
+    x.lineCap = 'round'; x.lineJoin = 'round';
+    for (const s of strokes) {
+      const pts = s.pts;
+      if (pts.length === 1) {
+        const q = pts[0]; if (q.a < 0.02) continue;
+        x.fillStyle = `rgba(255,246,228,${0.5 * q.a})`; x.beginPath(); x.arc(q.x + 0.8, q.y + 1.2, 2.2, 0, 6.283); x.fill();
+        x.fillStyle = `rgba(105,78,50,${0.7 * q.a})`; x.beginPath(); x.arc(q.x, q.y, 2.1, 0, 6.283); x.fill();
+        continue;
+      }
+      for (let pass = 0; pass < 3; pass++) {
+        for (let i = 1; i < pts.length; i++) {
+          const a = Math.min(pts[i - 1].a, pts[i].a); if (a < 0.02) continue;
+          const ox = pass === 0 ? 1.2 : 0, oy = pass === 0 ? 1.8 : 0;
+          x.strokeStyle = pass === 0 ? `rgba(255,246,228,${0.55 * a})` : pass === 1 ? `rgba(118,88,58,${0.7 * a})` : `rgba(80,58,38,${0.45 * a})`;
+          x.lineWidth = pass === 0 ? 5.5 : pass === 1 ? 5 : 1.8;
+          x.beginPath(); x.moveTo(pts[i - 1].x + ox, pts[i - 1].y + oy); x.lineTo(pts[i].x + ox, pts[i].y + oy); x.stroke();
+        }
+      }
+    }
+    if (mode === 'write' && !hasInk()) {
+      x.font = `20px 'Gowun Dodum', sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.fillStyle = `rgba(110,82,54,${0.3 + 0.15 * Math.sin(t * 2)})`;
+      x.fillText('여기에 손가락으로 써보세요', W / 2, H * 0.83);
+    }
+  }
+  function draw() {
+    const g = geo();
+    const edge = g.out + (g.inn - g.out) * p;
+    ctx.drawImage(skyC, 0, 0, W, g.horizon + 2);
+    ctx.drawImage(sandC, 0, g.horizon, W, H - g.horizon);
+
+    // 젖은 모래 (어둡고 하늘이 비치는 결)
+    ctx.save();
+    const wetPath = new Path2D(); wetPath.moveTo(-10, g.horizon);
+    for (let x = -10; x <= W + 10; x += 6) wetPath.lineTo(x, wet + 4 + wob(x, 0.5));
+    wetPath.lineTo(W + 10, g.horizon); wetPath.closePath();
+    ctx.clip(wetPath);
+    ctx.fillStyle = 'rgba(110,82,52,0.30)'; ctx.fillRect(0, g.horizon, W, wet + 10 - g.horizon);
+    let gr = ctx.createLinearGradient(0, edge, 0, wet + 8);
+    gr.addColorStop(0, 'rgba(255,232,214,0.30)'); gr.addColorStop(1, 'rgba(255,232,214,0.05)');
+    ctx.fillStyle = gr; ctx.fillRect(0, edge - 10, W, wet - edge + 20);
+    ctx.restore();
+
+    drawInk(ctx);
+
+    // 쓰기 안내 (빈 모래일 때)
+    if (mode === 'write' && !hasInk()) {
+      ctx.font = `20px 'Gowun Dodum', sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = `rgba(110,82,54,${0.25 + 0.15 * Math.sin(t * 2)})`;
+      ctx.fillText('여기에 손가락으로 써보세요', W / 2, H * 0.83);
+    }
+
+    // 바다
+    const sea = shorePath(edge);
+    ctx.save(); ctx.clip(sea);
+    gr = ctx.createLinearGradient(0, g.horizon, 0, edge + 8);
+    gr.addColorStop(0, '#8fb0b6'); gr.addColorStop(0.08, '#5a8d9c'); gr.addColorStop(0.45, '#3f7f8e');
+    gr.addColorStop(0.75, 'rgba(76,150,152,0.92)'); gr.addColorStop(0.92, 'rgba(120,190,182,0.6)'); gr.addColorStop(1, 'rgba(190,225,212,0.25)');
+    ctx.fillStyle = gr; ctx.fillRect(0, g.horizon, W, edge + 20 - g.horizon);
+    ctx.drawImage(seaTexC, -30 + Math.sin(t * 0.25) * 18, g.horizon, W + 60, H * 0.75 - g.horizon);
+    // 햇빛 반짝임
+    const sx = W * 0.68;
+    for (let i = 0; i < 26; i++) {
+      const y = g.horizon + 3 + Math.pow(i / 26, 1.4) * (edge - g.horizon) * 0.8;
+      const w = (6 + i * 1.5) * (0.4 + 0.6 * Math.abs(Math.sin(t * 1.7 + i * 1.3)));
+      ctx.fillStyle = `rgba(255,236,214,${0.5 - i * 0.015})`;
+      ctx.fillRect(sx - w / 2 + Math.sin(t * 0.8 + i) * (3 + i * 0.6), y, w, 1 + i * 0.05);
+    }
+    // 밀려오는 물마루 (부서지는 흰 띠)
+    for (let b = 0; b < 3; b++) {
+      const pos = (t * 0.1 + b / 3) % 1;
+      const y = g.horizon + 8 + Math.pow(pos, 1.6) * (edge - g.horizon - 14);
+      const al = Math.sin(Math.PI * pos) * 0.55;
+      for (let x = -4, i = b * 300; x < W + 4; x += 4, i++) {
+        const f = foamSeed[i % 2000];
+        if (f < 0.35) continue;
+        const yy = y + Math.sin(x * 0.02 + t + b) * (1 + pos * 3);
+        ctx.fillStyle = `rgba(245,250,248,${al * f})`;
+        ctx.fillRect(x, yy, 3 + f * 4 * pos, 0.6 + pos * 2.2);
+      }
+    }
+    ctx.restore();
+
+    // 큰 파도의 흰 물보라 막
+    if (foamAmt > 0.01) {
+      const band = H * 0.22, y0 = Math.min(edge, H + 20) - band;
+      let wg = ctx.createLinearGradient(0, y0, 0, edge);
+      wg.addColorStop(0, 'rgba(245,250,249,0)'); wg.addColorStop(0.6, `rgba(240,248,246,${0.35 * foamAmt})`); wg.addColorStop(1, `rgba(255,255,255,${0.75 * foamAmt})`);
+      ctx.save(); ctx.clip(sea); ctx.fillStyle = wg; ctx.fillRect(0, y0, W, band + 30);
+      for (let i = 0; i < 700; i++) {
+        const f = foamSeed[i], f2 = foamSeed[(i * 7 + 3) % 2000];
+        const x = f * W + Math.sin(t * 1.5 + i) * 6, y = edge - f2 * band + Math.sin(t * 2 + f * 9) * 4;
+        ctx.fillStyle = `rgba(255,255,255,${foamAmt * (0.25 + 0.5 * (1 - f2))})`;
+        ctx.beginPath(); ctx.arc(x, y, 1 + f2 * 3.5, 0, 6.283); ctx.fill();
+      }
+      ctx.restore();
+    }
+    // 물가 거품 (레이스처럼)
+    for (let row = 0; row < 5; row++) {
+      for (let x = -6, i = row * 397; x < W + 6; x += 3, i++) {
+        const f = foamSeed[i % 2000], f2 = foamSeed[(i * 7 + 13) % 2000];
+        const lace = 0.5 + 0.5 * Math.sin(x * 0.045 + row * 1.7 + t * 0.6 + f2 * 2);
+        if (row > 0 && lace * f < 0.35) continue;
+        const y = edge + wob(x) - row * (3 + f2 * 3) + (f - 0.5) * 2;
+        const r = row === 0 ? 1.6 + f * 1.8 : 0.7 + f * 1.4;
+        ctx.fillStyle = `rgba(255,255,255,${row === 0 ? 0.75 + f * 0.25 : (0.55 - row * 0.08) * lace})`;
+        ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill();
+      }
+    }
+    // 물러간 뒤 남은 거품 자국
+    const gap = wet - edge;
+    if (gap > 4) {
+      const al = Math.max(0, Math.min(0.5, 0.6 - gap / (H * 0.12)));
+      for (let x = -6, i = 911; x < W + 6; x += 5, i++) {
+        const f = foamSeed[i % 2000]; if (f < 0.5) continue;
+        ctx.fillStyle = `rgba(255,255,255,${al * f})`;
+        ctx.beginPath(); ctx.arc(x + f * 3, wet + wob(x, 0.5) + 2, 0.6 + f, 0, 6.283); ctx.fill();
+      }
+    }
+  }
+
+
+  /* ---------- 사실적인 바다 (WebGL 셰이더). 지원하지 않으면 위의 2D 그림으로 그려요 ---------- */
+  const FRAG = `
+precision highp float;
+uniform vec2 uRes; uniform float uT, uHor, uEdge, uWet, uFoam, uScale, uOut, uSunR, uNight; uniform vec2 uSun; uniform sampler2D uInk;
+uniform vec3 uSky0, uSky1, uSky2, uSunC, uGlowC, uSandL, uDeep, uShallow, uFoamC, uHaze;
+float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y); }
+float fbm(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 4; i++){ v += a * noise(p); p = p * 2.03 + vec2(17.1, 9.2); a *= 0.5; } return v; }
+float wob(float x){ return sin(x * 0.011 + uT * 0.9) * 5.0 + sin(x * 0.029 - uT * 1.3) * 2.5 + sin(x * 0.07 + uT * 2.1); }
+vec3 sandAt(vec2 q){
+  float d = clamp((q.y - uHor) / (uRes.y - uHor), 0.0, 1.0);
+  vec3 c = mix(vec3(0.78, 0.67, 0.51), vec3(0.93, 0.86, 0.74), smoothstep(0.0, 1.0, d));
+  float s = 0.35 + d;
+  c *= 0.9 + 0.2 * fbm(vec2(q.x * 0.012, q.y * 0.03) / s);
+  float rip = sin(q.y * 0.32 / s + fbm(q * 0.01) * 9.0);
+  c *= 1.0 + 0.035 * rip * smoothstep(0.1, 0.7, d);
+  c *= 0.93 + 0.14 * hash(floor(q * uScale * 1.0));
+  vec4 ink = texture2D(uInk, vec2(q.x / uRes.x, q.y / uRes.y));
+  return mix(c * uSandL, ink.rgb * uSandL, ink.a);
+}
+void main(){
+  vec2 q = vec2(gl_FragCoord.x, uRes.y * uScale - gl_FragCoord.y) / uScale;
+  vec3 col;
+  if (q.y < uHor) {
+    float k = q.y / uHor;
+    col = mix(uSky0, uSky1, smoothstep(0.0, 0.6, k));
+    col = mix(col, uSky2, smoothstep(0.55, 1.0, k));
+    // 별 (밤)
+    vec2 sc = floor(q * 0.45);
+    float st = step(0.993, hash(sc)) * (0.55 + 0.45 * sin(uT * (1.0 + hash(sc + 3.0) * 3.0) + hash(sc) * 30.0));
+    col += vec3(0.9, 0.93, 1.0) * st * uNight * (1.0 - k * 0.8);
+    float cl = fbm(vec2(q.x * 0.0035 + uT * 0.004, q.y * 0.028));
+    vec3 cloudC = mix(vec3(1.0, 0.95, 0.92), vec3(0.22, 0.27, 0.38), uNight);
+    col = mix(col, cloudC, smoothstep(0.55, 0.8, cl) * 0.45 * (1.0 - k * 0.5));
+    float sd = length(q - uSun);
+    float sr = min(uRes.x, uRes.y) * 0.045 * uSunR;
+    col += uGlowC * exp(-sd / (sr * 3.0)) * 0.35;
+    vec3 disc = uSunC * (1.0 - uNight * 0.12 * smoothstep(0.45, 0.75, fbm((q - uSun) / sr * 2.2)));
+    col = mix(col, disc, smoothstep(sr + 1.0, sr - 1.0, sd));
+    // 해질녘엔 해가 수평선에 걸려요
+    col = mix(col, uSky2, smoothstep(uHor - 1.5, uHor, q.y) * (1.0 - uNight));
+  } else {
+    float d = clamp((q.y - uHor) / (uRes.y - uHor), 0.0, 1.0);
+    float e = uEdge + wob(q.x) + (fbm(vec2(q.x * 0.02, uT * 0.4)) - 0.5) * 8.0;
+    float dist = e - q.y;
+    if (dist < 0.0) {
+      col = sandAt(q);
+      float we = uWet + wob(q.x) * 0.5;
+      float wetK = smoothstep(we + 6.0, we - 14.0, q.y);
+      col *= mix(1.0, 0.7, wetK);
+      col += vec3(0.11, 0.10, 0.10) * wetK * smoothstep(0.35, 0.8, fbm(q * vec2(0.008, 0.05)));
+      // 물러간 자리의 거품 자국
+      float rim = exp(-abs(q.y - we) / 2.5) * smoothstep(0.62, 0.8, noise(q * 0.32)) * smoothstep(4.0, 40.0, uWet - uEdge) * smoothstep(160.0, 40.0, uWet - uEdge);
+      col = mix(col, uFoamC, rim * 0.7);
+      // 물 가장자리의 얇은 물막 반짝임
+      col = mix(col, col * 1.08 + 0.04, smoothstep(-10.0, 0.0, dist) * 0.6);
+    } else {
+      float Z = 1.0 / (d + 0.07);
+      vec2 w = vec2((q.x - uRes.x * 0.5) / uRes.x * Z * 5.0, Z * 3.0);
+      vec2 fl = vec2(uT * 0.04, -uT * 0.35);
+      float h = fbm(w * vec2(0.7, 1.8) + fl);
+      float hx = fbm((w + vec2(0.04, 0.0)) * vec2(0.7, 1.8) + fl);
+      float hy = fbm((w + vec2(0.0, 0.04)) * vec2(0.7, 1.8) + fl);
+      vec3 n = normalize(vec3((h - hx) * 6.0, (h - hy) * 6.0, 1.0));
+      // 모래 위로 밀려온 물은 얇은 물막이라 모래가 비쳐요
+      float swash = smoothstep(uOut - 30.0, uOut + 50.0, q.y);
+      float s = (1.0 - exp(-dist / (10.0 + 110.0 * d))) * mix(1.0, 0.32, swash);
+      float open = smoothstep(uOut, uHor, q.y);
+      vec3 under = sandAt(q + n.xy * vec2(14.0, 9.0) * (0.3 + s));
+      vec3 shallow = uShallow;
+      vec3 deep = mix(uDeep, uDeep * 1.25, d);
+      vec3 water = mix(under * mix(vec3(0.86, 0.97, 0.95), vec3(0.8, 0.9, 1.0), uNight), shallow, smoothstep(0.0, 0.65, s) * 0.85);
+      water = mix(water, deep, smoothstep(0.4, 1.0, s) * 0.9);
+      water = mix(water, deep, open * 0.5);
+      float fres = 0.07 + 0.55 * pow(1.0 - d, 4.0);
+      vec3 skyRef = mix(uSky2, uSky1, clamp(n.y * 3.0 + 0.5, 0.0, 1.0));
+      water = mix(water, skyRef, fres * (0.4 + 0.6 * s));
+      vec3 L = normalize(vec3((uSun.x - q.x) / uRes.x * 0.6, -0.5, 0.6));
+      water += uGlowC * pow(max(dot(n, L), 0.0), 40.0) * 0.35 * s;
+      float gx = exp(-pow((q.x - uSun.x) / (14.0 + 70.0 * d), 2.0));
+      water += uGlowC * step(0.8, noise(w * vec2(5.0, 12.0) + vec2(uT * 0.4, uT * 2.0))) * gx * (1.0 - d) * 0.9 * (1.0 - swash);
+      for (int i = 0; i < 3; i++) {
+        float pos = fract(uT * 0.08 + float(i) / 3.0);
+        float yb = uHor + pow(pos, 1.7) * (min(uEdge, uOut) - uHor - 12.0);
+        float band = exp(-pow((q.y - yb - (noise(vec2(q.x * 0.03, float(i) * 7.0)) - 0.5) * 8.0) / (0.8 + pos * 5.0), 2.0));
+        float lc = smoothstep(0.4, 0.7, fbm(vec2(q.x * 0.045, q.y * 0.12) + float(i) * 3.1 + uT * 0.15));
+        water = mix(water, uFoamC, band * lc * sin(3.1416 * pos) * 0.8 * (1.0 - swash));
+      }
+      float lace = fbm(q * vec2(0.055, 0.11) + vec2(uT * 0.25, -uT * 0.7));
+      float lace2 = noise(q * vec2(0.22, 0.4) + uT * 0.8);
+      float edgeF = smoothstep(7.0, 0.0, dist) * (0.55 + 0.45 * lace2);
+      float bandF = smoothstep(30.0, 0.0, dist) * smoothstep(0.5, 0.72, lace) * 0.85;
+      float reach = (uRes.y - uHor) * 0.32 * uFoam + 1.0;
+      float sheet = uFoam * smoothstep(reach, 0.0, dist) * smoothstep(0.42, 0.68, lace + 0.18 * (1.0 - dist / reach)) * (0.6 + 0.4 * lace2);
+      float foam = clamp(edgeF + bandF + sheet, 0.0, 1.0);
+      water = mix(water, uFoamC, foam);
+      col = mix(sandAt(q) * 0.82, water, smoothstep(0.0, 2.5, dist));
+    }
+    col = mix(col, uHaze, exp(-(q.y - uHor) / 5.0) * 0.6);
+  }
+  gl_FragColor = vec4(col, 1.0);
+}`;
+  const TOD = {
+    morning: { sky0: [.64, .74, .80], sky1: [.87, .84, .81], sky2: [.97, .80, .68], sunC: [1, .91, .82], glow: [1, .86, .72], sunR: 1, sunY: -.03, sunX: .68, sand: [1, 1, 1], deep: [.20, .41, .49], shallow: [.45, .74, .71], foam: [.97, .985, .98], haze: [.92, .85, .80], night: 0 },
+    sunset:  { sky0: [.33, .36, .55], sky1: [.92, .57, .47], sky2: [1, .70, .40], sunC: [1, .88, .62], glow: [1, .62, .34], sunR: 1.5, sunY: -.006, sunX: .62, sand: [1, .84, .72], deep: [.17, .24, .36], shallow: [.62, .52, .46], foam: [1, .93, .86], haze: [1, .72, .52], night: 0 },
+    night:   { sky0: [.02, .04, .11], sky1: [.06, .10, .21], sky2: [.15, .19, .32], sunC: [.96, .95, .88], glow: [.62, .70, .86], sunR: .7, sunY: -.09, sunX: .76, sand: [.38, .42, .54], deep: [.03, .07, .14], shallow: [.09, .17, .24], foam: [.66, .73, .82], haze: [.17, .21, .32], night: 1 },
+  };
+  function todNow() {
+    const h = (location.hash || '').slice(1);
+    if (TOD[h]) return h;
+    const hr = new Date().getHours();
+    return hr >= 5 && hr < 12 ? 'morning' : hr >= 12 && hr < 18 ? 'sunset' : 'night';
+  }
+  let todKey = todNow(), todPal = TOD[todKey];
+  function applyTod() {
+    todKey = todNow(); todPal = TOD[todKey];
+    document.body.classList.toggle('night', todKey === 'night');
+    document.body.classList.toggle('sunset', todKey === 'sunset');
+  }
+  applyTod();
+  window.addEventListener('hashchange', applyTod);
+  setInterval(() => { if (todNow() !== todKey) applyTod(); }, 60000);
+  const VERT = 'attribute vec2 a; void main(){ gl_Position = vec4(a, 0.0, 1.0); }';
+  let G = null;
+  const inkC = document.createElement('canvas'), inkX = inkC.getContext('2d');
+  function initGL() {
+    const c = document.createElement('canvas');
+    c.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;display:block';
+    c.setAttribute('aria-hidden', 'true');
+    const gl = c.getContext('webgl', { antialias: false, alpha: false, preserveDrawingBuffer: false });
+    if (!gl) return null;
+    const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(o)); return null; } return o; };
+    const vs = sh(gl.VERTEX_SHADER, VERT), fs = sh(gl.FRAGMENT_SHADER, FRAG);
+    if (!vs || !fs) return null;
+    const pr = gl.createProgram(); gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return null;
+    gl.useProgram(pr);
+    const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    const u = {}; ['uRes', 'uT', 'uHor', 'uEdge', 'uWet', 'uFoam', 'uScale', 'uSun', 'uInk', 'uOut', 'uSunR', 'uNight', 'uSky0', 'uSky1', 'uSky2', 'uSunC', 'uGlowC', 'uSandL', 'uDeep', 'uShallow', 'uFoamC', 'uHaze'].forEach(k => u[k] = gl.getUniformLocation(pr, k));
+    gl.uniform1i(u.uInk, 0);
+    cv.parentNode.insertBefore(c, cv);
+    return { gl, c, u, tex, scale: 1 };
+  }
+  function glResize() {
+    if (!G) return;
+    G.scale = Math.min(1.5, window.devicePixelRatio || 1) * (W * H > 1200000 ? 0.75 : 1);
+    G.c.width = Math.round(W * G.scale); G.c.height = Math.round(H * G.scale);
+    G.gl.viewport(0, 0, G.c.width, G.c.height);
+    inkC.width = Math.round(W); inkC.height = Math.round(H);
+    ctx.clearRect(0, 0, W, H);
+  }
+  let inkWasEmpty = false;
+  function renderGL() {
+    const { gl, u } = G, g = geo();
+    const empty = strokes.length === 0 && !(mode === 'write') && !obj;
+    if (!(empty && inkWasEmpty)) {
+      inkX.clearRect(0, 0, inkC.width, inkC.height);
+      drawInk(inkX);
+      gl.bindTexture(gl.TEXTURE_2D, G.tex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, inkC);
+    }
+    inkWasEmpty = empty;
+    gl.uniform2f(u.uRes, W, H); gl.uniform1f(u.uT, t); gl.uniform1f(u.uHor, g.horizon);
+    gl.uniform1f(u.uEdge, g.out + (g.inn - g.out) * p); gl.uniform1f(u.uWet, wet); gl.uniform1f(u.uFoam, foamAmt);
+    gl.uniform1f(u.uScale, G.scale); gl.uniform1f(u.uOut, g.out + (g.inn - g.out) * 0.12); gl.uniform2f(u.uSun, W * todPal.sunX, g.horizon + H * todPal.sunY);
+    const P = todPal; gl.uniform1f(u.uSunR, P.sunR); gl.uniform1f(u.uNight, P.night);
+    [['uSky0', 'sky0'], ['uSky1', 'sky1'], ['uSky2', 'sky2'], ['uSunC', 'sunC'], ['uGlowC', 'glow'], ['uSandL', 'sand'], ['uDeep', 'deep'], ['uShallow', 'shallow'], ['uFoamC', 'foam'], ['uHaze', 'haze']].forEach(([k, n]) => gl.uniform3fv(u[k], P[n]));
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  try { G = initGL(); } catch (e) { G = null; }
+
+  window.addEventListener('resize', () => { resize(); glResize(); });
+  resize(); glResize();
+  let last = performance.now();
+  function loop(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    t += dt; modeT += dt;
+    update(dt); if (G) renderGL(); else draw();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+
+</body>
+</html>
