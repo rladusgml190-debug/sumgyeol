@@ -681,6 +681,7 @@ document.body.classList.add('at-intro');
     setMode('write');
   }
   function beginBreathing() {
+    sbLog('start');
     stopCalm();
     $('start').hidden = true; $('stop').hidden = false; moodEl.hidden = true;
     timeEl.textContent = fmt(TOTAL) + ' 남았어요';
@@ -688,6 +689,7 @@ document.body.classList.add('at-intro');
     setMode('pre');
   }
   function finish() {
+    sbLog('finish');
     const wasUnlocked = rec.unlocked, n = streak();
     timeEl.hidden = true; $('stop').hidden = true; $('again').hidden = false; barEl.style.width = '100%';
     spark(10);
@@ -724,7 +726,9 @@ document.body.classList.add('at-intro');
   // 내 주소(GitHub Pages)로 열었을 때: Supabase로 함께 기능을 이어요
   const SB_URL = 'https://phnvyoqmsgpomczmhiwj.supabase.co';
   const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBobnZ5b3Ftc2dwb21jem1oaXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0Njg0MjQsImV4cCI6MjEwOTA0NDQyNH0.39zhuX7_Zy5AqXeHLKb_xnkwhmIq8HHBH_XtY4aZGk8';
-  let sbRelease = null, mineInFlight = 0;
+  let sbRelease = null, mineInFlight = 0, sbLog = () => {};
+  // 방문 통계용 익명 번호 (이름·글 내용은 보내지 않아요)
+  let vid = ''; try { vid = localStorage.getItem('sumgyeol-vid') || ''; if (!vid) { vid = 'v' + Math.random().toString(36).slice(2, 12) + Date.now().toString(36); localStorage.setItem('sumgyeol-vid', vid); } } catch (e) { vid = 'v' + Math.random().toString(36).slice(2, 14); }
   async function initSupabase() {
     try {
       if (!window.supabase || !window.supabase.createClient) return;
@@ -739,8 +743,10 @@ document.body.classList.add('at-intro');
       const here = sb.channel('sumgyeol-here', { config: { presence: { key: Math.random().toString(36).slice(2) } } });
       here.on('presence', { event: 'sync' }, () => { herePeople = Object.keys(here.presenceState()).length; renderTogether(); })
         .subscribe(st => { if (st === 'SUBSCRIBED') here.track({ at: Date.now() }).catch(() => {}); });
+      sbLog = kind => { try { sb.rpc('log_event', { p_kind: kind, p_visitor: vid }).then(() => {}, () => {}); } catch (e) {} };
+      sbLog('visit');
       sbRelease = async () => {
-        mineInFlight++;
+        mineInFlight++; sbLog('release');
         try {
           const { data: n, error } = await sb.rpc('release_worry');
           if (!error && typeof n === 'number') { allTotal = Math.max(allTotal, n); renderTogether(); }
