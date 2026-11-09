@@ -729,6 +729,16 @@ document.body.classList.add('at-intro');
   let sbRelease = null, mineInFlight = 0, sbLog = () => {};
   // 방문 통계용 익명 번호 (이름·글 내용은 보내지 않아요)
   let vid = ''; try { vid = localStorage.getItem('sumgyeol-vid') || ''; if (!vid) { vid = 'v' + Math.random().toString(36).slice(2, 12) + Date.now().toString(36); localStorage.setItem('sumgyeol-vid', vid); } } catch (e) { vid = 'v' + Math.random().toString(36).slice(2, 14); }
+  // 어디서 왔는지: 링크의 ?ref=값 → 없으면 이전 사이트 주소(도메인만)
+  let refSrc = null;
+  try {
+    const u = new URL(location.href);
+    let r = u.searchParams.get('ref') || '';
+    if (!r && document.referrer) { const h = new URL(document.referrer).hostname; if (h && h !== location.hostname) r = h.replace(/^(www|m|l|lm)\./, ''); }
+    r = r.toLowerCase().replace(/[^a-z0-9._-]/g, '').slice(0, 30);
+    if (r) refSrc = r;
+    if (u.searchParams.has('ref')) { u.searchParams.delete('ref'); history.replaceState(null, '', u.pathname + u.search + u.hash); }
+  } catch (e) {}
   async function initSupabase() {
     try {
       if (!window.supabase || !window.supabase.createClient) return;
@@ -743,7 +753,15 @@ document.body.classList.add('at-intro');
       const here = sb.channel('sumgyeol-here', { config: { presence: { key: Math.random().toString(36).slice(2) } } });
       here.on('presence', { event: 'sync' }, () => { herePeople = Object.keys(here.presenceState()).length; renderTogether(); })
         .subscribe(st => { if (st === 'SUBSCRIBED') here.track({ at: Date.now() }).catch(() => {}); });
-      sbLog = kind => { try { sb.rpc('log_event', { p_kind: kind, p_visitor: vid }).then(() => {}, () => {}); } catch (e) {} };
+      sbLog = kind => {
+        try {
+          const base = { p_kind: kind, p_visitor: vid };
+          if (kind === 'visit' && refSrc) {
+            // DB가 아직 ref를 모르면 예전 방식으로 다시 보내요
+            sb.rpc('log_event', { ...base, p_ref: refSrc }).then(r => { if (r && r.error) sb.rpc('log_event', base).then(() => {}, () => {}); }, () => {});
+          } else sb.rpc('log_event', base).then(() => {}, () => {});
+        } catch (e) {}
+      };
       sbLog('visit');
       sbRelease = async () => {
         mineInFlight++; sbLog('release');
