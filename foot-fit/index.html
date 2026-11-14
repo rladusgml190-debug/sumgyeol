@@ -208,6 +208,10 @@ details.acc[open] summary::after{content:"–"}
 .checks{display:flex;flex-wrap:wrap;gap:6px}
 .checks span{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.75)}
 .checks span.ok{background:rgba(70,209,132,.25);color:#7ff0b0}.checks span.bad{background:rgba(255,159,10,.25);color:#ffc46b}
+.cam-screen.review .review-info .note.show{display:block}
+.seat-steps{display:flex;gap:6px}
+.seat-steps span{flex:1;font-size:11px;font-weight:600;text-align:center;padding:5px 4px;border-radius:999px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
+.seat-steps span.on{background:#fff;color:#141516}.seat-steps span.done{background:rgba(70,209,132,.3);color:#8ff3bb}
 .ar{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
 #scanChip{font-size:13px;padding:9px 16px;white-space:normal;text-align:center;line-height:1.35;max-width:calc(100% - 32px);transition:background .2s}
 #scanChip.warn{background:rgba(255,159,10,.92);color:#1c1300}
@@ -422,9 +426,9 @@ details.acc[open] summary::after{content:"–"}
   <h1 class="title">Now capture the<br><b>3D shape</b></h1>
   <p class="muted" style="margin:-8px 0 0;font-size:14px">Length and width are done. This step measures height, instep and girth.</p>
   <div class="opts">
-    <button class="opt" id="optVideo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5" stroke-dasharray="3 2.4"/><path d="M12 7.5v9M7.5 12h9"/></svg></span><div><b>Walk-around video scan</b><span>Circle your foot for about 15 seconds. Builds a 3D shape from many angles.</span></div><em>Best</em></button>
+    <button class="opt" id="optSeat"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="1.6"/><path d="M3 20h18M6 20c0-2.5 2-4 5-4h2c3 0 5 1.5 5 4"/></svg></span><div><b>Seated 3-shot scan</b><span>On your own. Sit down, stand the phone on the floor and take three photos: inside, front, outside. No paper needed.</span></div><em>Best</em></button>
+    <button class="opt" id="optVideo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5" stroke-dasharray="3 2.4"/><path d="M12 7.5v9M7.5 12h9"/></svg></span><div><b>Helper scan</b><span>A friend walks around you with the phone for about 15 seconds. Builds a full 3D shape.</span></div><em>Most detail</em></button>
     <label class="opt" id="optLidar"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><circle cx="10" cy="7" r="1.6"/><circle cx="14" cy="7" r="1.6"/><circle cx="12" cy="10.2" r="1"/></svg></span><div><b>LiDAR scan · iPhone Pro</b><span>Scan with a LiDAR app such as Polycam or 3D Scanner App, export OBJ or PLY, then import it here.</span></div><em>Pro</em><input type="file" id="lidarFile" accept=".obj,.ply,model/obj,application/octet-stream,text/plain"></label>
-    <button class="opt" id="optSide"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 18h18M5 18c0-5 1-9 4-10l3 0c4 1 7 5 9 10"/></svg></span><div><b>Single side photo</b><span>Quickest. Height is measured from one photo, girth is estimated.</span></div></button>
   </div>
   <div class="nav">
     <div class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></div>
@@ -464,9 +468,81 @@ details.acc[open] summary::after{content:"–"}
   </div>
 </section>
 
+<section class="screen" id="seatGuide" hidden>
+  <div class="row-h"><div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 7h11a13 13 0 0 1 0 26H9z" fill="var(--mint)"/><path d="M15 15l7 5-7 5z" fill="var(--surface)"/></svg>Arc</div><span class="label muted">On your own</span></div>
+  <h1 class="title">Seated <b>3-shot scan</b></h1>
+  <svg class="guide-art" viewBox="0 0 420 220" aria-hidden="true">
+      <rect x="0" y="0" width="420" height="220" rx="22" fill="var(--card)"/>
+      <rect x="40" y="18" width="130" height="34" rx="8" fill="var(--line)"/><text x="105" y="40" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="Poppins,sans-serif">chair</text>
+      <g transform="translate(105,190) scale(.48,-.48)"><path d="M0,4 C-30,4 -34,60 -38,120 C-52,165 -52,185 -46,205 C-42,235 -30,250 -14,250 C5,250 25,238 36,215 C48,190 50,165 46,150 C40,100 38,50 28,15 C20,-2 6,-2 0,4Z" fill="#24272e"/></g>
+      <g font-family="Poppins,sans-serif" font-size="11" font-weight="600" fill="var(--ink)">
+        <g transform="translate(36,130) rotate(90)"><rect x="-9" y="-6" width="18" height="12" rx="3" fill="var(--ink)"/><circle cx="0" cy="-3" r="1.8" fill="var(--mint)"/></g><text x="36" y="160" text-anchor="middle">1</text>
+        <g transform="translate(105,82) rotate(180)"><rect x="-9" y="-6" width="18" height="12" rx="3" fill="var(--ink)"/><circle cx="0" cy="-3" r="1.8" fill="var(--mint)"/></g>
+        <g transform="translate(174,130) rotate(-90)"><rect x="-9" y="-6" width="18" height="12" rx="3" fill="var(--ink)"/><circle cx="0" cy="-3" r="1.8" fill="var(--mint)"/></g><text x="174" y="160" text-anchor="middle">3</text>
+      </g>
+      <text x="105" y="74" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)" font-family="Poppins,sans-serif">2</text>
+      <path d="M48 130h24M150 130h-14M105 90v20" stroke="var(--mint)" stroke-width="2" stroke-dasharray="3 3"/>
+      <text x="105" y="212" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="Poppins,sans-serif">Seen from above: 3 phone spots</text>
+      <line x1="220" y1="20" x2="220" y2="200" stroke="var(--line)"/>
+      <line x1="236" y1="168" x2="404" y2="168" stroke="var(--muted)" stroke-width="1.5"/>
+      <path d="M318 168 C315 152 317 126 322 104 L334 104 C335 118 337 128 345 136 C357 146 371 156 381 162 C385 165 385 167 383 168Z" fill="#24272e"/>
+      <rect x="320" y="20" width="14" height="84" rx="5" fill="#8d8f96"/>
+      <g transform="translate(252,150)"><rect x="-5" y="-16" width="10" height="32" rx="3" fill="var(--ink)"/><circle cx="3" cy="-9" r="1.8" fill="var(--mint)"/></g>
+      <line x1="257" y1="141" x2="320" y2="141" stroke="var(--mint)" stroke-width="2" stroke-dasharray="4 4"/>
+      <text x="320" y="196" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="Poppins,sans-serif">Phone upright on the floor, ~30 cm away</text>
+    </svg>
+  <ol class="howto">
+    <li><b>Sit down, foot flat on the floor</b><span>Press down lightly as if standing. Roll up your trousers. The paper isn't needed for this step.</span></li>
+    <li><b>Stand the phone upright on the floor</b><span>About 30 cm from your foot, camera facing it. Lean it on a box or a shoe so it stays put.</span></li>
+    <li><b>Three spots: inside, front, outside</b><span>Move the phone to each spot. When your foot fills the dashed frame and the phone is still, the photo takes itself.</span></li>
+    <li><b>Check each shot</b><span>A green line traces your foot's top. Retake any shot where it doesn't follow your foot.</span></li>
+  </ol>
+  <div class="nav">
+    <div class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></div>
+    <button class="navbtn back" data-go="shape3d" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+    <button class="navbtn go" id="seatGo">I'm ready <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </div>
+</section>
+
+<section class="cam-screen review" id="seatScan" hidden>
+  <div class="cam-inner">
+    <video playsinline muted autoplay hidden></video>
+    <div class="shade"></div>
+    <div class="cam-head">
+      <div class="top"><div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 7h11a13 13 0 0 1 0 26H9z" fill="#46d184"/><path d="M15 15l7 5-7 5z" fill="#151617"/></svg>Arc</div><button class="sample" id="seatSample">Use sample</button></div>
+      <h2 id="seatTitle">1 of 3 · <b>Inner side</b></h2>
+    </div>
+    <div class="viewport" id="seatVP">
+      <svg class="guide" id="seatGuideSvg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <g id="seatSideG"><line x1="20" y1="232" x2="380" y2="232" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 6"/>
+        <path d="M78,232 C70,208 72,142 98,100 L134,98 C172,104 230,130 288,164 C326,184 340,200 346,232Z" fill="rgba(70,209,132,.35)" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-dasharray="6 5"/>
+        <rect x="96" y="10" width="40" height="92" rx="8" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.35)" stroke-dasharray="4 4"/></g>
+        <g id="seatFrontG"><line x1="20" y1="232" x2="380" y2="232" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 6"/>
+        <path d="M120,232 C118,200 140,170 200,166 C260,170 282,200 280,232Z" fill="rgba(70,209,132,.35)" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-dasharray="6 5"/>
+        <rect x="172" y="20" width="56" height="150" rx="12" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.35)" stroke-dasharray="4 4"/></g>
+        <text x="200" y="256" fill="rgba(255,255,255,.7)" font-size="10" letter-spacing="2" text-anchor="middle" font-family="Poppins,sans-serif">FLOOR</text>
+      </svg>
+      <canvas id="seatCanvas" hidden></canvas>
+      <div class="chip-float" id="seatChip">Stand the phone on the floor, facing the inside of your foot</div>
+    </div>
+    <div class="review-info"><div class="seat-steps" id="seatSteps"></div><div class="note show" id="seatNote"></div></div>
+    <div class="cam-nav" id="seatCtl">
+      <div class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></div>
+      <button class="navbtn back" data-go="seatGuide" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <label class="navbtn back" aria-label="Choose from library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg><input type="file" accept="image/*" id="seatAlbum"></label>
+      <label class="capture" id="seatShutter"><span class="ring"></span>Capture<input type="file" accept="image/*" capture="environment" id="seatCam"></label>
+    </div>
+    <div class="cam-nav" id="seatNav" hidden>
+      <div class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></div>
+      <button class="navbtn back" id="seatRetake" aria-label="Retake"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <button class="navbtn next go" id="seatNext">Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </div>
+  </div>
+</section>
+
 <section class="screen" id="scanGuide" hidden>
   <div class="row-h"><div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 7h11a13 13 0 0 1 0 26H9z" fill="var(--mint)"/><path d="M15 15l7 5-7 5z" fill="var(--surface)"/></svg>Arc</div><span class="label muted">Before you scan</span></div>
-  <h1 class="title">How to <b>walk around</b></h1>
+  <h1 class="title">Helper scan:<br><b>walk around</b></h1>
   <svg class="guide-art" viewBox="0 0 420 220" aria-hidden="true">
       <rect x="0" y="0" width="420" height="220" rx="22" fill="var(--card)"/>
       <circle cx="110" cy="110" r="78" fill="none" stroke="var(--mint)" stroke-width="2.5" stroke-dasharray="6 6"/>
@@ -489,11 +565,11 @@ details.acc[open] summary::after{content:"–"}
     </svg>
   <ol class="howto">
     <li><b>Keep standing on the paper</b><span>Weight on both feet, and don't lift the foot after the top photo. The scan lines up with that photo.</span></li>
-    <li><b>Hold the phone at chest height</b><span>Tilt it about 45° so the camera looks down at your foot.</span></li>
-    <li><b>Walk one slow circle</b><span>Stay about one step from the paper and keep the whole sheet in view. It takes about 15 seconds.</span></li>
+    <li><b>Your helper holds the phone at chest height</b><span>Tilted about 45° so the camera looks down at your foot.</span></li>
+    <li><b>They walk one slow circle</b><span>About one step from the paper, keeping the whole sheet in view. It takes about 15 seconds. You just stand still.</span></li>
     <li><b>Watch the ring fill up</b><span>Each green segment is a new angle. When all 12 are green, the 3D shape builds by itself.</span></li>
   </ol>
-  <div class="tipbox"><b>For best results</b><span>A mid-tone floor such as wood or grey tile, even lighting, and no other white paper nearby. It's easiest if a friend holds the phone.</span></div>
+  <div class="tipbox"><b>For best results</b><span>A mid-tone floor such as wood or grey tile, even lighting, and no other white paper nearby. Doing it alone? Use the Seated 3-shot scan instead.</span></div>
   <div class="nav">
     <div class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></div>
     <button class="navbtn back" data-go="shape3d" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
@@ -592,6 +668,7 @@ function go(id){
   if(id==='shootSide'){st.side.img?refit(st.side):openCam('sideVP','shootSide')}
   if(id==='checkTop'){requestAnimationFrame(()=>refit(st.meas))}
   if(id==='scan3d') startScan3d();
+  if(id==='seatScan') startSeat();
   if(id==='result') showResult();
   if(id==='home') renderRecs();
   window.scrollTo(0,0);
@@ -1237,9 +1314,106 @@ $('scanSample').onclick=async()=>{if(SC.busy)return;if(streams.scan3d){streams.s
 $('scanVideoFile').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f||SC.busy)return;
   if(streams.scan3d){streams.scan3d.getTracks().forEach(t=>t.stop());delete streams.scan3d}clearInterval(SC.timer);resetScan();
   try{busy('Reading video…',0);await framesFromVideoFile(f);await finishScan()}catch(err){$('scanBusy').hidden=true;$('scanNote').hidden=false;$('scanNote').textContent="That video couldn't be read. Try an MP4 or MOV filmed while walking around your foot."}});
-$('optVideo').onclick=()=>go('scanGuide');$('guideGo').onclick=()=>go('scan3d');
-$('optSide').onclick=()=>go('shootSide');
+$('optVideo').onclick=()=>go('scanGuide');$('optSeat').onclick=()=>go('seatGuide');$('seatGo').onclick=()=>go('seatScan');$('guideGo').onclick=()=>go('scan3d');
 
+
+/* ===== 3D shape: seated 3-shot scan (no paper) =====
+   The phone stands on the floor. Each photo gives a silhouette against the floor line. The side views are scaled
+   by the foot length from the top photo, the front view by the ball width, so no reference sheet is needed.
+   Side views give heights along the foot (instep, toe box, arch gap); the front view gives the cross-section shape. */
+const SEAT={steps:[{key:'inner',type:'side',title:'Inner side',say:'Stand the phone on the floor, facing the inside of your foot'},
+  {key:'front',type:'front',title:'Front',say:'Move the phone in front of your toes, about 30 cm away'},
+  {key:'outer',type:'side',title:'Outer side',say:'Now the outside of your foot'}],idx:0,shots:[],timer:null,stable:0,prev:null,reviewing:false};
+function silhouette(src,sw,sh){
+  const k=Math.min(1,480/Math.max(sw,sh)),w=Math.round(sw*k),h=Math.round(sh*k),cv=document.createElement('canvas');cv.width=w;cv.height=h;
+  const x=cv.getContext('2d',{willReadFrequently:true});x.drawImage(src,0,0,w,h);const d=x.getImageData(0,0,w,h).data,g=new Uint8Array(w*h),hist=new Array(256).fill(0);
+  for(let i=0;i<w*h;i++){g[i]=(d[i*4]*.299+d[i*4+1]*.587+d[i*4+2]*.114)|0;hist[g[i]]++}
+  const t=otsu(hist,w*h),mask=new Uint8Array(w*h);for(let i=0;i<w*h;i++)mask[i]=g[i]<t?1:0;
+  // close the sock's white dots
+  for(let i=0;i<w*h;i++)if(!mask[i]){const X=i%w,Y=(i/w)|0;if(X>2&&Y>2&&X<w-3&&Y<h-3){let c=0;for(const o of [-3,3,-3*w,3*w])c+=mask[i+o]===1?1:0;if(c>=3)mask[i]=2}}
+  for(let i=0;i<w*h;i++)if(mask[i]===2)mask[i]=1;
+  let floorY=h;for(let y=h-1;y>h*.35;y--){let c=0;for(let X=0;X<w;X++)c+=mask[y*w+X];if(c>w*.85)floorY=y;else if(floorY<h)break}
+  for(let y=Math.max(0,floorY-1);y<h;y++)for(let X=0;X<w;X++)mask[y*w+X]=0;
+  const {lab,best,n}=largest(mask,w,h);if(n<w*h*.02)return {fail:'nofoot'};
+  let ytop=1e9,yb=-1;for(let p=0;p<w*h;p++)if(lab[p]===best){const y=(p/w)|0;if(y>yb)yb=y;if(y<ytop)ytop=y}
+  if(floorY<h)yb=floorY;const band=Math.max(2,(yb-ytop)*.15);let x0=1e9,x1=-1;
+  for(let p=0;p<w*h;p++)if(lab[p]===best){const X=p%w,y=(p/w)|0;if(y>=yb-band){if(X<x0)x0=X;if(X>x1)x1=X}}
+  if(x1-x0<w*.18)return {fail:'small'};if(x0<=1||x1>=w-2)return {fail:'cut'};
+  const top=new Int16Array(w).fill(-1),bot=new Int16Array(w).fill(-1);for(let X=x0;X<=x1;X++){for(let y=0;y<yb;y++)if(lab[y*w+X]===best){top[X]=y;break}for(let y=yb-1;y>=0;y--)if(lab[y*w+X]===best){bot[X]=y;break}}
+  return {w,h,k,cv,x0,x1,yb,top,bot};
+}
+function readSide(si,L,ballPct){
+  if(si.fail)return si;const len=si.x1-si.x0,mm=L/len,H=X=>si.top[X]<0?0:(si.yb-si.top[X])*mm;
+  const avgH=(a,b)=>{let s2=0,n=0;for(let f=a;f<=b;f+=.01){s2+=H(Math.round(si.x0+f*len));n++}return s2/n};
+  const heelLeft=avgH(0,.2)>avgH(.8,1),X=f=>Math.round(heelLeft?si.x0+f*len:si.x1-f*len);
+  let hi=0,fi=.5;for(let f=.4;f<=.62;f+=.01){const v=H(X(f));if(v>hi){hi=v;fi=f}}
+  const fb=Math.min(.85,ballPct/100+.06);let hb=0,n=0;for(let f=fb-.015;f<=fb+.015;f+=.005){hb+=H(X(f));n++}hb/=n;
+  let arch=0;for(let f=.3;f<=.55;f+=.01){const Xc=X(f);if(si.bot[Xc]>=0)arch=Math.max(arch,(si.yb-1-si.bot[Xc])*mm)}
+  if(hi<L*.12||hi>L*.4)return {fail:'shape'};if(hb<L*.05||hb>hi)return {fail:'shape'};
+  return {hi,hb,ai:fi*L,ab:fb*L,arch,heelLeft,mm};
+}
+function readFront(si,ball,hbSide){
+  if(si.fail)return si;const wpx=si.x1-si.x0,mm=ball/wpx,cx=(si.x0+si.x1)/2,cap=(hbSide||ball*.4)*1.25;
+  const pts=[];for(let X=si.x0;X<=si.x1;X++){if(si.top[X]<0)continue;const u=(X-cx)/(wpx/2);if(Math.abs(u)>.96)continue;pts.push([u,Math.min(cap,(si.yb-si.top[X])*mm)])}
+  if(pts.length<10)return {fail:'shape'};const hmax=Math.max(...pts.map(p=>p[1]));
+  let best=2.5,be=1e9;for(let n=1.6;n<=4.01;n+=.1){let e=0;for(const [u,v] of pts){const pr=hmax*Math.pow(Math.max(0,1-Math.pow(Math.abs(u),n)),1/n);e+=(pr-v)**2}if(e<be){be=e;best=n}}
+  return {n:best,h:hmax,mm};
+}
+/* girth of a cross-section: flat-ish sole + superellipse top */
+function seGirth(width,height,n,soleFrac){let arc=0,prev=null;for(let i=0;i<=80;i++){const u=-1+i/40,y=height*Math.pow(Math.max(0,1-Math.pow(Math.abs(u),n)),1/n),q=[u*width/2,y];if(prev)arc+=Math.hypot(q[0]-prev[0],q[1]-prev[1]);prev=q}return arc+width*soleFrac}
+function seatUI(){
+  const i=SEAT.idx,stp=SEAT.steps[Math.min(i,2)];$('seatTitle').innerHTML=`${Math.min(i,2)+1} of 3 · <b>${stp.title}</b>`;
+  $('seatSteps').innerHTML=SEAT.steps.map((s2,j)=>`<span class="${j<i||SEAT.shots[j]?'done':j===i?'on':''}">${s2.title}</span>`).join('');
+  $('seatSideG').style.display=stp.type==='side'?'':'none';$('seatFrontG').style.display=stp.type==='front'?'':'none';
+}
+const SEAT_MSG={nofoot:"Can't find your foot. Aim the camera at it and keep the floor in view.",small:'Move the phone a little closer to your foot.',cut:'Your foot is cut off at the edge. Move the phone back a bit.',
+  shape:"That doesn't look like a foot outline. Clear the background and try again.",upright:'Stand the phone upright on the floor so it faces the foot.',still:'Hold still…',ok:'Looks good. Hold still…'};
+function seatSay(code,ok){const c=$('seatChip');c.textContent=SEAT_MSG[code]||code;c.className='chip-float '+(ok?'ok':code==='still'?'':'warn')}
+async function startSeat(){
+  SEAT.idx=0;SEAT.shots=[];SEAT.hb=null;SEAT.reviewing=false;seatUI();seatShowLive();
+  const scr=$('seatScan'),video=scr.querySelector('video');
+  try{if(!navigator.mediaDevices?.getUserMedia)throw 0;const s2=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280}},audio:false});
+    if(scr.hidden){s2.getTracks().forEach(t=>t.stop());return}streams.seatScan=s2;video.srcObject=s2;video.hidden=false;
+  }catch(e){video.hidden=true;$('seatChip').textContent='Live camera unavailable here · use Capture';$('seatChip').className='chip-float';return}
+  clearInterval(SEAT.timer);SEAT.timer=setInterval(()=>{
+    if(scr.hidden){clearInterval(SEAT.timer);return}if(SEAT.reviewing||!video.videoWidth||SEAT.idx>2)return;
+    const stp=SEAT.steps[SEAT.idx],si=silhouette(video,video.videoWidth,video.videoHeight);
+    const r=si.fail?si:stp.type==='side'?readSide(si,st.topRes.L,st.topRes.ballPct):readFront(si,st.topRes.ball,SEAT.hb);
+    if(r.fail){SEAT.stable=0;seatSay(r.fail);return}
+    if(tilt.seen&&(tilt.beta<65||tilt.beta>115)){SEAT.stable=0;seatSay('upright');return}
+    SEAT.stable++;seatSay(SEAT.stable>2?'ok':'still',SEAT.stable>2);
+    if(SEAT.stable>=5){SEAT.stable=0;const c=document.createElement('canvas');c.width=video.videoWidth;c.height=video.videoHeight;c.getContext('2d').drawImage(video,0,0);seatTake(c,c.width,c.height)}
+  },350);
+}
+function seatShowLive(){SEAT.reviewing=false;$('seatCanvas').hidden=true;$('seatGuideSvg').style.display='';$('seatCtl').hidden=false;$('seatNav').hidden=true;
+  const v=$('seatScan').querySelector('video');if(streams.seatScan)v.hidden=false;$('seatNote').textContent=SEAT.steps[Math.min(SEAT.idx,2)].say;seatUI()}
+function seatTake(src,w,h){
+  const stp=SEAT.steps[SEAT.idx],si=silhouette(src,w,h),r=si.fail?si:stp.type==='side'?readSide(si,st.topRes.L,st.topRes.ballPct):readFront(si,st.topRes.ball,SEAT.hb);
+  if(r.fail){seatSay(r.fail);toast(SEAT_MSG[r.fail]);return}
+  if(stp.type==='side'&&!SEAT.hb)SEAT.hb=r.hb;
+  SEAT.cur={si,r};SEAT.reviewing=true;
+  // review: the photo with the traced top line and floor line
+  const c=$('seatCanvas');c.width=si.w;c.height=si.h;const x=c.getContext('2d');x.drawImage(si.cv,0,0);
+  x.lineWidth=3;x.strokeStyle='#46d184';x.beginPath();let st0=false;for(let X=si.x0;X<=si.x1;X++){if(si.top[X]<0)continue;st0?x.lineTo(X,si.top[X]):x.moveTo(X,si.top[X]);st0=true}x.stroke();
+  x.setLineDash([6,5]);x.strokeStyle='rgba(255,255,255,.9)';x.beginPath();x.moveTo(0,si.yb);x.lineTo(si.w,si.yb);x.stroke();x.setLineDash([]);
+  $('seatCanvas').hidden=false;$('seatGuideSvg').style.display='none';$('seatScan').querySelector('video').hidden=true;$('seatCtl').hidden=true;$('seatNav').hidden=false;
+  requestAnimationFrame(()=>{const vp=$('seatVP'),kk=Math.min((vp.clientWidth-12)/c.width,(vp.clientHeight-8)/c.height);c.style.width=c.width*kk+'px';c.style.height=c.height*kk+'px'});
+  $('seatNote').textContent=stp.type==='side'?`Instep ${r.hi.toFixed(0)} mm · toe box ${r.hb.toFixed(0)} mm. Does the green line follow your foot?`:`Forefoot shape captured. Does the green line follow your toes?`;
+  seatSay('ok',true);$('seatChip').textContent='Shot captured';$('seatNext').innerHTML=(SEAT.idx===2?'See results ':'Next ')+'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+}
+$('seatRetake').onclick=()=>seatShowLive();
+$('seatNext').onclick=()=>{SEAT.shots[SEAT.idx]=SEAT.cur.r;SEAT.idx++;if(SEAT.idx>2){seatFinish();return}seatShowLive()};
+['seatAlbum','seatCam'].forEach(id=>$(id).addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const url=URL.createObjectURL(f),im=new Image();
+  im.onload=()=>{seatTake(im,im.naturalWidth,im.naturalHeight);URL.revokeObjectURL(url)};im.src=url}));
+$('seatSample').onclick=()=>{const stp=SEAT.steps[SEAT.idx]||SEAT.steps[2],c=stp.type==='front'?sampleFront():sampleSide(true,stp.key==='outer').c;seatTake(c,c.width,c.height);SEAT.sample=true};
+function seatFinish(){
+  if(streams.seatScan){streams.seatScan.getTracks().forEach(t=>t.stop());delete streams.seatScan}clearInterval(SEAT.timer);
+  const [a,f,b]=SEAT.shots,t=st.topRes,L=t.L,hi=(a.hi+b.hi)/2,hb=(a.hb+b.hb)/2,ai=(a.ai+b.ai)/2,ab=(a.ab+b.ab)/2,n=f.n;
+  const girth=seGirth(t.ball,hb,n,.88),girthInstep=seGirth(t.waist||t.ball*.85,hi,Math.max(1.7,n-.3),.72);
+  st.scanView=null;st.sideRes={source:'seated',sample:!!SEAT.sample,hi,hb,ai,ab,L,archH:a.arch,girth,girthInstep,modelGirth:true,toeBoxShape:n,
+    medialH:a.hi,lateralH:b.hi,slope:Math.atan2(hi-hb,Math.abs(ab-ai))*180/Math.PI,toeAng:Math.atan2(hb,Math.abs(L-ab))*180/Math.PI};
+  SEAT.sample=false;go('result');
+}
 /* ===== 3D shape: LiDAR scan import (OBJ / PLY from Polycam, 3D Scanner App, Scaniverse…) ===== */
 function parseOBJ(text){const P=[];for(const ln of text.split('\n')){if(ln.charCodeAt(0)===118&&ln.charCodeAt(1)===32){const a=ln.trim().split(/\s+/);P.push(+a[1],+a[2],+a[3])}}return P}
 function parsePLY(buf){
@@ -1299,7 +1473,7 @@ function classify(t,s){
 }
 function showResult(){
   const c=classify(st.topRes,st.sideRes);if(!c){go('home');return}
-  const src=st.sideRes?({video:'Video scan',lidar:'LiDAR scan'}[st.sideRes.source]||'Side photo'):'';
+  const src=st.sideRes?({video:'Helper scan',lidar:'LiDAR scan',seated:'3-shot scan'}[st.sideRes.source]||'Side photo'):'';
   $('resultTag').textContent=(st.foot==='L'?'Left foot':'Right foot')+(src?' · '+src:'')+((st.top.sample||st.side.sample||(st.sideRes&&st.sideRes.sample))?' · sample':'');
   const tips=[];
   if(c.width==='Wide')tips.push('Your forefoot is wide. Start with 2E or wider lasts instead of sizing up, which leaves extra length.');
@@ -1324,8 +1498,8 @@ function showResult(){
   const t=c.t,s=c.s,stat=(k,v,u,est)=>`<div class="stat${est?' est':''}"><small>${k}</small><b>${v}<em>${u}</em></b></div>`;
   let h=stat('Length',t.L.toFixed(1),'mm')+stat('Ball width',t.ball.toFixed(1),'mm')+stat('Heel width',t.heel.toFixed(1),'mm')+(t.waist?stat('Midfoot width',t.waist.toFixed(1),'mm'):'')+stat('Width ratio',(t.ball/t.L*100).toFixed(1),'%');
   if(s)h+=stat('Instep height',s.hi.toFixed(1),'mm')+stat('Toe box height',s.hb.toFixed(1),'mm')+stat('Instep slope',s.slope.toFixed(1),'°')+stat('Toe spring',s.toeAng.toFixed(1),'°')
-    +(s.archH!=null?stat('Arch height',s.archH.toFixed(1),'mm'):'')+(s.girth?stat('Ball girth',s.girth.toFixed(0),'mm'):stat('Ball girth (est.)',ellipsePerim(t.ball/2,s.hb).toFixed(0),'mm',true))
-    +(s.girthInstep?stat('Instep girth',s.girthInstep.toFixed(0),'mm'):'')+stat('Ball position',t.ballPct.toFixed(0),'%');
+    +(s.archH!=null?stat('Arch height',s.archH.toFixed(1),'mm'):'')+(s.girth?stat(s.modelGirth?'Ball girth (model)':'Ball girth',s.girth.toFixed(0),'mm',!!s.modelGirth):stat('Ball girth (est.)',ellipsePerim(t.ball/2,s.hb).toFixed(0),'mm',true))
+    +(s.girthInstep?stat(s.modelGirth?'Instep girth (model)':'Instep girth',s.girthInstep.toFixed(0),'mm',!!s.modelGirth):'')+stat('Ball position',t.ballPct.toFixed(0),'%');
   h+=(t.ballAngle?stat('Ball line angle',t.ballAngle.toFixed(0),'°'):'')+(t.toeShape?stat('Toe shape',t.toeShape,''):'');
   $('stats').innerHTML=h;
   requestAnimationFrame(()=>{big.build(t,s);
@@ -1517,6 +1691,10 @@ $('copyCsv').onclick=async()=>{const csv='name,app_length,tape_length,app_ball,t
 /* ===== Sample photos ===== */
 function footPath(x){x.beginPath();x.moveTo(0,4);x.bezierCurveTo(-30,4,-34,60,-38,120);x.bezierCurveTo(-52,165,-52,185,-46,205);x.bezierCurveTo(-42,235,-30,250,-14,250);
   x.bezierCurveTo(5,250,25,238,36,215);x.bezierCurveTo(48,190,50,165,46,150);x.bezierCurveTo(40,100,38,50,28,15);x.bezierCurveTo(20,-2,6,-2,0,4);x.closePath()}
+function sampleFront(){const c=document.createElement('canvas');c.width=900;c.height=1200;const x=c.getContext('2d');
+  x.fillStyle='#e6e2dc';x.fillRect(0,0,900,1200);x.fillStyle='#857766';x.fillRect(0,900,900,300);
+  x.fillStyle='#2b2f38';x.fillRect(370,0,160,800);x.fillStyle='#24272e';x.beginPath();x.moveTo(250,900);x.bezierCurveTo(240,780,330,740,450,736);x.bezierCurveTo(570,740,660,780,650,900);x.closePath();x.fill();
+  x.beginPath();x.moveTo(360,820);x.bezierCurveTo(360,700,540,700,540,820);x.closePath();x.fill();return c}
 function sampleTop(){const c=document.createElement('canvas');c.width=900;c.height=1200;const x=c.getContext('2d');
   const g=x.createLinearGradient(0,0,900,1200);g.addColorStop(0,'#6f6458');g.addColorStop(1,'#4a4038');x.fillStyle=g;x.fillRect(0,0,900,1200);
   const k=[[175,150],[735,185],[760,1100],[140,1065]];x.fillStyle='#f6f6f2';x.beginPath();k.forEach((p,i)=>i?x.lineTo(...p):x.moveTo(...p));x.closePath();x.fill();
@@ -1524,12 +1702,13 @@ function sampleTop(){const c=document.createElement('canvas');c.width=900;c.heig
   x.save();footPath(x);x.clip();x.fillStyle='rgba(255,255,255,.75)';for(let gy=6;gy<250;gy+=10)for(let gx=-50;gx<=50;gx+=10){x.beginPath();x.arc(gx+(gy%20?5:0),gy,1.4,0,7);x.fill()}x.restore();
   x.fillStyle='#3be07c';[[-44,180],[44,160]].forEach(([a,b])=>[[0,-4],[-3.5,2],[3.5,2]].forEach(([u,v])=>{x.beginPath();x.arc(a+u,b+v,1.8,0,7);x.fill()}));x.restore();
   return {c,pts:k.map(p=>[p[0]+3,p[1]+2])}}
-function sampleSide(){const c=document.createElement('canvas');c.width=1200;c.height=600;const x=c.getContext('2d');
+function sampleSide(withLeg,mirror){const c=document.createElement('canvas');c.width=1200;c.height=600;const x=c.getContext('2d');if(mirror){x.translate(1200,0);x.scale(-1,1)}
   x.fillStyle='#e6e2dc';x.fillRect(0,0,1200,600);x.fillStyle='#857766';x.fillRect(0,470,1200,130);const hx=150,gy=470;
   x.fillStyle='#24272e';x.beginPath();x.moveTo(hx,gy);x.bezierCurveTo(hx-12,gy-40,hx-8,gy-170,hx+40,gy-260);x.lineTo(hx+150,gy-265);
   x.bezierCurveTo(hx+260,gy-250,hx+420,gy-200,hx+560,gy-140);x.bezierCurveTo(hx+700,gy-110,hx+820,gy-95,hx+880,gy-75);x.bezierCurveTo(hx+905,gy-55,hx+905,gy-15,hx+900,gy);x.lineTo(hx+640,gy);x.bezierCurveTo(hx+540,gy-34,hx+300,gy-34,hx+210,gy);x.closePath();x.fill();x.save();x.clip();
   x.fillStyle='rgba(255,255,255,.7)';for(let yy=gy-260;yy<gy;yy+=36)for(let xx=hx-20;xx<hx+920;xx+=36){x.beginPath();x.arc(xx+((yy/36|0)%2?18:0),yy+14,4,0,7);x.fill()}x.restore();
   x.fillStyle='#3be07c';[[hx+690,gy-104],[hx+468,gy-222],[hx+600,gy-40]].forEach(([a,b])=>[[0,-13],[-11,7],[11,7]].forEach(([u,v])=>{x.beginPath();x.arc(a+u,b+v,6,0,7);x.fill()}));
+  if(withLeg){x.fillStyle='#2b2f38';x.fillRect(hx+15,0,140,gy-250)}
   return {c,pts:null}}
 
 /* ===== Wiring ===== */
