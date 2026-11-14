@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
 <title>Arc Foot Scan</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -169,6 +169,10 @@ button:focus-visible,label:focus-within,input:focus-visible{outline:2px solid va
 .match .bar i{display:block;height:100%;background:var(--mint);border-radius:3px}
 .match .det{grid-column:1/-1;font-size:12px;color:var(--muted)}
 .det .warn{color:var(--warn)}.det .bad{color:var(--bad)}.det .ok{color:var(--ink)}
+.accres{margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--mint-soft);font-size:13px}.accres b{font-weight:600}
+.accall{margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.accall:empty{display:none}
+.accall div{background:var(--surface);border-radius:14px;padding:10px 12px;min-width:0}.accall b{display:block;font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.accall span{font-size:11px;color:var(--muted);line-height:1.3;display:block}.accall p{grid-column:1/-1;margin:0;font-size:11px;color:var(--muted)}
 details.acc{background:var(--card);border-radius:20px;padding:14px 16px}
 details.acc summary{cursor:pointer;font-weight:500;font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center}
 details.acc summary::-webkit-details-marker{display:none}
@@ -243,6 +247,7 @@ details.acc[open] summary::after{content:"–"}
 .tune button{width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.14);color:#fff;font-size:16px;line-height:1;display:grid;place-items:center}
 .tune button:active{background:rgba(255,255,255,.28)}
 .tune .tname{font-size:12px;font-weight:600;color:#fff;min-width:96px;text-align:center}
+#shootSide.review #sideSheet,#shootSide.review #sideChip,#shootSide.review .cam-head p{display:none!important}
 #measHelp,#sideHelp{font-size:12px;color:rgba(255,255,255,.8)}#measHelp b,#sideHelp b{color:#fff}
 .tune .sp{flex:1}
 .loupe{position:fixed;width:124px;height:124px;border-radius:50%;border:3px solid #fff;box-shadow:0 8px 24px rgba(0,0,0,.45);pointer-events:none;z-index:40;background:#000}
@@ -325,16 +330,19 @@ details.acc[open] summary::after{content:"–"}
   <div class="grid" id="stats"></div>
   <div class="row-h"><span class="label">Best matching lasts</span><span class="fineprint">Sample data</span></div>
   <div class="list" id="matches"></div>
-  <details class="acc">
-    <summary>Accuracy check</summary>
-    <p class="muted" style="margin:8px 0 0;font-size:13px">Measure the same foot with a tape and save both to track the error.</p>
+  <details class="acc" id="accBox">
+    <summary>Accuracy check · help us test</summary>
+    <p class="muted" style="margin:8px 0 0;font-size:13px">Tell us your real size. We compare it with this scan to learn how accurate Arc is. Only the numbers are shared, never your name or photos.</p>
     <div class="fields">
-      <label for="who">Name<input type="text" id="who" placeholder="Minji, right"></label>
-      <label for="tapeLen">Tape length (mm)<input type="number" id="tapeLen" step="0.5" inputmode="decimal"></label>
-      <label for="tapeBall">Tape ball width<input type="number" id="tapeBall" step="0.5" inputmode="decimal"></label>
-      <label for="tapeInstep">Tape instep height<input type="number" id="tapeInstep" step="0.5" inputmode="decimal"></label>
+      <label for="realSize">Shoe size you usually wear (mm)<input type="number" id="realSize" step="5" inputmode="numeric" placeholder="e.g. 230"></label>
+      <label for="tapeLen">Tape length (mm) · optional<input type="number" id="tapeLen" step="0.5" inputmode="decimal"></label>
+      <label for="tapeBall">Tape ball width · optional<input type="number" id="tapeBall" step="0.5" inputmode="decimal"></label>
+      <label for="tapeInstep">Tape instep height · optional<input type="number" id="tapeInstep" step="0.5" inputmode="decimal"></label>
+      <label for="who">Label (kept on this phone only)<input type="text" id="who" placeholder="Minji, right"></label>
     </div>
-    <button class="savebtn" id="saveRec">Save scan</button>
+    <button class="savebtn" id="saveRec">Save and compare</button>
+    <div class="accres" id="accRes" hidden></div>
+    <div class="accall" id="accAll"></div>
   </details>
   <p class="fineprint">The 3D model is reconstructed from your top outline and side profile. Size conversions are approximate and vary by brand.</p>
   <div class="nav">
@@ -402,7 +410,7 @@ details.acc[open] summary::after{content:"–"}
         <button class="sample" id="measAuto">Reset</button>
       </div>
       <h2>Shape your <b>foot outline</b></h2>
-      <p>The outline is traced from your photo. Drag any of the 8 points that sit off your foot's edge.</p>
+      <p>The outline is traced from your photo. Drag any of the 4 points that sit off your foot's edge.</p>
     </div>
     <div class="viewport" id="measVP">
       <svg class="guide" viewBox="0 0 10 10" style="display:none" aria-hidden="true"></svg>
@@ -461,7 +469,7 @@ details.acc[open] summary::after{content:"–"}
     <li><b>Stand on the A4 sheet</b><span>Clear floor, nothing else around. Put your weight evenly on both feet, the way you stand in shoes. Feet are a little bigger standing, and later in the day.</span></li>
     <li><b>Keep your trousers out of the frame</b><span>Roll them up or wear shorts so only the Dot Sock is on the paper. A trouser leg looks like part of your foot.</span></li>
     <li><b>Hold the phone straight above</b><span>Chest height, camera facing down. The level turns green when it's flat, then the photo takes itself.</span></li>
-    <li><b>Check the outline</b><span>The app traces your foot for you. If part of it is off, drag the nearest of the 8 points and the line follows.</span></li>
+    <li><b>Check the outline</b><span>The app traces your foot for you. If part of it is off, drag the nearest of the 4 points and the line follows.</span></li>
   </ol>
   <div class="nav">
     <div class="dots"><i class="done"></i><i class="on"></i><i></i><i></i></div>
@@ -605,6 +613,36 @@ details.acc[open] summary::after{content:"–"}
   </div>
 </section>
 
+<section class="screen" id="sideGuide" hidden>
+  <div class="row-h"><div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 7h11a13 13 0 0 1 0 26H9z" fill="var(--mint)"/><path d="M15 15l7 5-7 5z" fill="var(--surface)"/></svg>Arc</div><span class="label muted">Before the photo</span></div>
+  <h1 class="title">Side photo · <b>5 points</b></h1>
+  <svg class="guide-art" viewBox="0 0 420 220" aria-hidden="true" font-family="Poppins,sans-serif">
+    <rect x="0" y="0" width="420" height="220" rx="22" fill="var(--card)"/>
+    <line x1="24" y1="170" x2="396" y2="170" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="2 5"/>
+    <path d="M62,170 C48,150 50,112 70,82 L72,24 L114,24 L114,80 C150,92 222,112 292,140 C330,154 352,160 362,170 L252,170 C222,170 204,154 172,154 C136,154 116,170 92,170 Z" fill="#24272e"/>
+    <g font-size="12" font-weight="700" text-anchor="middle">
+      <circle cx="56" cy="160" r="11" fill="var(--mint)"/><text x="56" y="164" fill="var(--mint-ink)">1</text>
+      <circle cx="362" cy="168" r="11" fill="var(--mint)"/><text x="362" y="172" fill="var(--mint-ink)">2</text>
+      <circle cx="306" cy="146" r="11" fill="var(--mint)"/><text x="306" y="150" fill="var(--mint-ink)">3</text>
+      <circle cx="142" cy="88" r="11" fill="var(--mint)"/><text x="142" y="92" fill="var(--mint-ink)">4</text>
+      <circle cx="186" cy="155" r="11" fill="var(--mint)"/><text x="186" y="159" fill="var(--mint-ink)">5</text>
+    </g>
+    <text x="210" y="200" text-anchor="middle" font-size="11" fill="var(--muted)">Inner side · heel on the left, toes on the right</text>
+  </svg>
+  <ol class="howto">
+    <li><b>Heel</b><span>The very back of your heel, right where it meets the floor.</span></li>
+    <li><b>Toe tip</b><span>The tip of your big toe, on the floor. Points 1 to 2 give your foot length.</span></li>
+    <li><b>Toe box</b><span>The top of your big-toe joint. This is how tall the front of the shoe needs to be.</span></li>
+    <li><b>Instep</b><span>The highest point on top of your foot, where the laces sit. Not on the leg.</span></li>
+    <li><b>Arch</b><span>The highest point of the gap under your inner arch. Leave it on the floor line if there is no gap.</span></li>
+  </ol>
+  <div class="tipbox"><b>How to take it</b><span>Phone flat on the floor about 30 cm away, camera facing the inside of your foot. Roll up your trousers so the instep shows. After the photo, drag points 1 to 5 onto these spots.</span></div>
+  <div class="nav">
+    <div class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></div>
+    <button class="navbtn back" data-go="shape3d" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+    <button class="navbtn go" id="sideGo">Take the photo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </div>
+</section>
 <section class="cam-screen" id="shootSide" hidden>
   <div class="cam-inner">
     <video playsinline muted autoplay hidden></video>
@@ -632,7 +670,7 @@ details.acc[open] summary::after{content:"–"}
     </div>
     <div class="cam-nav" id="sideCtl">
       <div class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></div>
-      <button class="navbtn back" data-go="shape3d" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <button class="navbtn back" data-go="sideGuide" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
       <label class="navbtn back" aria-label="Choose from library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg><input type="file" accept="image/*" data-role="album"></label>
       <label class="capture shutter"><span class="ring"></span>Capture<input type="file" accept="image/*" capture="environment" data-role="camera"></label>
     </div>
@@ -805,10 +843,7 @@ function drawShot(shot){
   const rw=c.getBoundingClientRect().width,disp=rw?c.width/rw:c.width/360,lw=2*disp,P=shot.pts;
   x.lineWidth=lw;x.font=`600 ${Math.round(11*disp)}px Poppins,-apple-system,sans-serif`;x.lineJoin='round';
   if(shot.kind==='corners'&&P.length>1){x.strokeStyle=MINT;x.fillStyle='rgba(70,209,132,.16)';x.beginPath();ordered(P).forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));if(P.length===4){x.closePath();x.fill()}x.stroke()}
-  if(shot.kind==='side'&&P.length>=2){x.strokeStyle=MINT;x.setLineDash([6*disp,5*disp]);x.beginPath();x.moveTo(P[0][0],P[0][1]);x.lineTo(P[1][0],P[1][1]);x.stroke();x.setLineDash([]);
-    if(P.length>=4){x.strokeStyle=ORANGE;x.beginPath();x.moveTo(P[1][0],P[1][1]);x.lineTo(P[2][0],P[2][1]);x.lineTo(P[3][0],P[3][1]);x.stroke()}
-    if(P.length>=5){const [a,b]=P,dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy,t=((P[4][0]-a[0])*dx+(P[4][1]-a[1])*dy)/l2;x.strokeStyle='#5aa2ff';x.beginPath();x.moveTo(P[4][0],P[4][1]);x.lineTo(a[0]+t*dx,a[1]+t*dy);x.stroke()}}
-  if(shot.kind==='meas'&&P.length>5&&shot.base){const C=bentContour(shot);x.beginPath();C.forEach((q,i)=>i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]));x.closePath();x.fillStyle='rgba(70,209,132,.16)';x.fill();x.strokeStyle=MINT;x.lineWidth=2.5*disp;x.stroke();x.lineWidth=lw;
+  if(shot.kind==='meas'&&P.length>=4&&shot.base){const C=bentContour(shot);x.beginPath();C.forEach((q,i)=>i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]));x.closePath();x.fillStyle='rgba(70,209,132,.16)';x.fill();x.strokeStyle=MINT;x.lineWidth=2.5*disp;x.stroke();x.lineWidth=lw;
     const A=st.measA,a2=st.topAuto;if(A&&a2&&a2.h){const TP=(t2,sv)=>{const q=A.toPx(t2,sv),r2=applyH(a2.h,q[0]/S,q[1]/S);return [r2[0]-a2.off[0],r2[1]-a2.off[1]]};const mid=i=>(A.lo[i]+A.hi[i])/2,seg=(p,q,col,dash)=>{x.strokeStyle=col;x.setLineDash(dash?[5*disp,4*disp]:[]);x.beginPath();x.moveTo(p[0],p[1]);x.lineTo(q[0],q[1]);x.stroke();x.setLineDash([])};
       seg(TP(A.tmin,mid(A.binAt(.5))),TP(A.tmax,mid(A.binAt(.5))),'#ffffff',true);
       seg(TP(A.tAt(A.ballI),A.lo[A.ballI]),TP(A.tAt(A.ballI),A.hi[A.ballI]),ORANGE);seg(TP(A.tAt(A.heelI),A.lo[A.heelI]),TP(A.tAt(A.heelI),A.hi[A.heelI]),ORANGE)}}
@@ -819,6 +854,7 @@ function drawShot(shot){
     x.fillStyle=on?MINT:'#fff';x.beginPath();x.arc(p[0],p[1],r,0,7);x.fill();
     x.fillStyle=on?'#fff':MINT;x.beginPath();x.arc(p[0],p[1],1.6*disp,0,7);x.fill();
     if(on){x.strokeStyle='#fff';x.lineWidth=1.5*disp;x.beginPath();x.arc(p[0],p[1],r+5*disp,0,7);x.stroke();x.lineWidth=lw}
+    if(shot.kind==='side'){x.fillStyle=on?'#fff':'#141516';x.font=`700 ${Math.round(10*disp)}px Poppins,-apple-system,sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillStyle=on?MINT:'#fff';x.beginPath();x.arc(p[0],p[1],r,0,7);x.fill();x.fillStyle=on?'#fff':'#141516';x.fillText(String(i+1),p[0],p[1]+.5*disp);x.textAlign='start';x.textBaseline='alphabetic';return}
     const nm=shot.names?shot.names[i]:null;
     if(nm){const tw=x.measureText(nm).width+10*disp;let tx=p[0]+r+5*disp;if(tx+tw>c.width)tx=p[0]-r-5*disp-tw;const ty=Math.max(14*disp,p[1]-r-2*disp);
       x.fillStyle='rgba(0,0,0,.6)';x.beginPath();x.roundRect?x.roundRect(tx,ty-12*disp,tw,17*disp,8*disp):x.rect(tx,ty-12*disp,tw,17*disp);x.fill();
@@ -878,7 +914,7 @@ function syncTune(shot){if(!shot.tune)return;let nm=(shot.names&&shot.names[shot
   if(shot.kind==='meas'&&shot.pts.length){const nn=HANDLE_NAMES[shot.sel]||'Point';nm=`${nn} · ${shot.sel+1}/${shot.pts.length}`;help=HANDLE_HELP[nn]||''}
   shot.tune.querySelector('.tname').textContent=shot.pts.length?nm:'—';
   const hl=shot.kind==='meas'?$('measHelp'):shot.kind==='side'?$('sideHelp'):null;if(hl)hl.innerHTML=help}
-function updatePrompt(shot){if(shot.kind==='meas'){shot.chip.textContent=shot.auto?'Outline traced from your photo · drag a point if it is off':'Foot not found · drag the 8 points onto your foot';return}shot.chip.textContent=shot.pts.length<shot.needed?`Tap ${shot.labels[shot.pts.length]}`:(shot.markers?'Sock markers found · points placed':(shot.sample?'Sample photo · drag to adjust':'Drag points to adjust'))}
+function updatePrompt(shot){if(shot.kind==='meas'){shot.chip.textContent=shot.auto?'Outline traced from your photo · drag a point if it is off':'Foot not found · drag the 4 points onto your foot';return}shot.chip.textContent=shot.pts.length<shot.needed?`Tap ${shot.labels[shot.pts.length]}`:(shot.markers?'Sock markers found · points placed':(shot.sample?'Sample photo · drag to adjust':'Drag points to adjust'))}
 
 /* green landmark dots on the Arc Dot Sock */
 /* Arc Dot Sock landmarks are triangles of three small green dots: merge nearby dots into one landmark */
@@ -1003,14 +1039,14 @@ function computeTop(){
 /* starting points: a big FOOT shape filling the paper (toes toward the top of the sheet, mirrored for the left foot).
    The user drags them in onto their own foot. */
 const OUTLINE_N=16,CN=120;
-/* 8 handles on the traced outline: heel, heel edges, midfoot, ball (both sides) and toe tip */
-const HANDLE_NAMES=['Heel','Heel edge','Midfoot','Ball','Toe tip','Ball','Midfoot','Heel edge'];
+/* 4 handles on the traced outline: heel, ball (both sides) and toe tip */
+const HANDLE_NAMES=['Heel','Ball','Toe tip','Ball'];
 const HANDLE_HELP={Heel:'<b>Heel</b> — the very back of your heel. Heel to toe tip is your foot length.','Heel edge':'<b>Heel edge</b> — the side of your heel. Sets heel width (how snug the back of a shoe feels).',
   Midfoot:'<b>Midfoot</b> — the middle of your foot, where the arch is on the inner side.',Ball:'<b>Ball</b> — the widest part of your foot, behind the toes. This sets your shoe width.',
   'Toe tip':'<b>Toe tip</b> — the end of your longest toe.'};
-function handleIdx(bf){const h2=CN/2,r=f=>Math.round(f*h2);return [0,r(.17),r(.45),r(bf),h2,CN-r(bf),CN-r(.45),CN-r(.17)]}
+function handleIdx(bf){const h2=CN/2,r=f=>Math.round(f*h2);return [0,r(bf),h2,CN-r(bf)]}
 /* bend the traced outline: each handle pulls nearby outline points with a smooth falloff along the outline */
-function bentContour(ms){const n=ms.base.length,sig=n*.09,D=ms.pts.map((p,k)=>[p[0]-ms.hBase[k][0],p[1]-ms.hBase[k][1]]);
+function bentContour(ms){const n=ms.base.length,sig=n*.14,D=ms.pts.map((p,k)=>[p[0]-ms.hBase[k][0],p[1]-ms.hBase[k][1]]);
   return ms.base.map((q,i)=>{let dx=0,dy=0;ms.hIdx.forEach((hi,k)=>{let d=Math.abs(i-hi);d=Math.min(d,n-d);const w=Math.exp(-((d/sig)**2));dx+=w*D[k][0];dy+=w*D[k][1]});return [q[0]+dx,q[1]+dy]})}
 /* a typical 250 mm foot in the middle of the sheet, toes to the top (used only when no foot is found) */
 function typicalFoot(Wmm,Hmm){const T=footTemplate(CN),port=Hmm>=Wmm,cx=Wmm/2,cy=Hmm/2;
@@ -1103,7 +1139,7 @@ function smoothPath(x,pts){const n=pts.length;x.beginPath();x.moveTo(pts[0][0],p
   for(let i=0;i<n;i++){const p0=pts[(i-1+n)%n],p1=pts[i],p2=pts[(i+1)%n],p3=pts[(i+2)%n];
     x.bezierCurveTo(p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6,p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6,p2[0],p2[1])}x.closePath()}
 function computeMeas(){
-  const a=st.topAuto,ms=st.meas;if(!a||a.error||!ms.base||ms.pts.length<6){st.topRes=null;return}
+  const a=st.topAuto,ms=st.meas;if(!a||a.error||!ms.base||ms.pts.length<4){st.topRes=null;return}
   const W=a.W,H=a.H,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
   const Rp=bentContour(ms).map(p=>{const m=applyH(a.Hs2m,p[0]+a.off[0],p[1]+a.off[1]);return [m[0]*S,m[1]*S]});
   x.beginPath();Rp.forEach((q,i)=>i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]));x.closePath();x.fillStyle='#000';x.fill();const d=x.getImageData(0,0,W,H).data,fm=new Uint8Array(W*H);for(let p=0;p<W*H;p++)fm[p]=d[p*4+3]>127?1:0;
@@ -1379,7 +1415,7 @@ $('scanSample').onclick=async()=>{if(SC.busy)return;if(streams.scan3d){streams.s
 $('scanVideoFile').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f||SC.busy)return;
   if(streams.scan3d){streams.scan3d.getTracks().forEach(t=>t.stop());delete streams.scan3d}clearInterval(SC.timer);resetScan();
   try{busy('Reading video…',0);await framesFromVideoFile(f);await finishScan()}catch(err){$('scanBusy').hidden=true;$('scanNote').hidden=false;$('scanNote').textContent="That video couldn't be read. Try an MP4 or MOV filmed while walking around your foot."}});
-$('optVideo').onclick=()=>go('scanGuide');$('optSide').onclick=()=>go('shootSide');$('optSeat').onclick=()=>go('seatGuide');$('seatGo').onclick=()=>go('seatScan');$('guideGo').onclick=()=>go('scan3d');
+$('optVideo').onclick=()=>go('scanGuide');$('optSide').onclick=()=>go('sideGuide');$('sideGo').onclick=()=>go('shootSide');$('optSeat').onclick=()=>go('seatGuide');$('seatGo').onclick=()=>go('seatScan');$('guideGo').onclick=()=>go('scan3d');
 
 
 /* ===== 3D shape: seated 3-shot scan (no paper) =====
@@ -1744,13 +1780,43 @@ function renderRecs(){
   const err=(a,b)=>a==null||b==null?null:a-b;
   el.innerHTML=recs.slice().reverse().map(r=>{const e=err(r.L,r.tL);return `<div class="li"><div><div class="t">${esc(r.who||'Untitled scan')}${r.side?` · ${r.side==='L'?'Left':'Right'}`:''}</div><div class="s">${new Date(r.at).toLocaleDateString('en-US',{month:'short',day:'numeric'})} · ${r.L.toFixed(1)} × ${r.B.toFixed(1)} mm${e==null?'':` · ${(e>0?'+':'')+e.toFixed(1)} mm vs tape`}</div></div><div class="r">${Math.ceil((r.L+5)/5)*5}</div></div>`}).join('');
   const mae=(a,b)=>{const v=recs.map(r=>err(r[a],r[b])).filter(x=>x!=null);return v.length?(v.reduce((s,x)=>s+Math.abs(x),0)/v.length).toFixed(1)+' mm':'—'};
-  $('recSummary').textContent=`Average error vs. tape: length ${mae('L','tL')}, ball width ${mae('B','tB')}, instep ${mae('I','tI')}.`;
+  const sz=recs.filter(r=>r.aS!=null&&r.rS!=null);
+  $('recSummary').textContent=(sz.length?`Size match: ${sz.filter(r=>r.aS===r.rS).length} of ${sz.length}. `:'')+`Average error vs. tape: length ${mae('L','tL')}, ball width ${mae('B','tB')}, instep ${mae('I','tI')}.`;
 }
-$('saveRec').onclick=()=>{const t=st.topRes;if(!t||t.error)return;const n=id=>{const v=parseFloat($(id).value);return isNaN(v)?null:v};
-  recs.push({toe:t.toeShape||'',time:st.measuredAt?st.measuredAt.toISOString():'',side:st.foot,who:$('who').value.trim(),L:t.L,B:t.ball,I:st.sideRes?st.sideRes.hi:null,tL:n('tapeLen'),tB:n('tapeBall'),tI:n('tapeInstep'),at:new Date().toISOString()});saveRecs();toast('Scan saved')};
+/* shared accuracy data: app numbers vs. the size people really wear (Supabase, numbers only) */
+const ACC={url:'https://phnvyoqmsgpomczmhiwj.supabase.co/rest/v1/foot_accuracy',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBobnZ5b3Ftc2dwb21jem1oaXdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0Njg0MjQsImV4cCI6MjEwOTA0NDQyNH0.39zhuX7_Zy5AqXeHLKb_xnkwhmIq8HHBH_XtY4aZGk8'};
+const accHead=()=>({apikey:ACC.key,Authorization:'Bearer '+ACC.key,'Content-Type':'application/json'});
+let accQueue=[];try{accQueue=JSON.parse(localStorage.getItem('arc-acc-queue')||'[]')}catch(e){accQueue=[]}
+const saveQueue=()=>{try{localStorage.setItem('arc-acc-queue',JSON.stringify(accQueue))}catch(e){}};
+async function accSend(row){const r=await fetch(ACC.url,{method:'POST',headers:{...accHead(),Prefer:'return=minimal'},body:JSON.stringify(row)});if(!r.ok)throw new Error(r.status)}
+async function accFlush(){if(!accQueue.length)return;const left=[];for(const row of accQueue){try{await accSend(row)}catch(e){left.push(row)}}accQueue=left;saveQueue()}
+async function accLoad(){const el=$('accAll');try{
+  const r=await fetch(ACC.url+'?select=app_size,actual_size,app_length,tape_length,app_ball,tape_ball&order=created_at.desc&limit=2000',{headers:accHead()});if(!r.ok)throw new Error(r.status);
+  const rows=await r.json(),sz=rows.filter(x=>x.app_size!=null&&x.actual_size!=null),tl=rows.filter(x=>x.app_length!=null&&x.tape_length!=null),tb=rows.filter(x=>x.app_ball!=null&&x.tape_ball!=null);
+  if(!rows.length){el.innerHTML='<p>No one has saved a check yet. Yours will be the first.</p>';return}
+  const pct=f=>sz.length?Math.round(sz.filter(f).length/sz.length*100)+'%':'—',mae=(a,k1,k2)=>a.length?(a.reduce((t,x)=>t+Math.abs(x[k1]-x[k2]),0)/a.length).toFixed(1):'—';
+  const bias=sz.length?sz.reduce((t,x)=>t+(x.app_size-x.actual_size),0)/sz.length:0;
+  el.innerHTML=`<div><b>${rows.length}</b><span>checks saved</span></div><div><b>${pct(x=>x.app_size===x.actual_size)}</b><span>exact size match</span></div><div><b>${pct(x=>Math.abs(x.app_size-x.actual_size)<=5)}</b><span>within one size</span></div>
+    <div><b>${mae(tl,'app_length','tape_length')}</b><span>mm length error vs tape</span></div><div><b>${mae(tb,'app_ball','tape_ball')}</b><span>mm width error vs tape</span></div><div><b>${sz.length?(bias>0?'+':'')+bias.toFixed(1):'—'}</b><span>mm app vs real size, on average</span></div>
+    <p>Everyone who used Arc and saved a check.</p>`;
+}catch(e){el.innerHTML='<p>Shared results load when Arc runs from its web address. Your check is kept on this phone and sent later.</p>'}}
+$('accBox').addEventListener('toggle',()=>{if($('accBox').open){accFlush().then(accLoad)}});
+$('saveRec').onclick=async()=>{const t=st.topRes;if(!t||t.error)return;const n=id=>{const v=parseFloat($(id).value);return isNaN(v)?null:v};
+  const real=n('realSize'),tL=n('tapeLen');if(real==null&&tL==null){toast('Enter your usual shoe size first');$('realSize').focus();return}
+  if(real!=null&&(real<150||real>330)){toast('Shoe size should be in mm, like 230');$('realSize').focus();return}
+  const c=classify(t,st.sideRes),app=c?c.size:null,s2=st.sideRes;
+  recs.push({toe:t.toeShape||'',time:st.measuredAt?st.measuredAt.toISOString():'',side:st.foot,who:$('who').value.trim(),L:t.L,B:t.ball,I:s2?s2.hi:null,aS:app,rS:real,tL,tB:n('tapeBall'),tI:n('tapeInstep'),at:new Date().toISOString()});saveRecs();renderRecs();
+  const q=v=>v==null?null:Math.round(v*10)/10;
+  const row={side:st.foot==='L'?'left':'right',method:s2?(s2.source||'photo'):'top only',app_length:q(t.L),app_ball:q(t.ball),app_instep:s2?q(s2.hi):null,app_size:app,actual_size:real,tape_length:tL,tape_ball:n('tapeBall'),tape_instep:n('tapeInstep'),toe_shape:t.toeShape||null,measured_hour:(st.measuredAt||new Date()).getHours()};
+  const box=$('accRes');box.hidden=false;
+  const d=real!=null&&app!=null?app-real:null;
+  box.innerHTML=(d==null?'':d===0?`<b>Spot on.</b> Arc suggests ${app} and you wear ${real}.`:`Arc suggests <b>${app}</b>, you wear <b>${real}</b>: ${Math.abs(d)} mm ${d>0?'bigger':'smaller'} (${Math.abs(d)/5} size${Math.abs(d)>5?'s':''}).`)
+    +(tL!=null?` Length vs tape: ${(t.L-tL>0?'+':'')+(t.L-tL).toFixed(1)} mm.`:'');
+  try{await accSend(row);toast('Thank you · check shared')}catch(e){accQueue.push(row);saveQueue();toast('Saved on this phone · will share when online')}
+  accLoad()};
 $('clearRec').onclick=()=>{const b=$('clearRec');if(b.dataset.armed){recs=[];saveRecs();renderRecs();delete b.dataset.armed;b.textContent='Clear history';toast('History cleared')}
   else{b.dataset.armed=1;b.textContent='Tap again to clear';setTimeout(()=>{delete b.dataset.armed;b.textContent='Clear history'},3000)}};
-$('copyCsv').onclick=async()=>{const csv='name,app_length,tape_length,app_ball,tape_ball,app_instep,tape_instep,date\n'+recs.map(r=>[r.who,r.L?.toFixed(1),r.tL,r.B?.toFixed(1),r.tB,r.I?.toFixed(1),r.tI,r.at].map(v=>v??'').join(',')).join('\n');
+$('copyCsv').onclick=async()=>{const csv='name,app_size,real_size,app_length,tape_length,app_ball,tape_ball,app_instep,tape_instep,date\n'+recs.map(r=>[r.who,r.aS,r.rS,r.L?.toFixed(1),r.tL,r.B?.toFixed(1),r.tB,r.I?.toFixed(1),r.tI,r.at].map(v=>v??'').join(',')).join('\n');
   try{await navigator.clipboard.writeText(csv);toast('CSV copied')}catch(e){const ta=document.createElement('textarea');ta.value=csv;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('CSV copied')}catch(_){toast("Copy isn't available here")}ta.remove()}};
 
 /* ===== Sample photos ===== */
@@ -1787,7 +1853,7 @@ $('topNext').onclick=()=>go('checkTop');$('measNext').onclick=()=>{const r=st.to
   const still=a&&!a.found&&!ms.moved;
   const odd=r.L<150||r.L>320||r.ball/r.L<.28||r.ball/r.L>.5;
   if(still||odd){const n=$('measNote');n.className='note warn show';
-    n.textContent=still?"We couldn't trace your foot, so this is a typical foot shape. Drag the 8 points onto your own foot first.":`This outline is ${r.L.toFixed(0)} mm long and ${r.ball.toFixed(0)} mm wide, which doesn't look like a foot. Drag the points onto your foot's edge.`;
+    n.textContent=still?"We couldn't trace your foot, so this is a typical foot shape. Drag the 4 points onto your own foot first.":`This outline is ${r.L.toFixed(0)} mm long and ${r.ball.toFixed(0)} mm wide, which doesn't look like a foot. Drag the points onto your foot's edge.`;
     toast(still?'Move the points onto your foot first':'Check the outline first');return}
   go('shape3d')};$('measBack').onclick=()=>{clearShot(st.top);go('shootTop')};
 $('measAuto').onclick=()=>{const ms=st.meas;if(!ms.base)return;ms.pts=ms.hBase.map(p=>[...p]);ms.moved=false;ms.sel=0;computeMeas();refit(st.meas);toast('Outline reset')};$('sideNext').onclick=()=>go('result');
@@ -1804,5 +1870,4 @@ $('demoBtn').onclick=()=>{resetShots();loadSample();go('result')};
 loadSample();hero.build(st.topRes,st.sideRes);resetShots();
 renderRecs();
 </script>
-
 </body></html>
