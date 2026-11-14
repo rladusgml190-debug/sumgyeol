@@ -188,6 +188,23 @@ details.acc[open] summary::after{content:"–"}
 .cam-screen.review .qstats b{font-size:20px}
 .cam-screen.review .cam-nav{padding:8px 10px 10px}
 .cam-screen.review .navbtn{height:48px}
+.level{position:absolute;right:14px;top:10px;width:46px;height:46px;border-radius:50%;border:2px solid rgba(255,255,255,.55);z-index:3;background:rgba(0,0,0,.25)}
+.level::before{content:"";position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;border:1.5px solid rgba(255,255,255,.7)}
+.level i{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#ff9f0a;transition:transform .08s linear}
+.level.ok{border-color:#46d184}.level.ok i{background:#46d184}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;text-align:left;background:var(--card);border-radius:22px;padding:16px;border:2px solid transparent;position:relative}
+.opt:active{transform:scale(.99)}
+.opt .ic{width:46px;height:46px;border-radius:15px;background:var(--mint-soft);display:grid;place-items:center}
+.opt .ic svg{width:24px;height:24px;color:var(--mint)}
+.opt b{font-weight:600;font-size:15px;display:block}
+.opt span{font-size:12px;color:var(--muted);display:block;margin-top:2px}
+.opt em{font-style:normal;font-size:11px;font-weight:600;background:var(--mint);color:var(--mint-ink);padding:3px 8px;border-radius:999px;white-space:nowrap}
+.opt input{position:absolute;opacity:0;width:1px;height:1px}
+.ring3d{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.busy{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(10,11,12,.92);color:#fff;font-size:14px;text-align:center;padding:24px}
+.busy .bar{width:180px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);overflow:hidden}
+.busy .bar i{display:block;height:100%;width:0;background:#46d184;transition:width .2s}
 .pick{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .pick button{background:var(--card);border-radius:26px;padding:22px 12px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;border:2px solid transparent;transition:border-color .15s,transform .15s}
 .pick button:active{transform:scale(.98)}
@@ -227,8 +244,8 @@ details.acc[open] summary::after{content:"–"}
   <div class="sock">
     <svg viewBox="0 0 80 110" aria-hidden="true"><path d="M22 4h30v52l18 18a14 14 0 0 1-10 24H30a20 20 0 0 1-20-20V62l12-12z" fill="#1d2026"/>
       <g fill="#fff" opacity=".85"><circle cx="30" cy="14" r="1.6"/><circle cx="42" cy="14" r="1.6"/><circle cx="30" cy="26" r="1.6"/><circle cx="42" cy="26" r="1.6"/><circle cx="30" cy="38" r="1.6"/><circle cx="42" cy="38" r="1.6"/><circle cx="24" cy="62" r="1.6"/><circle cx="36" cy="62" r="1.6"/><circle cx="48" cy="62" r="1.6"/><circle cx="24" cy="74" r="1.6"/><circle cx="48" cy="74" r="1.6"/><circle cx="60" cy="74" r="1.6"/><circle cx="24" cy="86" r="1.6"/><circle cx="36" cy="86" r="1.6"/><circle cx="48" cy="86" r="1.6"/></g>
-      <g fill="#46d184"><circle cx="16" cy="56" r="4"/><circle cx="36" cy="74" r="4"/><circle cx="62" cy="88" r="4"/><circle cx="36" cy="44" r="4"/></g></svg>
-    <div><b>Arc Dot Sock</b><p>A dark sock with a white dot grid and green landmark dots. The app finds the green dots and places the measuring points for you.</p></div>
+      <g fill="#46d184"><circle cx="16" cy="53.8" r="1.9"/><circle cx="13.2" cy="58.6" r="1.9"/><circle cx="18.8" cy="58.6" r="1.9"/><circle cx="36" cy="70.8" r="1.9"/><circle cx="33.2" cy="75.6" r="1.9"/><circle cx="38.8" cy="75.6" r="1.9"/><circle cx="62" cy="84.8" r="1.9"/><circle cx="59.2" cy="89.6" r="1.9"/><circle cx="64.8" cy="89.6" r="1.9"/><circle cx="36" cy="40.8" r="1.9"/><circle cx="33.2" cy="45.6" r="1.9"/><circle cx="38.8" cy="45.6" r="1.9"/></g></svg>
+    <div><b>Arc Dot Sock</b><p>A dark sock with a white dot grid and small green dot triangles over key bones. The app finds each triangle and places the measuring points for you.</p></div>
   </div>
   <div class="stage hero3d"><canvas id="heroCanvas"></canvas><span class="rotate-pill">‹ › Drag to rotate</span></div>
   <div class="needs">
@@ -271,7 +288,7 @@ details.acc[open] summary::after{content:"–"}
   <h1 class="title">3D scan <b>ready</b></h1>
   <div class="stage big">
     <canvas id="bigCanvas"></canvas>
-    <div class="seg"><button class="on" id="solidBtn">Solid</button><button id="meshBtn">Mesh</button></div>
+    <div class="seg"><button class="on" id="solidBtn">Solid</button><button id="meshBtn">Mesh</button><button id="scanBtn" hidden>Scan</button></div>
     <button class="reset" id="resetView">Reset</button>
     <span class="rotate-pill">‹ ›</span>
   </div>
@@ -326,6 +343,7 @@ details.acc[open] summary::after{content:"–"}
         <g stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".9"><path d="M134 268l12-6 12 6M134 276l12-6 12 6"/></g>
         <text id="scanTxt" x="146" y="296" fill="#fff" font-size="11" text-anchor="middle" font-family="Poppins,sans-serif">Step on</text>
       </svg>
+      <div class="level" id="level" hidden><i></i></div>
       <canvas id="topCanvas" hidden></canvas>
       <div class="chip-float" id="topChip" hidden></div>
     </div>
@@ -377,6 +395,46 @@ details.acc[open] summary::after{content:"–"}
   </div>
 </section>
 
+<section class="screen" id="shape3d" hidden>
+  <div class="row-h"><div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 7h11a13 13 0 0 1 0 26H9z" fill="var(--mint)"/><path d="M15 15l7 5-7 5z" fill="var(--surface)"/></svg>Arc</div><span class="label muted">Step 2 of 2</span></div>
+  <h1 class="title">Now capture the<br><b>3D shape</b></h1>
+  <p class="muted" style="margin:-8px 0 0;font-size:14px">Length and width are done. This step measures height, instep and girth.</p>
+  <div class="opts">
+    <button class="opt" id="optVideo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5" stroke-dasharray="3 2.4"/><path d="M12 7.5v9M7.5 12h9"/></svg></span><div><b>Walk-around video scan</b><span>Circle your foot for about 15 seconds. Builds a 3D shape from many angles.</span></div><em>Best</em></button>
+    <label class="opt" id="optLidar"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><circle cx="10" cy="7" r="1.6"/><circle cx="14" cy="7" r="1.6"/><circle cx="12" cy="10.2" r="1"/></svg></span><div><b>LiDAR scan · iPhone Pro</b><span>Scan with a LiDAR app such as Polycam or 3D Scanner App, export OBJ or PLY, then import it here.</span></div><em>Pro</em><input type="file" id="lidarFile" accept=".obj,.ply,model/obj,application/octet-stream,text/plain"></label>
+    <button class="opt" id="optSide"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 18h18M5 18c0-5 1-9 4-10l3 0c4 1 7 5 9 10"/></svg></span><div><b>Single side photo</b><span>Quickest. Height is measured from one photo, girth is estimated.</span></div></button>
+  </div>
+  <div class="nav">
+    <div class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></div>
+    <button class="navbtn back" data-go="checkTop" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+  </div>
+</section>
+
+<section class="cam-screen review" id="scan3d" hidden>
+  <div class="cam-inner">
+    <video playsinline muted autoplay hidden></video>
+    <div class="shade"></div>
+    <div class="cam-head">
+      <div class="top"><div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 7h11a13 13 0 0 1 0 26H9z" fill="#46d184"/><path d="M15 15l7 5-7 5z" fill="#151617"/></svg>Arc</div><button class="sample" id="scanSample">Use sample</button></div>
+      <h2>Walk <b>around your foot</b></h2>
+      <p>Keep your foot still on the paper. Point the phone at it from chest height and walk a slow circle.</p>
+    </div>
+    <div class="viewport" id="scanVP">
+      <svg class="guide" viewBox="0 0 10 10" style="display:none" aria-hidden="true"></svg>
+      <canvas class="ring3d" id="ring3d"></canvas>
+      <div class="chip-float" id="scanChip">Point the camera at your foot</div>
+      <div class="busy" id="scanBusy" hidden><div id="scanBusyTxt">Building your 3D shape…</div><div class="bar"><i id="scanBusyBar"></i></div></div>
+    </div>
+    <div class="review-info"><div class="qstats" id="scanQuick"></div><div class="note warn" id="scanNote" hidden></div></div>
+    <div class="cam-nav">
+      <div class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></div>
+      <button class="navbtn back" data-go="shape3d" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <label class="navbtn back" aria-label="Upload a video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="M16 10l5-3v10l-5-3z"/></svg><input type="file" id="scanVideoFile" accept="video/*"></label>
+      <button class="navbtn next go" id="scanFinish" disabled>Build 3D <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </div>
+  </div>
+</section>
+
 <section class="cam-screen" id="shootSide" hidden>
   <div class="cam-inner">
     <video playsinline muted autoplay hidden></video>
@@ -404,7 +462,7 @@ details.acc[open] summary::after{content:"–"}
     </div>
     <div class="cam-nav" id="sideCtl">
       <div class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></div>
-      <button class="navbtn back" data-go="checkTop" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <button class="navbtn back" data-go="shape3d" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
       <label class="navbtn back" aria-label="Choose from library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg><input type="file" accept="image/*" data-role="album"></label>
       <label class="capture shutter"><span class="ring"></span>Capture<input type="file" accept="image/*" capture="environment" data-role="camera"></label>
     </div>
@@ -441,6 +499,7 @@ function go(id){
   if(id==='shootTop'){st.top.img?refit(st.top):openCam('topVP','shootTop')}
   if(id==='shootSide'){st.side.img?refit(st.side):openCam('sideVP','shootSide')}
   if(id==='checkTop'){requestAnimationFrame(()=>refit(st.meas))}
+  if(id==='scan3d') startScan3d();
   if(id==='result') showResult();
   if(id==='home') renderRecs();
   window.scrollTo(0,0);
@@ -461,6 +520,15 @@ async function openCam(vpId,screenId){
     if(screenId==='shootTop')startAutoScan();
   }catch(e){video.hidden=true;delete shutter.dataset.live}
 }
+/* ===== Level sensor: top photo is taken only with the phone held flat ===== */
+const tilt={seen:false,beta:0,gamma:0,asked:false};
+function onTilt(e){if(e.beta==null||e.gamma==null)return;tilt.seen=true;tilt.beta=e.beta;tilt.gamma=e.gamma;
+  const lv=$('level');if(!lv)return;lv.hidden=$('shootTop').hidden||!!st.top.img;const ok=levelOk();lv.classList.toggle('ok',ok);
+  lv.querySelector('i').style.transform=`translate(${clamp(tilt.gamma,-20,20)*.85}px,${clamp(tilt.beta,-20,20)*.85}px)`}
+function initTilt(){if(tilt.asked)return;tilt.asked=true;
+  try{if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){DeviceOrientationEvent.requestPermission().then(r=>{if(r==='granted')addEventListener('deviceorientation',onTilt)}).catch(()=>{})}
+  else addEventListener('deviceorientation',onTilt)}catch(e){}}
+const levelOk=()=>!tilt.seen||(Math.abs(tilt.beta)<6&&Math.abs(tilt.gamma)<6);
 /* ===== Auto capture: when a foot fills the insole on white paper and holds still, the insole fills up and the photo is taken ===== */
 let autoTimer=null,autoProg=0,prevFrame=null;
 function setScanUI(pct,msg){
@@ -488,7 +556,8 @@ function startAutoScan(){
     let diff=0;if(prevFrame&&prevFrame.length===g.length){for(let q=0;q<g.length;q+=3)diff+=Math.abs(g[q]-prevFrame[q]);diff/=g.length/3}else diff=99;prevFrame=g;
     const foot=fIn/Math.max(1,fN),paper=pB/Math.max(1,pN),contrast=(()=>{let a=0,b=0,na=0,nb=0;for(let q=0;q<256;q++){if(q<t){a+=q*hist[q];na+=hist[q]}else{b+=q*hist[q];nb+=hist[q]}}return na&&nb?b/nb-a/na:0})();
     let msg;
-    if(contrast<45||paper<.55){msg='Show the white paper';autoProg=Math.max(0,autoProg-.06)}
+    if(!levelOk()){msg='Hold the phone level';autoProg=Math.max(0,autoProg-.05)}
+    else if(contrast<45||paper<.55){msg='Show the white paper';autoProg=Math.max(0,autoProg-.06)}
     else if(foot<.55){msg='Step on the insole';autoProg=Math.max(0,autoProg-.06)}
     else if(diff>14){msg='Hold still';autoProg=Math.max(0,autoProg-.02)}
     else{msg='Scanning…';autoProg=Math.min(1,autoProg+.045)}
@@ -502,6 +571,7 @@ function setupCam(screenId,vpId,ctlId,sheetId,navId,shot){
   const scr=$(screenId),vp=$(vpId),shutter=scr.querySelector('.shutter'),video=scr.querySelector('video');
   shot.ui={scr,vp,ctl:$(ctlId),sheet:$(sheetId),nav:$(navId),screenId};
   shutter.addEventListener('click',e=>{
+    if(screenId==='shootTop'&&!levelOk()){e.preventDefault();toast('Hold the phone level to take the photo');return}
     if(!shutter.dataset.live||!video.videoWidth)return;
     e.preventDefault();const c=document.createElement('canvas');c.width=video.videoWidth;c.height=video.videoHeight;c.getContext('2d').drawImage(video,0,0);
     accept(shot,c,c.width,c.height,false);
@@ -611,6 +681,12 @@ function syncTune(shot){if(!shot.tune)return;const nm=(shot.names&&shot.names[sh
 function updatePrompt(shot){shot.chip.textContent=shot.pts.length<shot.needed?`Tap ${shot.labels[shot.pts.length]}`:(shot.markers?'Sock markers found · points placed':(shot.sample?'Sample photo · drag to adjust':'Drag points to adjust'))}
 
 /* green landmark dots on the Arc Dot Sock */
+/* Arc Dot Sock landmarks are triangles of three small green dots: merge nearby dots into one landmark */
+function landmarks(blobs,dist){const used=new Array(blobs.length).fill(false),out=[];
+  for(let i=0;i<blobs.length;i++){if(used[i])continue;const g=[blobs[i]];used[i]=true;
+    for(let j=i+1;j<blobs.length;j++)if(!used[j]&&g.some(b=>Math.hypot(b.x-blobs[j].x,b.y-blobs[j].y)<dist)){g.push(blobs[j]);used[j]=true}
+    const n=g.reduce((a,b)=>a+b.n,0);out.push({x:g.reduce((a,b)=>a+b.x*b.n,0)/n,y:g.reduce((a,b)=>a+b.y*b.n,0)/n,n,dots:g.length})}
+  return out.sort((a,b)=>b.n-a.n)}
 function greenBlobs(data,w,h,minArea){
   const m=new Uint8Array(w*h),d=data;
   for(let i=0;i<w*h;i++){const r=d[i*4],g=d[i*4+1],b=d[i*4+2];if(g>90&&g>r+38&&g>b+18)m[i]=1}
@@ -619,7 +695,7 @@ function greenBlobs(data,w,h,minArea){
     while(stack.length){const a=stack.pop();const x=a%w,y=(a/w)|0;n++;sx+=x;sy+=y;
       for(const q of [x>0?a-1:-1,x<w-1?a+1:-1,y>0?a-w:-1,y<h-1?a+w:-1])if(q>=0&&m[q]&&!lab[q]){lab[q]=cur;stack.push(q)}}
     if(n>=minArea)out.push({x:sx/n,y:sy/n,n})}
-  return out.sort((a,b)=>b.n-a.n).slice(0,8);
+  return out.sort((a,b)=>b.n-a.n).slice(0,24);
 }
 
 /* ===== Auto-detection ===== */
@@ -665,7 +741,7 @@ function autoSide(shot){
   // Arc Dot Sock: the two highest green dots are the toe-box and instep landmarks
   const sc=Math.min(1,500/Math.max(W,H)),cw=Math.round(W*sc),ch=Math.round(H*sc),cv=document.createElement('canvas');cv.width=cw;cv.height=ch;
   const cx=cv.getContext('2d');cx.drawImage(shot.img,0,0,cw,ch);
-  const gb=greenBlobs(cx.getImageData(0,0,cw,ch).data,cw,ch,Math.max(6,cw*ch*.00004)).filter(b=>b.x/sc>pts[0][0]&&b.x/sc<pts[1][0]);
+  const gb=landmarks(greenBlobs(cx.getImageData(0,0,cw,ch).data,cw,ch,Math.max(3,cw*ch*.00001)),Math.max(cw,ch)*.035).filter(b=>b.x/sc>pts[0][0]&&b.x/sc<pts[1][0]);
   shot.markers=false;
   if(gb.length>=2){const top2=gb.sort((a,b)=>a.y-b.y).slice(0,2).sort((a,b)=>b.x-a.x);
     pts[2]=[top2[0].x/sc,top2[0].y/sc];pts[3]=[top2[1].x/sc,top2[1].y/sc];shot.markers=true}
@@ -705,7 +781,7 @@ function computeTop(){
   let touches=false;for(let y=0;y<H&&!touches;y++)for(let x=0;x<W;x++){if(!fm[y*W+x])continue;if(x<m+3||y<m+3||x>W-m-4||y>H-m-4){touches=true;break}}
   // green sock markers on the ball sides fix where the ball width is taken
   let ballFrac=null,markers=false;
-  const gb=greenBlobs(col.data,W,H,8).filter(g=>{const t=(g.x/S-A.mx)*A.ux+(g.y/S-A.my)*A.uy;return t>A.tmin&&t<A.tmax});
+  const gb=landmarks(greenBlobs(col.data,W,H,3),14*S).filter(g=>{const t=(g.x/S-A.mx)*A.ux+(g.y/S-A.my)*A.uy;return t>A.tmin&&t<A.tmax});
   if(gb.length>=2){let pr=null,bs=0;const sv=g=>-(g.x/S-A.mx)*A.uy+(g.y/S-A.my)*A.ux;
     for(let i=0;i<gb.length;i++)for(let j=i+1;j<gb.length;j++){const sep=Math.abs(sv(gb[i])-sv(gb[j]));if(sep>bs){bs=sep;pr=[gb[i],gb[j]]}}
     if(pr&&bs>30){const tm=pr.reduce((q,g)=>q+((g.x/S-A.mx)*A.ux+(g.y/S-A.my)*A.uy),0)/2;ballFrac=A.heelStart?(tm-A.tmin)/A.L:(A.tmax-tm)/A.L;markers=true}}
@@ -715,7 +791,7 @@ function computeTop(){
   const ox=Math.max(0,Math.floor(bx0-mg)),oy=Math.max(0,Math.floor(by0-mg)),cw=Math.min(shot.img.width,Math.ceil(bx1+mg))-ox,ch=Math.min(shot.img.height,Math.ceil(by1+mg))-oy;
   const mc=document.createElement('canvas');mc.width=cw;mc.height=ch;mc.getContext('2d').drawImage(shot.img,-ox,-oy);
   const pts=cs.map(p=>[p[0]-ox,p[1]-oy]);
-  st.topAuto={L:A.L,ball:A.ball,touches,markers,ballFrac,h,Hs2m,W,H,off:[ox,oy],contourImg:pts.map(p=>[...p])};
+  st.topAuto={L:A.L,ball:A.ball,touches,markers,ballFrac,h,Hs2m,W,H,Wmm,Hmm,fm,off:[ox,oy],contourImg:pts.map(p=>[...p])};
   const ms=st.meas;ms.img=mc;ms.canvas.width=cw;ms.canvas.height=ch;ms.pts=pts;ms.needed=pts.length;ms.sel=0;ms.markers=markers;
   computeMeas();
   renderTopQuick();
@@ -784,9 +860,258 @@ function computeSide(){
   const [heel,toe,box,inst,arch]=shot.pts,dx=toe[0]-heel[0],dy=toe[1]-heel[1],d=Math.hypot(dx,dy),k=L/d,ux=dx/d,uy=dy/d;
   const along=p=>((p[0]-heel[0])*ux+(p[1]-heel[1])*uy)*k,height=p=>Math.abs((p[0]-heel[0])*uy-(p[1]-heel[1])*ux)*k;
   const hb=height(box),hi=height(inst),ab=along(box),ai=along(inst);
-  st.sideRes={hb,hi,ab,ai,L,archH:height(arch),slope:Math.atan2(hi-hb,Math.abs(ab-ai))*180/Math.PI,toeAng:Math.atan2(hb,Math.abs(L-ab))*180/Math.PI};
+  st.scanView=null;st.sideRes={source:'photo',hb,hi,ab,ai,L,archH:height(arch),slope:Math.atan2(hi-hb,Math.abs(ab-ai))*180/Math.PI,toeAng:Math.atan2(hb,Math.abs(L-ab))*180/Math.PI};
 }
 const ellipsePerim=(a,b)=>{const h=((a-b)/(a+b))**2;return Math.PI*(a+b)*(1+3*h/(10+Math.sqrt(4-3*h)))};
+
+/* ===== 3D shape: walk-around video scan =====
+   Every frame finds the A4 sheet, which gives the camera position (homography → pose). The foot silhouette
+   against the white paper then carves a voxel block that starts as the outline from the top photo (shape from
+   silhouette). Heights and girths are read from the carved block. */
+const SC={frames:[],sectors:new Array(12).fill(0),timer:null,stream:null,busy:false,f:null};
+function paperQuad(g,w,h){
+  const hist=new Array(256).fill(0);for(let i=0;i<w*h;i++)hist[g[i]]++;
+  // paper is the brightest large surface: stay well above a mid-tone floor
+  let acc=0,p97=255;for(let v=255;v>=0;v--){acc+=hist[v];if(acc>w*h*.03){p97=v;break}}
+  const t=Math.max(otsu(hist,w*h),p97-60),m=new Uint8Array(w*h);for(let i=0;i<w*h;i++)m[i]=g[i]>t?1:0;
+  // the foot can split the sheet into pieces: use every large bright piece
+  const lab=new Int32Array(w*h),sz=[0],stack=[];let cur=0,big=0;
+  for(let p=0;p<w*h;p++){if(!m[p]||lab[p])continue;cur++;let n=0;stack.push(p);lab[p]=cur;while(stack.length){const q=stack.pop();n++;const X=q%w,Y=(q/w)|0;
+    for(const r of [X>0?q-1:-1,X<w-1?q+1:-1,Y>0?q-w:-1,Y<h-1?q+w:-1])if(r>=0&&m[r]&&!lab[r]){lab[r]=cur;stack.push(r)}}sz.push(n);big=Math.max(big,n)}
+  if(big<w*h*.04)return null;const keep=sz.map(n=>n>big*.12),inP=p=>lab[p]&&keep[lab[p]];
+  const P=[];for(let p=0;p<w*h;p++)if(inP(p)){const x=p%w,y=(p/w)|0;
+    if(x===0||y===0||x===w-1||y===h-1||!inP(p-1)||!inP(p+1)||!inP(p-w)||!inP(p+w))P.push([x,y])}
+  if(P.length<20)return null;
+  // convex hull, then the 4 longest straight edges are the sheet's sides (a leg or heel hiding a corner only cuts a short chord)
+  P.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];
+  for(const q of P){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],q)<=0)lo.pop();lo.push(q)}
+  for(let i=P.length-1;i>=0;i--){const q=P[i];while(up.length>1&&cr(up[up.length-2],up[up.length-1],q)<=0)up.pop();up.push(q)}
+  let hull=lo.slice(0,-1).concat(up.slice(0,-1));if(hull.length<4)return null;
+  // merge nearly collinear hull edges into long sides
+  const ang=(a,b)=>Math.atan2(b[1]-a[1],b[0]-a[0]),segs=[];
+  for(let i=0;i<hull.length;i++){const a=hull[i],b=hull[(i+1)%hull.length],l=Math.hypot(b[0]-a[0],b[1]-a[1]),an=ang(a,b);
+    const last=segs[segs.length-1];let dA=last?Math.abs(((an-last.an+3*Math.PI)%(2*Math.PI))-Math.PI):9;
+    if(last&&dA<.12){last.b=b;last.l+=l;last.an=ang(last.a,b)}else segs.push({a,b,l,an})}
+  if(segs.length>1){const f=segs[0],l=segs[segs.length-1],dA=Math.abs(((f.an-l.an+3*Math.PI)%(2*Math.PI))-Math.PI);if(dA<.12){l.b=f.b;l.l+=f.l;l.an=ang(l.a,l.b);segs.shift()}}
+  // a side cut off by the image border is not a paper edge
+  const onB=q=>q[0]<=1||q[1]<=1||q[0]>=w-2||q[1]>=h-2,real=segs.filter(sg=>!(onB(sg.a)&&onB(sg.b)&&(Math.abs(sg.a[0]-sg.b[0])<3||Math.abs(sg.a[1]-sg.b[1])<3)));
+  if(real.length<4)return null;segs.length=0;segs.push(...real);
+  const top4=[...segs].sort((p,q)=>q.l-p.l).slice(0,4),cx=hull.reduce((s2,q)=>s2+q[0],0)/hull.length,cy=hull.reduce((s2,q)=>s2+q[1],0)/hull.length;
+  top4.sort((p,q)=>Math.atan2((p.a[1]+p.b[1])/2-cy,(p.a[0]+p.b[0])/2-cx)-Math.atan2((q.a[1]+q.b[1])/2-cy,(q.a[0]+q.b[0])/2-cx));
+  const X=(s1,s2)=>{const x1=s1.a[0],y1=s1.a[1],x2=s1.b[0],y2=s1.b[1],x3=s2.a[0],y3=s2.a[1],x4=s2.b[0],y4=s2.b[1],d=(x1-x2)*(y3-y4)-(y1-y2)*(x3-x4);if(Math.abs(d)<1e-6)return null;
+    const t1=((x1-x3)*(y3-y4)-(y1-y3)*(x3-x4))/d;return [x1+t1*(x2-x1),y1+t1*(y2-y1)]};
+  const C=[];for(let i=0;i<4;i++){const q=X(top4[i],top4[(i+1)%4]);if(!q||q[0]<-w*.5||q[0]>w*1.5||q[1]<-h*.5||q[1]>h*1.5)return null;C.push(q)}
+  return {q:ordered(C),t};
+}
+function focalFromH(H,cx,cy){
+  // shift to principal point, then use orthogonality of the rotation columns
+  const a=H[0]-cx*H[6],b=H[3]-cy*H[6],c=H[6],d=H[1]-cx*H[7],e=H[4]-cy*H[7],g=H[7],out=[];
+  if(Math.abs(c*g)>1e-12){const f2=-(a*d+b*e)/(c*g);if(f2>0)out.push(Math.sqrt(f2))}
+  if(Math.abs(c*c-g*g)>1e-12){const f2=-(a*a+b*b-d*d-e*e)/(c*c-g*g);if(f2>0)out.push(Math.sqrt(f2))}
+  return out;
+}
+function poseFromH(H,f,cx,cy){
+  const col=k=>[(H[k]-cx*H[6+k])/f,(H[3+k]-cy*H[6+k])/f,H[6+k]];
+  let r1=col(0),r2=col(1),t=[(H[2]-cx*H[8])/f,(H[5]-cy*H[8])/f,H[8]];const n=v=>Math.hypot(...v),lam=2/(n(r1)+n(r2));
+  r1=r1.map(v=>v*lam);r2=r2.map(v=>v*lam);t=t.map(v=>v*lam);if(t[2]<0){r1=r1.map(v=>-v);r2=r2.map(v=>-v);t=t.map(v=>-v)}
+  const dot=(u,v)=>u[0]*v[0]+u[1]*v[1]+u[2]*v[2],sub=(u,v,k)=>u.map((x,i)=>x-k*v[i]),nm=v=>{const l=n(v);return v.map(x=>x/l)};
+  r1=nm(r1);r2=nm(sub(r2,r1,dot(r1,r2)));let r3=[r1[1]*r2[2]-r1[2]*r2[1],r1[2]*r2[0]-r1[0]*r2[2],r1[0]*r2[1]-r1[1]*r2[0]];
+  let C=[-(r1[0]*t[0]+r1[1]*t[1]+r1[2]*t[2]),-(r2[0]*t[0]+r2[1]*t[1]+r2[2]*t[2]),-(r3[0]*t[0]+r3[1]*t[1]+r3[2]*t[2])];
+  if(C[2]<0){r3=r3.map(v=>-v);C[2]=-C[2]}
+  return {r1,r2,r3,t,C,f,cx,cy,proj:(X,Y,Z)=>{const x=r1[0]*X+r2[0]*Y+r3[0]*Z+t[0],y=r1[1]*X+r2[1]*Y+r3[1]*Z+t[1],z=r1[2]*X+r2[2]*Y+r3[2]*Z+t[2];return z>1?[f*x/z+cx,f*y/z+cy]:null}};
+}
+/* read one frame: paper corners, paper mask, and which way round the sheet is (matched to the top photo) */
+function readFrame(src,sw,shh){
+  const a=st.topAuto;if(!a||!a.fm)return null;
+  const k=Math.min(1,480/Math.max(sw,shh)),w=Math.round(sw*k),h=Math.round(shh*k),cv=document.createElement('canvas');cv.width=w;cv.height=h;
+  const x=cv.getContext('2d',{willReadFrequently:true});x.drawImage(src,0,0,w,h);const d=x.getImageData(0,0,w,h).data,g=new Uint8Array(w*h);
+  for(let i=0;i<w*h;i++)g[i]=(d[i*4]*.299+d[i*4+1]*.587+d[i*4+2]*.114)|0;
+  const pq=paperQuad(g,w,h);if(!pq)return null;
+  // paper mask: bright pixels in big bright regions (white sock dots are small, so they stay "foot")
+  const m=new Uint8Array(w*h);for(let i=0;i<w*h;i++)m[i]=g[i]>pq.t?1:0;
+  const lab=new Int32Array(w*h),sizes=[0],stack=[];let cur=0;
+  for(let p=0;p<w*h;p++){if(!m[p]||lab[p])continue;cur++;let n=0;stack.push(p);lab[p]=cur;while(stack.length){const q=stack.pop();n++;const X=q%w,Y=(q/w)|0;
+    for(const r of [X>0?q-1:-1,X<w-1?q+1:-1,Y>0?q-w:-1,Y<h-1?q+w:-1])if(r>=0&&m[r]&&!lab[r]){lab[r]=cur;stack.push(r)}}sizes.push(n)}
+  const paper=new Uint8Array(w*h),minA=w*h*.004;for(let p=0;p<w*h;p++)if(lab[p]&&sizes[lab[p]]>minA)paper[p]=1;
+  // try the 4 ways the sheet can be rotated; keep the one whose dark footprint matches the top photo
+  const R=[[0,0],[a.Wmm,0],[a.Wmm,a.Hmm],[0,a.Hmm]];let best=null;
+  for(let r=0;r<4;r++){const H=homography(R,[0,1,2,3].map(i=>pq.q[(i+r)%4]));let inter=0,uni=0;
+    for(let Y=4;Y<a.Hmm-4;Y+=5)for(let X=4;X<a.Wmm-4;X+=5){const [u,v]=applyH(H,X,Y),ui=u|0,vi=v|0;if(ui<0||vi<0||ui>=w||vi>=h)continue;
+      const dark=!paper[vi*w+ui],foot=a.fm[Math.round(Y*S)*a.W+Math.round(X*S)];if(dark&&foot)inter++;if(dark||foot)uni++}
+    const iou=uni?inter/uni:0;if(!best||iou>best.iou)best={H,iou}}
+  if(!best||best.iou<.38)return null;
+  // background = paper, or anything clearly lighter than the dark sock (floor around the sheet). White sock dots stay "foot".
+  const sockV=[],bgV=[];for(let Y=6;Y<a.Hmm-6;Y+=4)for(let X=6;X<a.Wmm-6;X+=4){if(!a.fm[Math.round(Y*S)*a.W+Math.round(X*S)])continue;const [u,v]=applyH(best.H,X,Y),ui=u|0,vi=v|0;if(ui>=0&&vi>=0&&ui<w&&vi<h&&!paper[vi*w+ui])sockV.push(g[vi*w+ui])}
+  for(let i=0;i<w;i+=3){for(const y of [2,h-3])if(!paper[y*w+i])bgV.push(g[y*w+i])}for(let j=0;j<h;j+=3){for(const x of [2,w-3])if(!paper[j*w+x])bgV.push(g[j*w+x])}
+  const med=v=>{if(!v.length)return null;const q=[...v].sort((p,r)=>p-r);return q[q.length>>1]},sk=med(sockV),bgm=med(bgV),thr=sk!=null&&bgm!=null&&bgm-sk>18?(sk+bgm)/2:-1;
+  const bg=new Uint8Array(w*h);for(let p=0;p<w*h;p++)bg[p]=paper[p]||(thr>0&&g[p]>=thr&&!m[p])?1:0;
+  return {w,h,H:best.H,iou:best.iou,paper:bg,fs:focalFromH(best.H,w/2,h/2)};
+}
+function frameAzimuth(fr,f){const P=poseFromH(fr.H,f,fr.w/2,fr.h/2),a=st.topAuto,dx=P.C[0]-a.Wmm/2,dy=P.C[1]-a.Hmm/2;
+  return {az:Math.atan2(dy,dx),el:Math.atan2(P.C[2],Math.hypot(dx,dy)),P}}
+function addFrame(fr){
+  const f=SC.f||.75*Math.max(fr.w,fr.h),{az,el}=frameAzimuth(fr,f);if(el<.25||el>1.45)return false;
+  const sec=((Math.round(az/(Math.PI/6))%12)+12)%12;if(SC.sectors[sec]>=2)return false;
+  SC.sectors[sec]++;SC.frames.push(fr);return true}
+function drawRing(){
+  const c=$('ring3d'),r=c.getBoundingClientRect();if(!r.width)return;c.width=r.width*2;c.height=r.height*2;const x=c.getContext('2d'),cx=c.width/2,cy=c.height/2,R=Math.min(cx,cy)*.78;
+  x.lineWidth=14;x.lineCap='round';
+  for(let i=0;i<12;i++){const a0=-Math.PI/2+i*Math.PI/6+.05,a1=a0+Math.PI/6-.1;x.strokeStyle=SC.sectors[i]?'#46d184':'rgba(255,255,255,.22)';x.beginPath();x.arc(cx,cy,R,a0,a1);x.stroke()}
+  const n=SC.sectors.filter(v=>v).length;x.fillStyle='#fff';x.font='600 40px Poppins,sans-serif';x.textAlign='center';x.fillText(Math.round(n/12*100)+'%',cx,cy+14);
+  $('scanQuick').innerHTML=`<div><small>Angles covered</small><b>${n}<em>/ 12</em></b></div><div><small>Frames</small><b>${SC.frames.length}</b></div>`;
+  $('scanFinish').disabled=n<6||SC.busy;
+}
+function resetScan(){SC.frames=[];SC.sectors.fill(0);SC.f=null;$('scanNote').hidden=true;drawRing()}
+async function startScan3d(){
+  resetScan();$('scanBusy').hidden=true;
+  const scr=$('scan3d'),video=scr.querySelector('video');
+  try{if(!navigator.mediaDevices?.getUserMedia)throw 0;const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280}},audio:false});
+    if(scr.hidden){s.getTracks().forEach(t=>t.stop());return}streams.scan3d=s;video.srcObject=s;video.hidden=false;$('scanChip').textContent='Walk slowly around your foot';
+  }catch(e){video.hidden=true;$('scanChip').textContent='Live camera unavailable here · upload a video instead';return}
+  clearInterval(SC.timer);SC.timer=setInterval(()=>{
+    if(scr.hidden||SC.busy||!streams.scan3d){clearInterval(SC.timer);return}if(!video.videoWidth)return;
+    const fr=readFrame(video,video.videoWidth,video.videoHeight);
+    if(!fr){$('scanChip').textContent='Keep the whole paper and your foot in view';return}
+    fr.fs.forEach(v=>{if(v>.4*Math.max(fr.w,fr.h)&&v<2.5*Math.max(fr.w,fr.h))(SC.fl=SC.fl||[]).push(v)});
+    if(SC.fl&&SC.fl.length>3){const s2=[...SC.fl].sort((a,b)=>a-b);SC.f=s2[s2.length>>1]}
+    if(addFrame(fr)){$('scanChip').textContent='Got it · keep walking';if(navigator.vibrate)try{navigator.vibrate(15)}catch(e){}}
+    drawRing();if(SC.sectors.every(v=>v))finishScan();
+  },300);
+  requestAnimationFrame(drawRing);
+}
+async function framesFromVideoFile(file){
+  const url=URL.createObjectURL(file),v=document.createElement('video');v.muted=true;v.playsInline=true;v.src=url;
+  await new Promise((ok,no)=>{v.onloadeddata=ok;v.onerror=no;setTimeout(no,15000)});
+  const N=36,dur=v.duration||10;
+  for(let i=0;i<N;i++){v.currentTime=dur*(i+.5)/N;await new Promise(r=>{v.onseeked=r;setTimeout(r,1500)});
+    const fr=readFrame(v,v.videoWidth,v.videoHeight);busy(`Reading video… ${i+1}/${N}`,(i+1)/N*.5);
+    if(fr){fr.fs.forEach(q=>{if(q>.4*Math.max(fr.w,fr.h)&&q<2.5*Math.max(fr.w,fr.h))(SC.fl=SC.fl||[]).push(q)});SC.all=(SC.all||[]).concat([fr])}}
+  URL.revokeObjectURL(url);
+  if(SC.fl&&SC.fl.length){const s2=[...SC.fl].sort((a,b)=>a-b);SC.f=s2[s2.length>>1]}
+  (SC.all||[]).forEach(addFrame);SC.all=null;drawRing();
+}
+function busy(t,p){$('scanBusy').hidden=false;$('scanBusyTxt').textContent=t;$('scanBusyBar').style.width=Math.round(p*100)+'%'}
+const tick=()=>new Promise(r=>setTimeout(r,0));
+async function finishScan(){
+  if(SC.busy)return;SC.busy=true;clearInterval(SC.timer);if(streams.scan3d){streams.scan3d.getTracks().forEach(t=>t.stop());delete streams.scan3d}
+  try{
+    if(SC.frames.length<5)throw new Error('Not enough angles. Walk all the way around your foot and try again.');
+    const a=st.topAuto,A=st.measA,vs=2.5,Zmax=130,nx=Math.ceil(a.Wmm/vs),ny=Math.ceil(a.Hmm/vs),nz=Math.ceil(Zmax/vs),occ=new Uint8Array(nx*ny*nz);
+    // start from the top-photo footprint (slightly grown), full height
+    for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){let inF=false;for(let dj=-1;dj<=1&&!inF;dj++)for(let di=-1;di<=1;di++){const X=Math.round(((i+.5+di*.8)*vs)*S),Y=Math.round(((j+.5+dj*.8)*vs)*S);if(X>=0&&Y>=0&&X<a.W&&Y<a.H&&a.fm[Y*a.W+X]){inF=true;break}}
+      if(inF)for(let k=0;k<nz;k++)occ[i+nx*(j+ny*k)]=1}
+    const f=SC.f||.75*Math.max(SC.frames[0].w,SC.frames[0].h),votes=new Uint8Array(occ.length);
+    for(let fi=0;fi<SC.frames.length;fi++){const fr=SC.frames[fi],P=poseFromH(fr.H,f,fr.w/2,fr.h/2);busy('Building your 3D shape…',.5+.45*fi/SC.frames.length);await tick();
+      for(let k=0;k<nz;k++)for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const id=i+nx*(j+ny*k);if(!occ[id])continue;
+        const q=P.proj((i+.5)*vs,(j+.5)*vs,(k+.5)*vs);if(!q)continue;const u=q[0]|0,v=q[1]|0;if(u<0||v<0||u>=fr.w||v>=fr.h)continue;if(fr.paper[v*fr.w+u]&&votes[id]<255)votes[id]++}}
+    // a voxel is removed when at least two views see background through it (one bad frame cannot cut the foot)
+    for(let id=0;id<occ.length;id++)if(votes[id]>=2)occ[id]=0;
+    // read heights and girths along the foot axis from the top photo
+    const along=(X,Y)=>(X-A.mx)*A.ux+(Y-A.my)*A.uy,across=(X,Y)=>-(X-A.mx)*A.uy+(Y-A.my)*A.ux,L=A.L;
+    const fromHeel=tt=>A.heelStart?(tt-A.tmin)/L:(A.tmax-tt)/L;
+    const section=f0=>{const bins={};for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const X=(i+.5)*vs,Y=(j+.5)*vs,fh=fromHeel(along(X,Y));if(Math.abs(fh-f0)*L>vs*.75)continue;
+        let top=-1;for(let k=nz-1;k>=0;k--)if(occ[i+nx*(j+ny*k)]){top=(k+1)*vs;break}if(top<0)continue;const sb=Math.round(across(X,Y)/vs);bins[sb]=Math.max(bins[sb]||0,top)}
+      const ks=Object.keys(bins).map(Number).sort((p,q)=>p-q);if(ks.length<3)return null;
+      let per=(ks[ks.length-1]-ks[0]+1)*vs,hmax=0,prev=null;for(const kk of ks){const pt=[kk*vs,bins[kk]];hmax=Math.max(hmax,bins[kk]);if(prev)per+=Math.hypot(pt[0]-prev[0],pt[1]-prev[1]);else per+=pt[1];prev=pt}per+=prev[1];
+      return {h:hmax,girth:per}};
+    let best=null;for(let ff=.38;ff<=.6;ff+=.02){const sct=section(ff);if(sct&&(!best||sct.h>best.h))best={...sct,f:ff}}
+    const ballF=A.ballPct/100,ball=section(ballF),toe=section(Math.min(.8,ballF+.06));
+    if(!best||!ball)throw new Error('The scan did not cover the foot well. Keep the paper and foot in view from every side.');
+    const hi=best.h,hb=toe?toe.h:ball.h*.9,ai=best.f*L,ab=Math.min(.8,ballF+.06)*L;
+    st.sideRes={source:'video',sample:!!SC.sample,hi,hb,ai,ab,L,archH:null,girth:ball.girth,girthInstep:best.girth,
+      slope:Math.atan2(hi-hb,Math.abs(ab-ai))*180/Math.PI,toeAng:Math.atan2(hb,Math.abs(L-ab))*180/Math.PI};
+    st.scanView=()=>voxelMesh(occ,nx,ny,nz,vs);
+    busy('Done',1);setTimeout(()=>{SC.busy=false;$('scanBusy').hidden=true;go('result')},250);
+  }catch(e){SC.busy=false;$('scanBusy').hidden=true;$('scanNote').hidden=false;$('scanNote').textContent=e.message||'Something went wrong while building the shape.';drawRing()}
+}
+/* carved block → smooth mesh in the result viewer's frame (heel at −L/2, x along the foot) */
+function voxelMesh(occ,nx,ny,nz,vs){
+  const A=st.measA,L=A.L,dir=A.heelStart?1:-1,tH=A.heelStart?A.tmin:A.tmax,med=st.foot==='L'?1:-1;
+  // soften the voxel steps (3×3×3 average) so the scan reads as a surface
+  const sm=new Float32Array(occ.length),raw=(i,j,k)=>i<0||j<0||k<0||i>=nx||j>=ny||k>=nz?0:occ[i+nx*(j+ny*k)];
+  for(let k=0;k<nz;k++)for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){let v=0;for(let c=-1;c<=1;c++)for(let b2=-1;b2<=1;b2++)for(let a2=-1;a2<=1;a2++)v+=raw(i+a2,j+b2,k+c);sm[i+nx*(j+ny*k)]=v/27}
+  const get=(i,j,k)=>i<0||j<0||k<0||i>=nx||j>=ny||k>=nz?0:sm[i+nx*(j+ny*k)];
+  const field=(x,y,z)=>{const tt=tH+dir*x,sv=z*dir*med,X=A.mx+A.ux*tt-A.uy*sv,Y=A.my+A.uy*tt+A.ux*sv,fi=X/vs-.5,fj=Y/vs-.5,fk=y/vs-.5;
+    const i0=Math.floor(fi),j0=Math.floor(fj),k0=Math.floor(fk),di=fi-i0,dj=fj-j0,dk=fk-k0;let v=0;
+    for(let c=0;c<8;c++){const a=c&1,b=c>>1&1,e=c>>2&1;v+=get(i0+a,j0+b,k0+e)*(a?di:1-di)*(b?dj:1-dj)*(e?dk:1-dk)}return .5-v};
+  const g=surfaceNets(field,[[-8,L+8],[-2,130],[-90,90]],3);const pa=g.attributes.position.array;for(let i=0;i<pa.length;i+=3)pa[i]-=L/2;
+  return new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:new THREE.Color(css('--girth')),roughness:.7,side:THREE.DoubleSide,flatShading:false}));
+}
+/* sample: render the sample foot standing on the sample sheet from 12 angles */
+async function sampleScanFrames(){
+  if(typeof THREE==='undefined')throw new Error('3D engine not loaded');
+  const a=st.topAuto,A=st.measA,w=480,h=640,rd=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});rd.setSize(w,h,false);rd.setPixelRatio(1);
+  const sc=new THREE.Scene();sc.background=new THREE.Color('#5d5146');
+  sc.add(new THREE.HemisphereLight(0xffffff,0x444444,1));
+  const paper=new THREE.Mesh(new THREE.PlaneGeometry(a.Wmm,a.Hmm),new THREE.MeshBasicMaterial({color:'#f4f4f0'}));paper.rotation.x=-Math.PI/2;paper.position.set(a.Wmm/2,.2,a.Hmm/2);sc.add(paper);
+  const F=footSDF({...st.topRes,foot:st.foot},{hi:62,hb:30,ai:.5*A.L,archH:10}),g=surfaceNets(F.d,F.box,A.L/80),pa=g.attributes.position.array,dir=A.heelStart?1:-1,tH=A.heelStart?A.tmin:A.tmax;
+  for(let i=0;i<pa.length;i+=3){const fx=pa[i],fy=pa[i+1],fz=pa[i+2]*F.med*(st.foot==='L'?1:-1),tt=tH+dir*fx,sv=fz*dir,X=A.mx+A.ux*tt-A.uy*sv,Y=A.my+A.uy*tt+A.ux*sv;pa[i]=X;pa[i+1]=fy+.4;pa[i+2]=Y}
+  sc.add(new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:'#25272d',side:THREE.DoubleSide})));
+  const cam=new THREE.PerspectiveCamera(58,w/h,5,3000),out=[];
+  for(let i=0;i<14;i++){const az=i/14*Math.PI*2,el=i%2?.55:.85,R=430;
+    cam.position.set(a.Wmm/2+R*Math.cos(el)*Math.cos(az),R*Math.sin(el),a.Hmm/2+R*Math.cos(el)*Math.sin(az));cam.lookAt(a.Wmm/2,20,a.Hmm/2);rd.render(sc,cam);
+    const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(rd.domElement,0,0);out.push(c)}
+  rd.dispose();return out;
+}
+$('scanFinish').onclick=()=>finishScan();
+$('scanSample').onclick=async()=>{if(SC.busy)return;if(streams.scan3d){streams.scan3d.getTracks().forEach(t=>t.stop());delete streams.scan3d}clearInterval(SC.timer);resetScan();
+  try{busy('Rendering sample views…',.1);await tick();const fr=await sampleScanFrames();SC.fl=[];
+    for(const c of fr){const r=readFrame(c,c.width,c.height);if(r){r.fs.forEach(q=>{if(q>.4*Math.max(r.w,r.h)&&q<2.5*Math.max(r.w,r.h))SC.fl.push(q)});(SC.all=SC.all||[]).push(r)}}
+    if(SC.fl.length){const s2=[...SC.fl].sort((p,q)=>p-q);SC.f=s2[s2.length>>1]}(SC.all||[]).forEach(addFrame);SC.all=null;drawRing();SC.sample=true;await finishScan();SC.sample=false}
+  catch(e){$('scanBusy').hidden=true;$('scanNote').hidden=false;$('scanNote').textContent='Sample failed: '+e.message}};
+$('scanVideoFile').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f||SC.busy)return;
+  if(streams.scan3d){streams.scan3d.getTracks().forEach(t=>t.stop());delete streams.scan3d}clearInterval(SC.timer);resetScan();
+  try{busy('Reading video…',0);await framesFromVideoFile(f);await finishScan()}catch(err){$('scanBusy').hidden=true;$('scanNote').hidden=false;$('scanNote').textContent="That video couldn't be read. Try an MP4 or MOV filmed while walking around your foot."}});
+$('optVideo').onclick=()=>go('scan3d');
+$('optSide').onclick=()=>go('shootSide');
+
+/* ===== 3D shape: LiDAR scan import (OBJ / PLY from Polycam, 3D Scanner App, Scaniverse…) ===== */
+function parseOBJ(text){const P=[];for(const ln of text.split('\n')){if(ln.charCodeAt(0)===118&&ln.charCodeAt(1)===32){const a=ln.trim().split(/\s+/);P.push(+a[1],+a[2],+a[3])}}return P}
+function parsePLY(buf){
+  const u8=new Uint8Array(buf);let hdrEnd=-1;for(let i=0;i<Math.min(u8.length,4096);i++){if(u8[i]===10&&String.fromCharCode(...u8.slice(Math.max(0,i-10),i)).endsWith('end_header')){hdrEnd=i+1;break}}
+  if(hdrEnd<0)throw new Error('Not a PLY file');const hdr=new TextDecoder().decode(u8.slice(0,hdrEnd)).split('\n').map(l=>l.trim());
+  const fmt=(hdr.find(l=>l.startsWith('format'))||'').split(' ')[1];let nv=0,props=[],inV=false;
+  for(const l of hdr){const a=l.split(' ');if(a[0]==='element'){inV=a[1]==='vertex';if(inV)nv=+a[2]}else if(a[0]==='property'&&inV)props.push(a[a.length-1]+':'+a[1])}
+  const ix=props.findIndex(p=>p.startsWith('x:')),iy=props.findIndex(p=>p.startsWith('y:')),iz=props.findIndex(p=>p.startsWith('z:')),P=[];
+  if(fmt==='ascii'){const lines=new TextDecoder().decode(u8.slice(hdrEnd)).split('\n');for(let i=0;i<nv&&i<lines.length;i++){const a=lines[i].trim().split(/\s+/);P.push(+a[ix],+a[iy],+a[iz])}return P}
+  const SZ={char:1,uchar:1,int8:1,uint8:1,short:2,ushort:2,int16:2,uint16:2,int:4,uint:4,int32:4,uint32:4,float:4,float32:4,double:8,float64:8},le=fmt!=='binary_big_endian';
+  const types=props.map(p=>p.split(':')[1]),offs=[];let stride=0;types.forEach(t=>{offs.push(stride);stride+=SZ[t]||4});const dv=new DataView(buf,hdrEnd);
+  const rd=(o,t)=>t.startsWith('double')||t==='float64'?dv.getFloat64(o,le):dv.getFloat32(o,le);
+  for(let i=0;i<nv;i++){const b=i*stride;P.push(rd(b+offs[ix],types[ix]),rd(b+offs[iy],types[iy]),rd(b+offs[iz],types[iz]))}return P;
+}
+function measurePointCloud(P){
+  let n=P.length/3;if(n<200)throw new Error('The scan has too few points.');
+  let mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9];for(let i=0;i<P.length;i+=3)for(let k=0;k<3;k++){mn[k]=Math.min(mn[k],P[i+k]);mx[k]=Math.max(mx[k],P[i+k])}
+  const ext=Math.max(mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2]),sc=ext<5?1000:ext<50?10:1; // metres / cm / mm
+  const ys=[];for(let i=1;i<P.length;i+=3)ys.push(P[i]*sc);ys.sort((a,b)=>a-b);const floor=ys[Math.floor(ys.length*.02)];
+  let pts=[];for(let i=0;i<P.length;i+=3){const y=P[i+1]*sc-floor;if(y>3&&y<140)pts.push([P[i]*sc,y,P[i+2]*sc])}
+  if(pts.length<200)throw new Error('Could not find the foot above the floor in this scan.');
+  const xs=pts.map(p=>p[0]).sort((a,b)=>a-b),zs=pts.map(p=>p[2]).sort((a,b)=>a-b),cx=xs[xs.length>>1],cz=zs[zs.length>>1];
+  pts=pts.filter(p=>Math.hypot(p[0]-cx,p[2]-cz)<220);
+  let mxx=0,mzz=0;pts.forEach(p=>{mxx+=p[0];mzz+=p[2]});mxx/=pts.length;mzz/=pts.length;let sxx=0,szz=0,sxz=0;pts.forEach(p=>{const a=p[0]-mxx,b=p[2]-mzz;sxx+=a*a;szz+=b*b;sxz+=a*b});
+  const ang=.5*Math.atan2(2*sxz,sxx-szz),ux=Math.cos(ang),uz=Math.sin(ang);
+  const T=pts.map(p=>[(p[0]-mxx)*ux+(p[2]-mzz)*uz,-(p[0]-mxx)*uz+(p[2]-mzz)*ux,p[1]]);const tmin=Math.min(...T.map(q=>q[0])),tmax=Math.max(...T.map(q=>q[0])),L=tmax-tmin;
+  const widthAt=f=>{let lo=1e9,hi=-1e9;T.forEach(q=>{if(Math.abs(q[0]-(tmin+f*L))<3){lo=Math.min(lo,q[1]);hi=Math.max(hi,q[1])}});return hi-lo};
+  // the heel end carries the ankle, so it is the taller end
+  let hA=0,hB=0;T.forEach(q=>{const f=(q[0]-tmin)/L;if(f<.25)hA=Math.max(hA,q[2]);if(f>.75)hB=Math.max(hB,q[2])});
+  const heelFirst=Math.abs(hA-hB)>10?hA>hB:widthAt(.08)<widthAt(.92),fh=q=>heelFirst?(q[0]-tmin)/L:(tmax-q[0])/L;
+  const section=f0=>{const bins={};T.forEach(q=>{if(Math.abs(fh(q)-f0)*L>2.5)return;const b=Math.round(q[1]/4);bins[b]=Math.max(bins[b]||0,q[2])});
+    const ks=Object.keys(bins).map(Number).sort((a,b)=>a-b);if(ks.length<3)return null;let per=(ks[ks.length-1]-ks[0]+1)*4,hm=0,prev=null;
+    for(const k of ks){const pt=[k*4,bins[k]];hm=Math.max(hm,bins[k]);per+=prev?Math.hypot(pt[0]-prev[0],pt[1]-prev[1]):pt[1];prev=pt}per+=prev[1];return {h:hm,girth:per}};
+  const Lt=st.topRes?st.topRes.L:L,ballF=st.topRes?st.topRes.ballPct/100:.68;let best=null;for(let f=.38;f<=.6;f+=.02){const s2=section(f);if(s2&&(!best||s2.h>best.h))best={...s2,f}}
+  const ball=section(ballF),toe=section(Math.min(.8,ballF+.06));if(!best||!ball)throw new Error('The scan does not show the top of the foot clearly.');
+  const hi=best.h,hb=toe?toe.h:ball.h*.9,ai=best.f*Lt,ab=Math.min(.8,ballF+.06)*Lt;
+  // points for the Scan view, in the viewer frame
+  const med=st.foot==='L'?1:-1,view=T.filter((_,i)=>i%Math.max(1,Math.floor(T.length/20000))===0).map(q=>[(fh(q)-.5)*L,q[2],q[1]*(heelFirst?1:-1)]);
+  return {res:{source:'lidar',hi,hb,ai,ab,L:Lt,archH:null,girth:ball.girth,girthInstep:best.girth,slope:Math.atan2(hi-hb,Math.abs(ab-ai))*180/Math.PI,toeAng:Math.atan2(hb,Math.abs(Lt-ab))*180/Math.PI,scanLength:L},view};
+}
+$('lidarFile').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{toast('Reading scan…');const buf=await f.arrayBuffer(),name=f.name.toLowerCase();
+    const P=name.endsWith('.ply')?parsePLY(buf):parseOBJ(new TextDecoder().decode(buf));const {res,view}=measurePointCloud(P);st.sideRes=res;
+    st.scanView=()=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(view.flat(),3));return new THREE.Points(g,new THREE.PointsMaterial({color:new THREE.Color(css('--girth')),size:2.2}))};
+    if(Math.abs(res.scanLength-res.L)>15)toast(`LiDAR length ${res.scanLength.toFixed(0)} mm differs from the photo. Check the scan scale.`);
+    go('result')}
+  catch(err){toast(err.message||"That file couldn't be read. Export OBJ or PLY and try again.")}});
 
 /* ===== Results ===== */
 function classify(t,s){
@@ -796,7 +1121,8 @@ function classify(t,s){
 }
 function showResult(){
   const c=classify(st.topRes,st.sideRes);if(!c){go('home');return}
-  $('resultTag').textContent=(st.foot==='L'?'Left foot':'Right foot')+' · '+((st.top.sample||st.side.sample)?'Sample photos':new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}));
+  const src=st.sideRes?({video:'Video scan',lidar:'LiDAR scan'}[st.sideRes.source]||'Side photo'):'';
+  $('resultTag').textContent=(st.foot==='L'?'Left foot':'Right foot')+(src?' · '+src:'')+((st.top.sample||st.side.sample||(st.sideRes&&st.sideRes.sample))?' · sample':'');
   const tips=[];
   if(c.width==='Wide')tips.push('Your forefoot is wide. Start with 2E or wider lasts instead of sizing up, which leaves extra length.');
   if(c.width==='Narrow')tips.push('Your forefoot is narrow. Slim lasts and lace-up uppers will hold your foot best.');
@@ -810,7 +1136,7 @@ function showResult(){
     <div class="measure-line"><svg viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1" y="2" width="20" height="10" rx="1.5"/><path d="M5 2v4M9 2v3M13 2v4M17 2v3"/></svg>${(t0.L/10).toFixed(1)} cm long · ${(t0.ball/10).toFixed(1)} cm wide</div>
     ${scale('Narrow','Wide',t0.ball/t0.L,.345,.435)}
     ${s0?scale('Low instep','High instep',s0.hi/t0.L,.2,.31):''}
-    ${s0?scale('Flat','Arched',s0.archH,0,22):''}
+    ${s0&&s0.archH!=null?scale('Flat','Arched',s0.archH,0,22):''}
     ${scale('Slim heel','Broad heel',t0.heel/t0.ball,.58,.74)}`;
   $('sizeCard').innerHTML=`<span class="label">Recommended size</span>
     <div class="big"><b>${c.size}</b><span>mm</span></div>
@@ -821,13 +1147,16 @@ function showResult(){
   const t=c.t,s=c.s,stat=(k,v,u,est)=>`<div class="stat${est?' est':''}"><small>${k}</small><b>${v}<em>${u}</em></b></div>`;
   let h=stat('Length',t.L.toFixed(1),'mm')+stat('Ball width',t.ball.toFixed(1),'mm')+stat('Heel width',t.heel.toFixed(1),'mm')+(t.waist?stat('Midfoot width',t.waist.toFixed(1),'mm'):'')+stat('Width ratio',(t.ball/t.L*100).toFixed(1),'%');
   if(s)h+=stat('Instep height',s.hi.toFixed(1),'mm')+stat('Toe box height',s.hb.toFixed(1),'mm')+stat('Instep slope',s.slope.toFixed(1),'°')+stat('Toe spring',s.toeAng.toFixed(1),'°')
-    +stat('Arch height',s.archH.toFixed(1),'mm')+stat('Ball girth (est.)',ellipsePerim(t.ball/2,s.hb).toFixed(0),'mm',true)+stat('Ball position',t.ballPct.toFixed(0),'%');
+    +(s.archH!=null?stat('Arch height',s.archH.toFixed(1),'mm'):'')+(s.girth?stat('Ball girth',s.girth.toFixed(0),'mm'):stat('Ball girth (est.)',ellipsePerim(t.ball/2,s.hb).toFixed(0),'mm',true))
+    +(s.girthInstep?stat('Instep girth',s.girthInstep.toFixed(0),'mm'):'')+stat('Ball position',t.ballPct.toFixed(0),'%');
   $('stats').innerHTML=h;
   const rows=LASTS.map(l=>{const k=c.size/250,dB=l.ball*k-t.ball,dI=s?l.instep*k-s.hi:null;
     let sc=100-Math.max(0,-dB)*9-Math.max(0,dB-5)*4;if(dI!==null)sc-=Math.max(0,-dI)*7+Math.max(0,dI-6)*3;return {l,dB,dI,sc:Math.max(0,Math.round(sc))}}).sort((a,b)=>b.sc-a.sc);
   const fmt=v=>(v>0?'+':'')+v.toFixed(1)+' mm',lab=(name,d,lo,hi)=>d===null?`${name} —`:d<lo?`<span class="bad">${name} tight ${fmt(d)}</span>`:d>hi?`<span class="warn">${name} roomy ${fmt(d)}</span>`:`<span class="ok">${name} good ${fmt(d)}</span>`;
   $('matches').innerHTML=rows.map(r=>`<div class="match"><span class="nm">${r.l.name}</span><span class="sc">${r.sc}</span><span class="bar"><i style="width:${r.sc}%"></i></span><span class="det">${lab('Width',r.dB,0,5)} · ${lab('Instep',r.dI,0,6)}</span></div>`).join('');
-  requestAnimationFrame(()=>big.build(t,s));
+  requestAnimationFrame(()=>{big.build(t,s);
+    const sc=st.scanView?st.scanView():null;big.setScan(sc);$('scanBtn').hidden=!sc;
+    $('solidBtn').classList.add('on');$('meshBtn').classList.remove('on');$('scanBtn').classList.remove('on')});
 }
 
 /* ===== 3D foot viewer ===== */
@@ -849,7 +1178,7 @@ const smin=(a,b,k)=>{const h=Math.max(k-Math.abs(a-b),0)/k;return Math.min(a,b)-
 const smax=(a,b,k)=>-smin(-a,-b,k);
 function footSDF(t,s){
   const L=t.L,u=L/250,ball=clamp(t.ball,.32*L,.46*L),heelW=clamp(t.heel||ball*.66,ball*.55,ball*.8);
-  const hi=clamp(s?s.hi:.26*L,.2*L,.32*L),hb=clamp(s?s.hb:.12*L,.09*L,.15*L),arch=clamp(s?s.archH:10,2,24),fi=s?clamp(s.ai/L,.4,.6):.5;
+  const hi=clamp(s?s.hi:.26*L,.2*L,.32*L),hb=clamp(s?s.hb:.12*L,.09*L,.15*L),arch=clamp(s&&s.archH!=null?s.archH:10,2,24),fi=s?clamp(s.ai/L,.4,.6):.5;
   const bx=clamp(t.ballPct/100,.64,.74)*L,P=t.prof||[];
   const med=t.foot==='L'?1:-1;
   const wAt=f=>{if(P.length<5)return ball*.8;let s2=0,n=0;const i0=Math.round(clamp(f,0,1)*(P.length-1));for(let k=-2;k<=2;k++){const q=P[clamp(i0+k,0,P.length-1)];if(q.w>0){s2+=q.w;n++}}return n?s2/n:ball*.8};
@@ -923,6 +1252,8 @@ function makeViewer(canvas,opts){
   const up=e=>{ptrs.delete(e.pointerId);if(!ptrs.size)drag=null};canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
   if(opts.zoom)canvas.addEventListener('wheel',e=>{e.preventDefault();V.auto=false;V.dist=Math.min(1600,Math.max(380,V.dist*(1+e.deltaY*.001)))},{passive:false});
   V.reset=()=>{V.rx=-.42;V.ry=.75;V.dist=opts.dist;V.auto=true};
+  V.scanObj=null;V.showScan=on=>{(V.parts||[]).forEach(m=>m.visible=!on);if(V.scanObj)V.scanObj.visible=!!on};
+  V.setScan=obj=>{if(V.scanObj){root.remove(V.scanObj);V.scanObj.geometry&&V.scanObj.geometry.dispose()}V.scanObj=obj;if(obj){obj.visible=false;root.add(obj)}};
   V.setWire=w=>{V.wire=w;(V.parts||[]).forEach(m=>{m.material.wireframe=w;m.material.color.set(css(w?'--girth':'--model'))})};
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   (function loop(){requestAnimationFrame(loop);if(!canvas.offsetParent)return;
@@ -930,7 +1261,7 @@ function makeViewer(canvas,opts){
     if(V.auto&&!reduce)V.ry+=.005;
     camera.position.set(V.dist*Math.cos(V.rx)*Math.sin(V.ry),-V.dist*Math.sin(V.rx),V.dist*Math.cos(V.rx)*Math.cos(V.ry));camera.lookAt(0,35,0);renderer.render(scene,camera)})();
   V.build=(t,s)=>{
-    while(root.children.length){const o=root.children.pop();o.geometry&&o.geometry.dispose()}
+    while(root.children.length){const o=root.children.pop();o.geometry&&o.geometry.dispose()}V.scanObj=null;
     const L=t.L,F=footSDF(t,s),med=F.med;
     const geo=surfaceNets(F.d,F.box,L/100);
     // place in world: heel at -L/2, z flipped so the big toe sits on the measured side
@@ -959,8 +1290,9 @@ function makeViewer(canvas,opts){
 const hero=makeViewer($('heroCanvas'),{dist:600,annotate:false,zoom:false});
 const big=makeViewer($('bigCanvas'),{dist:580,annotate:true,zoom:true});
 $('resetView').onclick=()=>big.reset();
-$('solidBtn').onclick=()=>{big.setWire(false);$('solidBtn').classList.add('on');$('meshBtn').classList.remove('on')};
-$('meshBtn').onclick=()=>{big.setWire(true);$('meshBtn').classList.add('on');$('solidBtn').classList.remove('on')};
+$('solidBtn').onclick=()=>{big.showScan(false);big.setWire(false);$('solidBtn').classList.add('on');$('meshBtn').classList.remove('on');$('scanBtn').classList.remove('on')};
+$('meshBtn').onclick=()=>{big.showScan(false);big.setWire(true);$('meshBtn').classList.add('on');$('solidBtn').classList.remove('on');$('scanBtn').classList.remove('on')};
+$('scanBtn').onclick=()=>{big.showScan(true);$('scanBtn').classList.add('on');$('solidBtn').classList.remove('on');$('meshBtn').classList.remove('on')};
 
 /* ===== History ===== */
 let recs=[];try{recs=JSON.parse(localStorage.getItem('arc-scans')||'[]')}catch(e){recs=[]}
@@ -989,14 +1321,14 @@ function sampleTop(){const c=document.createElement('canvas');c.width=900;c.heig
   const k=[[175,150],[735,185],[760,1100],[140,1065]];x.fillStyle='#f6f6f2';x.beginPath();k.forEach((p,i)=>i?x.lineTo(...p):x.moveTo(...p));x.closePath();x.fill();
   x.save();x.setTransform((735-175)/210,(185-150)/210,(140-175)/297,(1065-150)/297,175,150);x.translate(108,272);x.rotate(Math.PI+.06);x.fillStyle='#24272e';footPath(x);x.fill();
   x.save();footPath(x);x.clip();x.fillStyle='rgba(255,255,255,.75)';for(let gy=6;gy<250;gy+=10)for(let gx=-50;gx<=50;gx+=10){x.beginPath();x.arc(gx+(gy%20?5:0),gy,1.4,0,7);x.fill()}x.restore();
-  x.fillStyle='#3be07c';[[-44,180],[44,160]].forEach(([a,b])=>{x.beginPath();x.arc(a,b,3.6,0,7);x.fill()});x.restore();
+  x.fillStyle='#3be07c';[[-44,180],[44,160]].forEach(([a,b])=>[[0,-4],[-3.5,2],[3.5,2]].forEach(([u,v])=>{x.beginPath();x.arc(a+u,b+v,1.8,0,7);x.fill()}));x.restore();
   return {c,pts:k.map(p=>[p[0]+3,p[1]+2])}}
 function sampleSide(){const c=document.createElement('canvas');c.width=1200;c.height=600;const x=c.getContext('2d');
   x.fillStyle='#e6e2dc';x.fillRect(0,0,1200,600);x.fillStyle='#857766';x.fillRect(0,470,1200,130);const hx=150,gy=470;
   x.fillStyle='#24272e';x.beginPath();x.moveTo(hx,gy);x.bezierCurveTo(hx-12,gy-40,hx-8,gy-170,hx+40,gy-260);x.lineTo(hx+150,gy-265);
   x.bezierCurveTo(hx+260,gy-250,hx+420,gy-200,hx+560,gy-140);x.bezierCurveTo(hx+700,gy-110,hx+820,gy-95,hx+880,gy-75);x.bezierCurveTo(hx+905,gy-55,hx+905,gy-15,hx+900,gy);x.lineTo(hx+640,gy);x.bezierCurveTo(hx+540,gy-34,hx+300,gy-34,hx+210,gy);x.closePath();x.fill();x.save();x.clip();
   x.fillStyle='rgba(255,255,255,.7)';for(let yy=gy-260;yy<gy;yy+=36)for(let xx=hx-20;xx<hx+920;xx+=36){x.beginPath();x.arc(xx+((yy/36|0)%2?18:0),yy+14,4,0,7);x.fill()}x.restore();
-  x.fillStyle='#3be07c';[[hx+690,gy-104],[hx+468,gy-222],[hx+600,gy-40]].forEach(([a,b])=>{x.beginPath();x.arc(a,b,13,0,7);x.fill()});
+  x.fillStyle='#3be07c';[[hx+690,gy-104],[hx+468,gy-222],[hx+600,gy-40]].forEach(([a,b])=>[[0,-13],[-11,7],[11,7]].forEach(([u,v])=>{x.beginPath();x.arc(a+u,b+v,6,0,7);x.fill()}));
   return {c,pts:null}}
 
 /* ===== Wiring ===== */
@@ -1006,14 +1338,14 @@ st.meas.ui={vp:$('measVP')};
 st.side=makeShot('sideCanvas','sideChip',5,['the back of the heel','the tip of the big toe','the top of the toe box','the highest point of the instep','the highest point under the arch'],computeSide,'side',['Heel','Toe','Toe box','Instep','Arch']);
 bindPointer(st.top);bindPointer(st.side);bindPointer(st.meas);bindTune('top',st.top);bindTune('side',st.side);bindTune('meas',st.meas);
 setupCam('shootTop','topVP','topCtl','topSheet','topNav',st.top);setupCam('shootSide','sideVP','sideCtl','sideSheet','sideNav',st.side);
-$('topNext').onclick=()=>go('checkTop');$('measNext').onclick=()=>go('shootSide');$('measBack').onclick=()=>{clearShot(st.top);go('shootTop')};
+$('topNext').onclick=()=>go('checkTop');$('measNext').onclick=()=>go('shape3d');$('measBack').onclick=()=>{clearShot(st.top);go('shootTop')};
 $('measAuto').onclick=()=>{if(st.topAuto&&st.topAuto.contourImg){st.meas.pts=st.topAuto.contourImg.map(p=>[...p]);computeMeas();refit(st.meas);toast('Outline reset')}};$('sideNext').onclick=()=>go('result');
 const resetShots=()=>{clearShot(st.top);clearShot(st.side)};
 function applyFoot(){const L2=st.foot==='L';$('scanFootName').textContent=L2?'left foot':'right foot';$('insoleLetter').textContent=L2?'L':'R';
   $('insoleFlip').setAttribute('transform',L2?'translate(300,0) scale(-1,1)':'');
   ['pickL','pickR'].forEach(id=>$(id).classList.toggle('on',$(id).dataset.foot===st.foot))}
 ['pickL','pickR'].forEach(id=>$(id).onclick=()=>{st.foot=$(id).dataset.foot;applyFoot()});
-$('pickNext').onclick=()=>{resetShots();applyFoot();go('shootTop')};
+$('pickNext').onclick=()=>{initTilt();resetShots();applyFoot();go('shootTop')};
 $('startBtn').onclick=()=>{applyFoot();go('pickFoot')};
 $('againBtn').onclick=()=>{applyFoot();go('pickFoot')};
 function loadSample(){st.silent=true;const a=sampleTop(),b=sampleSide();accept(st.top,a.c,a.c.width,a.c.height,true,a.pts);accept(st.side,b.c,b.c.width,b.c.height,true);st.silent=false}
