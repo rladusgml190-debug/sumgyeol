@@ -218,8 +218,8 @@ details.acc[open] summary::after{content:"–"}
 .tune .tname{font-size:12px;font-weight:600;color:#fff;min-width:64px;text-align:center}
 .tune .sp{flex:1}
 .loupe{position:fixed;width:124px;height:124px;border-radius:50%;border:3px solid #fff;box-shadow:0 8px 24px rgba(0,0,0,.45);pointer-events:none;z-index:40;background:#000}
-.sock{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;background:var(--card);border-radius:22px;padding:14px 16px}
-.sock svg{width:74px;height:auto}
+.sock{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;background:var(--card);border-radius:20px;padding:12px 14px}
+.sock svg{width:40px;height:auto}
 .sock b{font-weight:600;font-size:14px;display:block}
 .sock p{margin:2px 0 0;font-size:12px;color:var(--muted)}
 .fineprint{font-size:11px;color:var(--muted);margin:0}
@@ -241,16 +241,15 @@ details.acc[open] summary::after{content:"–"}
     <button class="link" id="demoBtn">See sample scan</button>
   </div>
   <h1 class="title">Find shoes that<br><b>actually fit</b></h1>
-  <div class="sock">
+  <div class="stage hero3d"><canvas id="heroCanvas"></canvas><span class="rotate-pill">‹ › Drag to rotate</span></div>
+  <div class="needs">
+    <div class="need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 8h6M9 12h6"/></svg></span><div><b>A4 paper on the floor</b><span>Used as a size reference</span></div></div>
+    <div class="sock">
     <svg viewBox="0 0 80 110" aria-hidden="true"><path d="M22 4h30v52l18 18a14 14 0 0 1-10 24H30a20 20 0 0 1-20-20V62l12-12z" fill="#1d2026"/>
       <g fill="#fff" opacity=".85"><circle cx="30" cy="14" r="1.6"/><circle cx="42" cy="14" r="1.6"/><circle cx="30" cy="26" r="1.6"/><circle cx="42" cy="26" r="1.6"/><circle cx="30" cy="38" r="1.6"/><circle cx="42" cy="38" r="1.6"/><circle cx="24" cy="62" r="1.6"/><circle cx="36" cy="62" r="1.6"/><circle cx="48" cy="62" r="1.6"/><circle cx="24" cy="74" r="1.6"/><circle cx="48" cy="74" r="1.6"/><circle cx="60" cy="74" r="1.6"/><circle cx="24" cy="86" r="1.6"/><circle cx="36" cy="86" r="1.6"/><circle cx="48" cy="86" r="1.6"/></g>
       <g fill="#46d184"><circle cx="16" cy="53.8" r="1.9"/><circle cx="13.2" cy="58.6" r="1.9"/><circle cx="18.8" cy="58.6" r="1.9"/><circle cx="36" cy="70.8" r="1.9"/><circle cx="33.2" cy="75.6" r="1.9"/><circle cx="38.8" cy="75.6" r="1.9"/><circle cx="62" cy="84.8" r="1.9"/><circle cx="59.2" cy="89.6" r="1.9"/><circle cx="64.8" cy="89.6" r="1.9"/><circle cx="36" cy="40.8" r="1.9"/><circle cx="33.2" cy="45.6" r="1.9"/><circle cx="38.8" cy="45.6" r="1.9"/></g></svg>
     <div><b>Arc Dot Sock</b><p>A dark sock with a white dot grid and small green dot triangles over key bones. The app finds each triangle and places the measuring points for you.</p></div>
   </div>
-  <div class="stage hero3d"><canvas id="heroCanvas"></canvas><span class="rotate-pill">‹ › Drag to rotate</span></div>
-  <div class="needs">
-    <div class="need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 8h6M9 12h6"/></svg></span><div><b>A4 paper on the floor</b><span>Used as a size reference</span></div></div>
-    <div class="need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6v8l3.5 3.5a3 3 0 0 1-2.1 5.1H10a4 4 0 0 1-4-4V14l3-3z"/></svg></span><div><b>Arc Dot Sock</b><span>Places the points for you</span></div></div>
     <div class="need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="3"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l1.5-3h5L16 7"/></svg></span><div><b>Top and side photo</b><span>About one minute</span></div></div>
   </div>
   <div class="row-h"><span class="label">Recent scans</span><button class="link" id="copyCsv" hidden>Copy CSV</button></div>
