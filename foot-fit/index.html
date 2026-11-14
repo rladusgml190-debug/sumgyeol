@@ -210,7 +210,7 @@ details.acc[open] summary::after{content:"–"}
   <div class="stage hero3d"><canvas id="heroCanvas"></canvas><span class="rotate-pill">‹ › Drag to rotate</span></div>
   <div class="needs">
     <div class="need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 8h6M9 12h6"/></svg></span><div><b>A4 paper on the floor</b><span>Used as a size reference</span></div></div>
-    <div class="need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6v8l3.5 3.5a3 3 0 0 1-2.1 5.1H10a4 4 0 0 1-4-4V14l3-3z"/></svg></span><div><b>Dark socks</b><span>Gives a clean outline</span></div></div>
+    <div class="need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6v8l3.5 3.5a3 3 0 0 1-2.1 5.1H10a4 4 0 0 1-4-4V14l3-3z"/></svg></span><div><b>Dot Sock</b><span>Places the points for you</span></div></div>
     <div class="need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="3"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l1.5-3h5L16 7"/></svg></span><div><b>Top and side photo</b><span>About one minute</span></div></div>
   </div>
   <div class="sock">
@@ -607,7 +607,7 @@ function computeTop(){
   const t=otsu(hist,cnt),mask=new Uint8Array(W*H);
   for(let j=m;j<H-m;j++)for(let i=m;i<W-m;i++)if(gray[j*W+i]<t)mask[j*W+i]=1;
   const {lab,best,n}=largest(mask,W,H);
-  if(n<2000){st.topAuto={error:"We couldn't find your foot. Wear dark socks on white paper and try again."};st.topRes=null;renderTopQuick();return}
+  if(n<2000){st.topAuto={error:"We couldn't find your foot. Wear the Dot Sock on white paper and try again."};st.topRes=null;renderTopQuick();return}
   let mx=0,my=0;const P=[];for(let p=0;p<W*H;p++)if(lab[p]===best){const x=(p%W)/S,y=((p/W)|0)/S;P.push(x,y);mx+=x;my+=y}
   const N=P.length/2;mx/=N;my/=N;let sxx=0,syy=0,sxy=0;
   for(let i=0;i<P.length;i+=2){const dx=P[i]-mx,dy=P[i+1]-my;sxx+=dx*dx;syy+=dy*dy;sxy+=dx*dy}
