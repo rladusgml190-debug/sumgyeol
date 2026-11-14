@@ -399,10 +399,10 @@ details.acc[open] summary::after{content:"–"}
     <div class="cam-head">
       <div class="top">
         <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 7h11a13 13 0 0 1 0 26H9z" fill="#46d184"/><path d="M15 15l7 5-7 5z" fill="#151617"/></svg>Arc</div>
-        <button class="sample" id="measAuto">Auto-fit</button>
+        <button class="sample" id="measAuto">Reset</button>
       </div>
       <h2>Shape your <b>foot outline</b></h2>
-      <p>The points start on the paper's edge. Drag each one in onto the edge of your foot.</p>
+      <p>The outline is traced from your photo. Drag any of the 8 points that sit off your foot's edge.</p>
     </div>
     <div class="viewport" id="measVP">
       <svg class="guide" viewBox="0 0 10 10" style="display:none" aria-hidden="true"></svg>
@@ -461,7 +461,7 @@ details.acc[open] summary::after{content:"–"}
     <li><b>Stand on the A4 sheet</b><span>Clear floor, nothing else around. Put your weight evenly on both feet, the way you stand in shoes. Feet are a little bigger standing, and later in the day.</span></li>
     <li><b>Keep your trousers out of the frame</b><span>Roll them up or wear shorts so only the Dot Sock is on the paper. A trouser leg looks like part of your foot.</span></li>
     <li><b>Hold the phone straight above</b><span>Chest height, camera facing down. The level turns green when it's flat, then the photo takes itself.</span></li>
-    <li><b>Check the outline</b><span>The app traces your foot with 8 points. If one sits off the edge, drag it into place.</span></li>
+    <li><b>Check the outline</b><span>The app traces your foot for you. If part of it is off, drag the nearest of the 8 points and the line follows.</span></li>
   </ol>
   <div class="nav">
     <div class="dots"><i class="done"></i><i class="on"></i><i></i><i></i></div>
@@ -808,7 +808,7 @@ function drawShot(shot){
   if(shot.kind==='side'&&P.length>=2){x.strokeStyle=MINT;x.setLineDash([6*disp,5*disp]);x.beginPath();x.moveTo(P[0][0],P[0][1]);x.lineTo(P[1][0],P[1][1]);x.stroke();x.setLineDash([]);
     if(P.length>=4){x.strokeStyle=ORANGE;x.beginPath();x.moveTo(P[1][0],P[1][1]);x.lineTo(P[2][0],P[2][1]);x.lineTo(P[3][0],P[3][1]);x.stroke()}
     if(P.length>=5){const [a,b]=P,dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy,t=((P[4][0]-a[0])*dx+(P[4][1]-a[1])*dy)/l2;x.strokeStyle='#5aa2ff';x.beginPath();x.moveTo(P[4][0],P[4][1]);x.lineTo(a[0]+t*dx,a[1]+t*dy);x.stroke()}}
-  if(shot.kind==='meas'&&P.length>5){smoothPath(x,P);x.fillStyle='rgba(70,209,132,.14)';x.fill();x.strokeStyle=MINT;x.stroke();
+  if(shot.kind==='meas'&&P.length>5&&shot.base){const C=bentContour(shot);x.beginPath();C.forEach((q,i)=>i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]));x.closePath();x.fillStyle='rgba(70,209,132,.16)';x.fill();x.strokeStyle=MINT;x.lineWidth=2.5*disp;x.stroke();x.lineWidth=lw;
     const A=st.measA,a2=st.topAuto;if(A&&a2&&a2.h){const TP=(t2,sv)=>{const q=A.toPx(t2,sv),r2=applyH(a2.h,q[0]/S,q[1]/S);return [r2[0]-a2.off[0],r2[1]-a2.off[1]]};const mid=i=>(A.lo[i]+A.hi[i])/2,seg=(p,q,col,dash)=>{x.strokeStyle=col;x.setLineDash(dash?[5*disp,4*disp]:[]);x.beginPath();x.moveTo(p[0],p[1]);x.lineTo(q[0],q[1]);x.stroke();x.setLineDash([])};
       seg(TP(A.tmin,mid(A.binAt(.5))),TP(A.tmax,mid(A.binAt(.5))),'#ffffff',true);
       seg(TP(A.tAt(A.ballI),A.lo[A.ballI]),TP(A.tAt(A.ballI),A.hi[A.ballI]),ORANGE);seg(TP(A.tAt(A.heelI),A.lo[A.heelI]),TP(A.tAt(A.heelI),A.hi[A.heelI]),ORANGE)}}
@@ -864,7 +864,7 @@ function bindPointer(shot){
     else return;
     shot.sel=shot.drag;shot.canvas.setPointerCapture(e.pointerId);drawShot(shot);updatePrompt(shot);showLoupe(shot,shot.pts[shot.drag],e.clientX,e.clientY)});
   shot.canvas.addEventListener('pointermove',e=>{if(shot.drag<0)return;const p=pos(e);shot.pts[shot.drag]=clamp([p[0]+shot.off[0],p[1]+shot.off[1]]);drawShot(shot);showLoupe(shot,shot.pts[shot.drag],e.clientX,e.clientY)});
-  const end=()=>{loupe.hidden=true;if(shot.drag<0)return;shot.drag=-1;updatePrompt(shot);shot.onChange()};
+  const end=()=>{loupe.hidden=true;if(shot.drag<0)return;shot.drag=-1;shot.moved=true;updatePrompt(shot);shot.onChange()};
   shot.canvas.addEventListener('pointerup',end);shot.canvas.addEventListener('pointercancel',end);
 }
 function bindTune(key,shot){
@@ -875,10 +875,10 @@ function bindTune(key,shot){
 }
 function syncTune(shot){if(!shot.tune)return;let nm=(shot.names&&shot.names[shot.sel])||(shot.kind==='corners'?`Corner ${shot.sel+1}`:`Point ${shot.sel+1}/${shot.pts.length}`),help='';
   if(shot.kind==='side')help=SIDE_HELP[nm]||'';
-  if(shot.kind==='meas'&&shot.pts.length){const r=outlineRegion(shot.sel,shot.pts.length);nm=`${r[0]} · ${shot.sel+1}/${shot.pts.length}`;help=r[1]}
+  if(shot.kind==='meas'&&shot.pts.length){const nn=HANDLE_NAMES[shot.sel]||'Point';nm=`${nn} · ${shot.sel+1}/${shot.pts.length}`;help=HANDLE_HELP[nn]||''}
   shot.tune.querySelector('.tname').textContent=shot.pts.length?nm:'—';
   const hl=shot.kind==='meas'?$('measHelp'):shot.kind==='side'?$('sideHelp'):null;if(hl)hl.innerHTML=help}
-function updatePrompt(shot){if(shot.kind==='meas'&&!shot.auto){shot.chip.textContent='Drag each point onto the edge of your foot';return}shot.chip.textContent=shot.pts.length<shot.needed?`Tap ${shot.labels[shot.pts.length]}`:(shot.markers?'Sock markers found · points placed':(shot.sample?'Sample photo · drag to adjust':'Drag points to adjust'))}
+function updatePrompt(shot){if(shot.kind==='meas'){shot.chip.textContent=shot.auto?'Outline traced from your photo · drag a point if it is off':'Foot not found · drag the 8 points onto your foot';return}shot.chip.textContent=shot.pts.length<shot.needed?`Tap ${shot.labels[shot.pts.length]}`:(shot.markers?'Sock markers found · points placed':(shot.sample?'Sample photo · drag to adjust':'Drag points to adjust'))}
 
 /* green landmark dots on the Arc Dot Sock */
 /* Arc Dot Sock landmarks are triangles of three small green dots: merge nearby dots into one landmark */
@@ -989,18 +989,32 @@ function computeTop(){
   const ox=Math.max(0,Math.floor(Math.min(...xs)-mg)),oy=Math.max(0,Math.floor(Math.min(...ys)-mg)),cw=Math.min(shot.img.width,Math.ceil(Math.max(...xs)+mg))-ox,ch=Math.min(shot.img.height,Math.ceil(Math.max(...ys)+mg))-oy;
   const mc=document.createElement('canvas');mc.width=cw;mc.height=ch;mc.getContext('2d').drawImage(shot.img,-ox,-oy);
   const toImg=mm=>{const r=applyH(h,mm[0],mm[1]);return [r[0]-ox,r[1]-oy]};
-  const edgePts=paperEdge(Wmm,Hmm,OUTLINE_N).map(toImg),autoPts=A?makeContourN(A,OUTLINE_N).map(p=>toImg([p[0]/S,p[1]/S])):null;
-  st.topAuto={L:A?A.L:null,ball:A?A.ball:null,found:!!A,touches,markers,ballFrac,h,Hs2m,W,H,Wmm,Hmm,fm,off:[ox,oy],contourImg:autoPts,edgeImg:edgePts};
-  // start on the detected outline only when it looks like a real foot; otherwise start on the paper edge
-  const plausible=!!(A&&A.L>150&&A.L<320&&A.ball/A.L>.3&&A.ball/A.L<.48&&!touches);
-  const ms=st.meas;ms.img=mc;ms.canvas.width=cw;ms.canvas.height=ch;ms.pts=(plausible?autoPts:edgePts).map(p=>[...p]);ms.needed=ms.pts.length;ms.sel=0;ms.markers=markers;ms.auto=plausible;
-  $('measAuto').textContent=ms.auto?'Start over':'Auto-fit';
+  // the outline starts on the foot found in the photo (traced densely); if none is found, a typical foot sits in the middle of the sheet
+  const plausible=!!(A&&A.L>150&&A.L<320&&A.ball/A.L>.3&&A.ball/A.L<.48);
+  const bf=plausible?Math.max(.62,Math.min(.76,A.ballPct/100)):.7;
+  const base=(plausible?makeContourN(A,CN).map(p=>toImg([p[0]/S,p[1]/S])):typicalFoot(Wmm,Hmm).map(toImg));
+  st.topAuto={L:A?A.L:null,ball:A?A.ball:null,found:plausible,touches,markers,ballFrac,h,Hs2m,W,H,Wmm,Hmm,fm,off:[ox,oy]};
+  const ms=st.meas;ms.img=mc;ms.canvas.width=cw;ms.canvas.height=ch;ms.base=base;ms.hIdx=handleIdx(bf);ms.hBase=ms.hIdx.map(i=>[...base[i]]);
+  ms.pts=ms.hBase.map(p=>[...p]);ms.needed=ms.pts.length;ms.sel=0;ms.markers=markers;ms.auto=plausible;ms.moved=false;
+  $('measAuto').textContent='Reset';
   computeMeas();
   renderTopQuick();
 }
 /* starting points: a big FOOT shape filling the paper (toes toward the top of the sheet, mirrored for the left foot).
    The user drags them in onto their own foot. */
-const OUTLINE_N=16;
+const OUTLINE_N=16,CN=120;
+/* 8 handles on the traced outline: heel, heel edges, midfoot, ball (both sides) and toe tip */
+const HANDLE_NAMES=['Heel','Heel edge','Midfoot','Ball','Toe tip','Ball','Midfoot','Heel edge'];
+const HANDLE_HELP={Heel:'<b>Heel</b> — the very back of your heel. Heel to toe tip is your foot length.','Heel edge':'<b>Heel edge</b> — the side of your heel. Sets heel width (how snug the back of a shoe feels).',
+  Midfoot:'<b>Midfoot</b> — the middle of your foot, where the arch is on the inner side.',Ball:'<b>Ball</b> — the widest part of your foot, behind the toes. This sets your shoe width.',
+  'Toe tip':'<b>Toe tip</b> — the end of your longest toe.'};
+function handleIdx(bf){const h2=CN/2,r=f=>Math.round(f*h2);return [0,r(.17),r(.45),r(bf),h2,CN-r(bf),CN-r(.45),CN-r(.17)]}
+/* bend the traced outline: each handle pulls nearby outline points with a smooth falloff along the outline */
+function bentContour(ms){const n=ms.base.length,sig=n*.09,D=ms.pts.map((p,k)=>[p[0]-ms.hBase[k][0],p[1]-ms.hBase[k][1]]);
+  return ms.base.map((q,i)=>{let dx=0,dy=0;ms.hIdx.forEach((hi,k)=>{let d=Math.abs(i-hi);d=Math.min(d,n-d);const w=Math.exp(-((d/sig)**2));dx+=w*D[k][0];dy+=w*D[k][1]});return [q[0]+dx,q[1]+dy]})}
+/* a typical 250 mm foot in the middle of the sheet, toes to the top (used only when no foot is found) */
+function typicalFoot(Wmm,Hmm){const T=footTemplate(CN),port=Hmm>=Wmm,cx=Wmm/2,cy=Hmm/2;
+  return T.map(([x,y])=>{let fx=x*1,fy=y-125;if(st.foot==='L')fx=-fx;return port?[cx+fx,cy-fy]:[cx-fy,cy-fx]})}
 const FOOT_BEZ=[[[0,4],[-30,4],[-34,60],[-38,120]],[[-38,120],[-52,165],[-52,185],[-46,205]],[[-46,205],[-42,235],[-30,250],[-14,250]],
   [[-14,250],[5,250],[25,238],[36,215]],[[36,215],[48,190],[50,165],[46,150]],[[46,150],[40,100],[38,50],[28,15]],[[28,15],[20,-2],[6,-2],[0,4]]];
 function footTemplate(n){
@@ -1053,7 +1067,7 @@ function sockOnly(mask,gray,t,W,H){
     let dk=0;for(const [dx,dy] of [[R2,0],[-R2,0],[0,R2],[0,-R2]]){const X=cx+dx,Y=cy+dy;if(X>=0&&Y>=0&&X<W&&Y<H&&gray[Y*W+X]<t)dk++}if(dk>=3)dots.push([cx,cy])}
   if(dots.length<25)return;
   const near=new Uint8Array(W*H),r=14*S;for(const [cx,cy] of dots)for(let y=Math.max(0,cy-r);y<=Math.min(H-1,cy+r);y++)for(let x=Math.max(0,cx-r);x<=Math.min(W-1,cx+r);x++)if((x-cx)**2+(y-cy)**2<=r*r)near[y*W+x]=1;
-  for(let p=0;p<W*H;p++){if(mask[p]&&!near[p])mask[p]=0;else if(!mask[p]&&near[p]&&gray[p]>=t){const x=p%W,y=(p/W)|0;if(x>0&&y>0&&x<W-1&&y<H-1&&mask[p-1]+mask[p+1]+mask[p-W]+mask[p+W]>=2)mask[p]=1}}
+  const m0=mask.slice();for(let p=0;p<W*H;p++){if(m0[p]&&!near[p])mask[p]=0;else if(!m0[p]&&near[p]&&gray[p]>=t){const x=p%W,y=(p/W)|0;if(x>0&&y>0&&x<W-1&&y<H-1&&m0[p-1]+m0[p+1]+m0[p-W]+m0[p+W]>=3)mask[p]=1}}
 }
 /* foot outline analysis on a flattened mask (1px = 1/S mm) */
 function analyzeMask(fm,W,H,ballFrac,heelHint){
@@ -1089,11 +1103,11 @@ function smoothPath(x,pts){const n=pts.length;x.beginPath();x.moveTo(pts[0][0],p
   for(let i=0;i<n;i++){const p0=pts[(i-1+n)%n],p1=pts[i],p2=pts[(i+1)%n],p3=pts[(i+2)%n];
     x.bezierCurveTo(p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6,p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6,p2[0],p2[1])}x.closePath()}
 function computeMeas(){
-  const a=st.topAuto,ms=st.meas;if(!a||a.error||ms.pts.length<6){st.topRes=null;return}
+  const a=st.topAuto,ms=st.meas;if(!a||a.error||!ms.base||ms.pts.length<6){st.topRes=null;return}
   const W=a.W,H=a.H,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
-  const Rp=ms.pts.map(p=>{const m=applyH(a.Hs2m,p[0]+a.off[0],p[1]+a.off[1]);return [m[0]*S,m[1]*S]});
-  smoothPath(x,Rp);x.fillStyle='#000';x.fill();const d=x.getImageData(0,0,W,H).data,fm=new Uint8Array(W*H);for(let p=0;p<W*H;p++)fm[p]=d[p*4+3]>127?1:0;
-  const A=analyzeMask(fm,W,H,a.ballFrac,Rp[0]);if(!A){st.topRes=null;return}
+  const Rp=bentContour(ms).map(p=>{const m=applyH(a.Hs2m,p[0]+a.off[0],p[1]+a.off[1]);return [m[0]*S,m[1]*S]});
+  x.beginPath();Rp.forEach((q,i)=>i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]));x.closePath();x.fillStyle='#000';x.fill();const d=x.getImageData(0,0,W,H).data,fm=new Uint8Array(W*H);for(let p=0;p<W*H;p++)fm[p]=d[p*4+3]>127?1:0;
+  const A=analyzeMask(fm,W,H,a.ballFrac,Rp[0]);if(!A){st.topRes=null;return}ms.cur=null;
   // ball line: the inner-most and outer-most points of the forefoot (55–85% from the heel)
   let pm=null,pl=null;const dHT=A.heelStart?[A.ux,A.uy]:[-A.ux,-A.uy],medV=st.foot==='L'?[-dHT[1],dHT[0]]:[dHT[1],-dHT[0]];
   for(let i=0;i<A.bins;i++){const f=A.heelStart?i/A.bins:1-i/A.bins;if(f<.55||f>.85)continue;for(const sv of [A.lo[i],A.hi[i]]){const q2=[A.mx+A.ux*A.tAt(i)-A.uy*sv,A.my+A.uy*A.tAt(i)+A.ux*sv],m2=q2[0]*medV[0]+q2[1]*medV[1];
@@ -1770,17 +1784,13 @@ st.side=makeShot('sideCanvas','sideChip',5,['the back of the heel','the tip of t
 bindPointer(st.top);bindPointer(st.side);bindPointer(st.meas);bindTune('top',st.top);bindTune('side',st.side);bindTune('meas',st.meas);
 setupCam('shootTop','topVP','topCtl','topSheet','topNav',st.top);setupCam('shootSide','sideVP','sideCtl','sideSheet','sideNav',st.side);
 $('topNext').onclick=()=>go('checkTop');$('measNext').onclick=()=>{const r=st.topRes,a=st.topAuto,ms=st.meas;if(!r)return;
-  const still=a&&a.edgeImg&&ms.pts.every((p,i)=>Math.hypot(p[0]-a.edgeImg[i][0],p[1]-a.edgeImg[i][1])<3);
+  const still=a&&!a.found&&!ms.moved;
   const odd=r.L<150||r.L>320||r.ball/r.L<.28||r.ball/r.L>.5;
   if(still||odd){const n=$('measNote');n.className='note warn show';
-    n.textContent=still?'The points are still on the paper edge. Drag each one in onto the edge of your foot, or tap Auto-fit.':`This outline is ${r.L.toFixed(0)} mm long and ${r.ball.toFixed(0)} mm wide, which doesn't look like a foot. Drag the points onto your foot's edge.`;
+    n.textContent=still?"We couldn't trace your foot, so this is a typical foot shape. Drag the 8 points onto your own foot first.":`This outline is ${r.L.toFixed(0)} mm long and ${r.ball.toFixed(0)} mm wide, which doesn't look like a foot. Drag the points onto your foot's edge.`;
     toast(still?'Move the points onto your foot first':'Check the outline first');return}
   go('shape3d')};$('measBack').onclick=()=>{clearShot(st.top);go('shootTop')};
-$('measAuto').onclick=()=>{const a=st.topAuto,ms=st.meas;if(!a)return;
-  if(ms.auto){ms.pts=a.edgeImg.map(p=>[...p]);ms.auto=false;$('measAuto').textContent='Auto-fit';toast('Points back on the paper edge')}
-  else if(a.contourImg){ms.pts=a.contourImg.map(p=>[...p]);ms.auto=true;$('measAuto').textContent='Start over';toast('Points placed on the detected outline. Check each one.')}
-  else{toast("Couldn't find your foot automatically. Drag the points in.");return}
-  ms.sel=0;computeMeas();refit(st.meas)};$('sideNext').onclick=()=>go('result');
+$('measAuto').onclick=()=>{const ms=st.meas;if(!ms.base)return;ms.pts=ms.hBase.map(p=>[...p]);ms.moved=false;ms.sel=0;computeMeas();refit(st.meas);toast('Outline reset')};$('sideNext').onclick=()=>go('result');
 const resetShots=()=>{clearShot(st.top);clearShot(st.side)};
 function applyFoot(){const L2=st.foot==='L';$('scanFootName').textContent=L2?'left foot':'right foot';$('insoleLetter').textContent=L2?'L':'R';
   $('insoleFlip').setAttribute('transform',L2?'translate(300,0) scale(-1,1)':'');
