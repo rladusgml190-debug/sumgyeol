@@ -205,6 +205,14 @@ details.acc[open] summary::after{content:"–"}
 .busy{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(10,11,12,.92);color:#fff;font-size:14px;text-align:center;padding:24px}
 .busy .bar{width:180px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);overflow:hidden}
 .busy .bar i{display:block;height:100%;width:0;background:#46d184;transition:width .2s}
+.guide-art{width:100%;height:auto;display:block}
+.howto{margin:0;padding:0;list-style:none;counter-reset:st;display:flex;flex-direction:column;gap:12px}
+.howto li{counter-increment:st;display:grid;grid-template-columns:28px 1fr;gap:2px 12px}
+.howto li::before{content:counter(st);grid-row:span 2;width:28px;height:28px;border-radius:50%;background:var(--mint);color:var(--mint-ink);display:grid;place-items:center;font-size:13px;font-weight:600}
+.howto b{font-weight:600;font-size:14px}
+.howto span{font-size:13px;color:var(--muted)}
+.tipbox{background:var(--mint-soft);border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.tipbox b{font-size:13px;font-weight:600}.tipbox span{font-size:12px;color:var(--muted)}
 .pick{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .pick button{background:var(--card);border-radius:26px;padding:22px 12px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;border:2px solid transparent;transition:border-color .15s,transform .15s}
 .pick button:active{transform:scale(.98)}
@@ -409,6 +417,43 @@ details.acc[open] summary::after{content:"–"}
   </div>
 </section>
 
+<section class="screen" id="scanGuide" hidden>
+  <div class="row-h"><div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 7h11a13 13 0 0 1 0 26H9z" fill="var(--mint)"/><path d="M15 15l7 5-7 5z" fill="var(--surface)"/></svg>Arc</div><span class="label muted">Before you scan</span></div>
+  <h1 class="title">How to <b>walk around</b></h1>
+  <svg class="guide-art" viewBox="0 0 420 220" aria-hidden="true">
+      <rect x="0" y="0" width="420" height="220" rx="22" fill="var(--card)"/>
+      <circle cx="110" cy="110" r="78" fill="none" stroke="var(--mint)" stroke-width="2.5" stroke-dasharray="6 6"/>
+      <path d="M176 62 l10 -4 l-2 11" fill="none" stroke="var(--mint)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="86" y="76" width="48" height="68" rx="2" fill="#fff" stroke="var(--line)"/>
+      <g transform="translate(110,138) scale(.22,-.22)"><path d="M0,4 C-30,4 -34,60 -38,120 C-52,165 -52,185 -46,205 C-42,235 -30,250 -14,250 C5,250 25,238 36,215 C48,190 50,165 46,150 C40,100 38,50 28,15 C20,-2 6,-2 0,4Z" fill="#24272e"/></g>
+      <g transform="translate(110.0,32.0) rotate(0.0)"><rect x="-7" y="-11" width="14" height="22" rx="3" fill="var(--ink)"/><circle cx="0" cy="-6" r="1.8" fill="var(--mint)"/></g><g transform="translate(188.0,110.0) rotate(90.0)"><rect x="-7" y="-11" width="14" height="22" rx="3" fill="var(--ink)"/><circle cx="0" cy="-6" r="1.8" fill="var(--mint)"/></g><g transform="translate(110.0,188.0) rotate(180.0)"><rect x="-7" y="-11" width="14" height="22" rx="3" fill="var(--ink)"/><circle cx="0" cy="-6" r="1.8" fill="var(--mint)"/></g><g transform="translate(32.0,110.00000000000001) rotate(270.0)"><rect x="-7" y="-11" width="14" height="22" rx="3" fill="var(--ink)"/><circle cx="0" cy="-6" r="1.8" fill="var(--mint)"/></g>
+      <text x="110" y="208" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="Poppins,sans-serif">Walk one slow circle</text>
+      <line x1="220" y1="20" x2="220" y2="200" stroke="var(--line)"/>
+      <line x1="244" y1="170" x2="404" y2="170" stroke="var(--muted)" stroke-width="1.5"/>
+      <rect x="300" y="165" width="70" height="5" fill="#fff" stroke="var(--line)"/>
+      <path d="M304 165 C301 150 303 120 309 96 L321 96 C322 110 324 120 332 128 C344 138 358 148 368 156 C372 160 372 163 370 165Z" fill="#24272e"/>
+      <g transform="translate(262,64) rotate(45)"><rect x="-8" y="-13" width="16" height="26" rx="3.5" fill="var(--ink)"/><circle cx="0" cy="7" r="2" fill="var(--mint)"/></g>
+      <line x1="272" y1="74" x2="330" y2="140" stroke="var(--mint)" stroke-width="2" stroke-dasharray="4 4"/>
+      <path d="M262 112 A40 40 0 0 0 286 98" fill="none" stroke="var(--muted)" stroke-width="1.2"/>
+      <text x="252" y="128" font-size="11" fill="var(--ink)" font-weight="600" font-family="Poppins,sans-serif">~45°</text>
+      <line x1="240" y1="42" x2="240" y2="170" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3"/>
+      <text x="232" y="34" font-size="10" fill="var(--muted)" font-family="Poppins,sans-serif">chest height</text>
+      <text x="324" y="208" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="Poppins,sans-serif">Aim down at the foot</text>
+    </svg>
+  <ol class="howto">
+    <li><b>Keep your foot still on the paper</b><span>Don't lift it after the top photo. The scan lines up with that photo.</span></li>
+    <li><b>Hold the phone at chest height</b><span>Tilt it about 45° so the camera looks down at your foot.</span></li>
+    <li><b>Walk one slow circle</b><span>Stay about one step from the paper and keep the whole sheet in view. It takes about 15 seconds.</span></li>
+    <li><b>Watch the ring fill up</b><span>Each green segment is a new angle. When all 12 are green, the 3D shape builds by itself.</span></li>
+  </ol>
+  <div class="tipbox"><b>For best results</b><span>A mid-tone floor such as wood or grey tile, even lighting, and no other white paper nearby. It's easiest if a friend holds the phone.</span></div>
+  <div class="nav">
+    <div class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></div>
+    <button class="navbtn back" data-go="shape3d" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+    <button class="navbtn go" id="guideGo">I'm ready <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </div>
+</section>
+
 <section class="cam-screen review" id="scan3d" hidden>
   <div class="cam-inner">
     <video playsinline muted autoplay hidden></video>
@@ -427,7 +472,7 @@ details.acc[open] summary::after{content:"–"}
     <div class="review-info"><div class="qstats" id="scanQuick"></div><div class="note warn" id="scanNote" hidden></div></div>
     <div class="cam-nav">
       <div class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></div>
-      <button class="navbtn back" data-go="shape3d" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <button class="navbtn back" data-go="scanGuide" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
       <label class="navbtn back" aria-label="Upload a video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="M16 10l5-3v10l-5-3z"/></svg><input type="file" id="scanVideoFile" accept="video/*"></label>
       <button class="navbtn next go" id="scanFinish" disabled>Build 3D <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     </div>
@@ -1061,7 +1106,7 @@ $('scanSample').onclick=async()=>{if(SC.busy)return;if(streams.scan3d){streams.s
 $('scanVideoFile').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f||SC.busy)return;
   if(streams.scan3d){streams.scan3d.getTracks().forEach(t=>t.stop());delete streams.scan3d}clearInterval(SC.timer);resetScan();
   try{busy('Reading video…',0);await framesFromVideoFile(f);await finishScan()}catch(err){$('scanBusy').hidden=true;$('scanNote').hidden=false;$('scanNote').textContent="That video couldn't be read. Try an MP4 or MOV filmed while walking around your foot."}});
-$('optVideo').onclick=()=>go('scan3d');
+$('optVideo').onclick=()=>go('scanGuide');$('guideGo').onclick=()=>go('scan3d');
 $('optSide').onclick=()=>go('shootSide');
 
 /* ===== 3D shape: LiDAR scan import (OBJ / PLY from Polycam, 3D Scanner App, Scaniverse…) ===== */
