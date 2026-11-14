@@ -242,7 +242,8 @@ details.acc[open] summary::after{content:"–"}
 .tune{display:flex;align-items:center;gap:6px;margin-top:4px}
 .tune button{width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.14);color:#fff;font-size:16px;line-height:1;display:grid;place-items:center}
 .tune button:active{background:rgba(255,255,255,.28)}
-.tune .tname{font-size:12px;font-weight:600;color:#fff;min-width:64px;text-align:center}
+.tune .tname{font-size:12px;font-weight:600;color:#fff;min-width:96px;text-align:center}
+#measHelp,#sideHelp{font-size:12px;color:rgba(255,255,255,.8)}#measHelp b,#sideHelp b{color:#fff}
 .tune .sp{flex:1}
 .loupe{position:fixed;width:124px;height:124px;border-radius:50%;border:3px solid #fff;box-shadow:0 8px 24px rgba(0,0,0,.45);pointer-events:none;z-index:40;background:#000}
 .sock{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;background:var(--card);border-radius:20px;padding:12px 14px}
@@ -355,13 +356,13 @@ details.acc[open] summary::after{content:"–"}
         <button class="sample" data-role="sample">Use sample</button>
       </div>
       <h2>Scan <b id="scanFootName">right foot</b></h2>
-      <p>Paper inside the corners, foot on the insole. Hold still and it captures by itself.</p>
+      <p>Line the paper's corners up with the white corners. Foot on the insole, phone level. It captures by itself.</p>
     </div>
     <div class="viewport" id="topVP">
-      <svg class="guide" id="topGuide" viewBox="0 0 300 400" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <svg class="guide" id="topGuideSvg" viewBox="0 0 300 400" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
         <defs><clipPath id="fillClip"><rect id="fillRect" x="40" y="350" width="220" height="0"/></clipPath></defs>
-        <g fill="none" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linecap="round"><path d="M55 58v-22h22M223 36h22v22M245 346v22h-22M77 368H55v-22"/></g>
-        <rect id="paperBox" x="55" y="36" width="190" height="332" fill="none"/>
+        <g fill="none" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linecap="round"><path d="M33 56v-22h22M245 34h22v22M267 343v22h-22M55 365H33v-22"/></g>
+        <rect id="paperBox" x="33" y="34" width="234" height="331" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="1" stroke-dasharray="4 5"/>
         <g id="insoleFlip">        <g transform="translate(150,350) scale(.98,-.98)"><path id="insole" d="M0,4 C-30,4 -34,60 -38,120 C-52,165 -52,185 -46,205 C-42,235 -30,250 -14,250 C5,250 25,238 36,215 C48,190 50,165 46,150 C40,100 38,50 28,15 C20,-2 6,-2 0,4Z" fill="rgba(70,209,132,.38)" stroke="rgba(255,255,255,.5)" stroke-width="1"/></g>
         <g clip-path="url(#fillClip)"><g transform="translate(150,350) scale(.98,-.98)"><path d="M0,4 C-30,4 -34,60 -38,120 C-52,165 -52,185 -46,205 C-42,235 -30,250 -14,250 C5,250 25,238 36,215 C48,190 50,165 46,150 C40,100 38,50 28,15 C20,-2 6,-2 0,4Z" fill="rgba(70,209,132,.9)"/></g></g></g>
         <text x="146" y="165" fill="rgba(255,255,255,.7)" font-size="34" font-weight="300" text-anchor="middle" font-family="Poppins,sans-serif" id="insoleLetter">R</text>
@@ -398,10 +399,10 @@ details.acc[open] summary::after{content:"–"}
     <div class="cam-head">
       <div class="top">
         <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 7h11a13 13 0 0 1 0 26H9z" fill="#46d184"/><path d="M15 15l7 5-7 5z" fill="#151617"/></svg>Arc</div>
-        <button class="sample" id="measAuto">Reset outline</button>
+        <button class="sample" id="measAuto">Auto-fit</button>
       </div>
       <h2>Shape your <b>foot outline</b></h2>
-      <p>Your photo is flattened to true scale. Drag the points onto the edge of your foot.</p>
+      <p>The points start on the paper's edge. Drag each one in onto the edge of your foot.</p>
     </div>
     <div class="viewport" id="measVP">
       <svg class="guide" viewBox="0 0 10 10" style="display:none" aria-hidden="true"></svg>
@@ -410,7 +411,7 @@ details.acc[open] summary::after{content:"–"}
     </div>
     <div class="review-info" id="measSheet">
       <div class="qstats" id="measQuick"></div>
-      <div class="note" id="measNote"></div>
+      <div class="note" id="measNote"></div><div class="note show" id="measHelp"></div>
       <div class="tune" data-for="meas"><button data-act="prev" aria-label="Previous point">‹</button><span class="tname"></span><button data-act="next" aria-label="Next point">›</button><span class="sp"></span><button data-d="-1,0" aria-label="Nudge left">←</button><button data-d="0,-1" aria-label="Nudge up">↑</button><button data-d="0,1" aria-label="Nudge down">↓</button><button data-d="1,0" aria-label="Nudge right">→</button></div>
     </div>
     <div class="cam-nav" id="measNav">
@@ -428,6 +429,7 @@ details.acc[open] summary::after{content:"–"}
   <div class="opts">
     <button class="opt" id="optSeat"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="1.6"/><path d="M3 20h18M6 20c0-2.5 2-4 5-4h2c3 0 5 1.5 5 4"/></svg></span><div><b>Seated 3-shot scan</b><span>On your own. Sit down, stand the phone on the floor and take three photos: inside, front, outside. No paper needed.</span></div><em>Best</em></button>
     <button class="opt" id="optVideo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5" stroke-dasharray="3 2.4"/><path d="M12 7.5v9M7.5 12h9"/></svg></span><div><b>Helper scan</b><span>A friend walks around you with the phone for about 15 seconds. Builds a full 3D shape.</span></div><em>Most detail</em></button>
+    <button class="opt" id="optSide"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 18h18M5 18c0-5 1-9 4-10l3 0c4 1 7 5 9 10"/></svg></span><div><b>Side photo · drag 5 points</b><span>One photo from the side. You place heel, toe, toe box, instep and arch yourself.</span></div></button>
     <label class="opt" id="optLidar"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><circle cx="10" cy="7" r="1.6"/><circle cx="14" cy="7" r="1.6"/><circle cx="12" cy="10.2" r="1"/></svg></span><div><b>LiDAR scan · iPhone Pro</b><span>Scan with a LiDAR app such as Polycam or 3D Scanner App, export OBJ or PLY, then import it here.</span></div><em>Pro</em><input type="file" id="lidarFile" accept=".obj,.ply,model/obj,application/octet-stream,text/plain"></label>
   </div>
   <div class="nav">
@@ -625,7 +627,7 @@ details.acc[open] summary::after{content:"–"}
       <div class="chip-float" id="sideChip" hidden></div>
     </div>
     <div class="review-info" id="sideSheet" hidden>
-      <div class="note" id="sideNote">Drag each point onto the exact spot. A magnifier shows what is under your finger.</div>
+      <div class="note show" id="sideHelp"></div><div class="note" id="sideNote">Drag each point onto the exact spot. A magnifier shows what is under your finger.</div>
       <div class="tune" data-for="side"><button data-act="prev" aria-label="Previous point">‹</button><span class="tname"></span><button data-act="next" aria-label="Next point">›</button><span class="sp"></span><button data-d="-1,0" aria-label="Nudge left">←</button><button data-d="0,-1" aria-label="Nudge up">↑</button><button data-d="0,1" aria-label="Nudge down">↓</button><button data-d="1,0" aria-label="Nudge right">→</button></div>
     </div>
     <div class="cam-nav" id="sideCtl">
@@ -731,10 +733,20 @@ function startAutoScan(){
     else if(diff>14){msg='Hold still';autoProg=Math.max(0,autoProg-.02)}
     else{msg='Scanning…';autoProg=Math.min(1,autoProg+.045)}
     setScanUI(autoProg,msg);
-    if(autoProg>=1){const c=document.createElement('canvas');c.width=vw;c.height=vh;c.getContext('2d').drawImage(video,0,0);stopAutoScan();
+    if(autoProg>=1){const g2=grabVisible(scr);stopAutoScan();
       if(navigator.vibrate)try{navigator.vibrate(40)}catch(e){}
-      accept(st.top,c,vw,vh,false);toast('Captured automatically')}
+      accept(st.top,g2.c,g2.c.width,g2.c.height,false,g2.corners);toast('Captured automatically')}
   },120);
+}
+/* Capture what the user sees (the camera frame fills the screen), and on the top view use the on-screen A4 guide as
+   the paper corners: the user lined the paper up with it, so no paper detection is needed. (Idea from the student version.) */
+function grabVisible(scr){
+  const video=scr.querySelector('video'),R=scr.querySelector('.cam-inner').getBoundingClientRect(),vw=video.videoWidth,vh=video.videoHeight;
+  const s0=Math.max(R.width/vw,R.height/vh),sw=Math.min(vw,R.width/s0),sh=Math.min(vh,R.height/s0),sx=(vw-sw)/2,sy=(vh-sh)/2;
+  const c=document.createElement('canvas');c.width=Math.round(sw);c.height=Math.round(sh);c.getContext('2d').drawImage(video,sx,sy,sw,sh,0,0,c.width,c.height);
+  let corners=null;const pb=scr.querySelector('#paperBox');
+  if(pb){const b=pb.getBoundingClientRect(),X=v=>(v-R.left)/s0,Y=v=>(v-R.top)/s0;corners=[[X(b.left),Y(b.top)],[X(b.right),Y(b.top)],[X(b.right),Y(b.bottom)],[X(b.left),Y(b.bottom)]]}
+  return {c,corners};
 }
 function setupCam(screenId,vpId,ctlId,sheetId,navId,shot){
   const scr=$(screenId),vp=$(vpId),shutter=scr.querySelector('.shutter'),video=scr.querySelector('video');
@@ -742,8 +754,8 @@ function setupCam(screenId,vpId,ctlId,sheetId,navId,shot){
   shutter.addEventListener('click',e=>{
     if(screenId==='shootTop'&&!levelOk()){e.preventDefault();toast('Hold the phone level to take the photo');return}
     if(!shutter.dataset.live||!video.videoWidth)return;
-    e.preventDefault();const c=document.createElement('canvas');c.width=video.videoWidth;c.height=video.videoHeight;c.getContext('2d').drawImage(video,0,0);
-    accept(shot,c,c.width,c.height,false);
+    e.preventDefault();const g2=grabVisible(scr);
+    accept(shot,g2.c,g2.c.width,g2.c.height,false,shot===st.top?g2.corners:undefined);
   });
   scr.querySelectorAll('input[type=file]').forEach(inp=>inp.addEventListener('change',()=>{
     const f=inp.files[0];if(!f)return;const url=URL.createObjectURL(f),im=new Image();
@@ -762,13 +774,12 @@ function setReview(shot,on){
 function clearShot(shot){shot.img=null;shot.pts=[];shot.sel=0;shot.sample=false;if(shot===st.top){st.topRes=null;st.topAuto=null}else st.sideRes=null;setReview(shot,false)}
 function accept(shot,src,w,h,isSample,preset){
   const id=shot.ui.screenId;if(streams[id]){streams[id].getTracks().forEach(t=>t.stop());delete streams[id]}
-  loadInto(shot,src,w,h);shot.sample=isSample;
+  loadInto(shot,src,w,h);shot.sample=isSample;const lk=shot.img.width/w;if(preset)preset=preset.map(p=>[p[0]*lk,p[1]*lk]);
   if(shot===st.top)st.measuredAt=new Date();
   shot.pts=preset?preset.map(p=>[...p]):(shot===st.top?autoPaper(shot):autoSide(shot));
   if(shot===st.side){const xs=shot.pts.map(p=>p[0]),ys=shot.pts.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),bw=x1-x0,bh=Math.max(20,y1-y0);
     cropShot(shot,x0-.1*bw,y0-.4*bh,x1+.1*bw,y1+.3*bh)}
   setReview(shot,true);updatePrompt(shot);fitCanvas(shot);shot.onChange();
-  if(shot===st.top&&!st.silent&&st.topAuto&&!st.topAuto.error)go('checkTop');
 }
 function cropShot(shot,x0,y0,x1,y1){
   const W=shot.img.width,H=shot.img.height;x0=Math.max(0,Math.floor(x0));y0=Math.max(0,Math.floor(y0));x1=Math.min(W,Math.ceil(x1));y1=Math.min(H,Math.ceil(y1));
@@ -797,11 +808,10 @@ function drawShot(shot){
   if(shot.kind==='side'&&P.length>=2){x.strokeStyle=MINT;x.setLineDash([6*disp,5*disp]);x.beginPath();x.moveTo(P[0][0],P[0][1]);x.lineTo(P[1][0],P[1][1]);x.stroke();x.setLineDash([]);
     if(P.length>=4){x.strokeStyle=ORANGE;x.beginPath();x.moveTo(P[1][0],P[1][1]);x.lineTo(P[2][0],P[2][1]);x.lineTo(P[3][0],P[3][1]);x.stroke()}
     if(P.length>=5){const [a,b]=P,dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy,t=((P[4][0]-a[0])*dx+(P[4][1]-a[1])*dy)/l2;x.strokeStyle='#5aa2ff';x.beginPath();x.moveTo(P[4][0],P[4][1]);x.lineTo(a[0]+t*dx,a[1]+t*dy);x.stroke()}}
-  if(shot.kind==='meas'&&P.length>5&&st.topAuto)drawTemplate(x,P,disp);
   if(shot.kind==='meas'&&P.length>5){smoothPath(x,P);x.fillStyle='rgba(70,209,132,.14)';x.fill();x.strokeStyle=MINT;x.stroke();
     const A=st.measA,a2=st.topAuto;if(A&&a2&&a2.h){const TP=(t2,sv)=>{const q=A.toPx(t2,sv),r2=applyH(a2.h,q[0]/S,q[1]/S);return [r2[0]-a2.off[0],r2[1]-a2.off[1]]};const mid=i=>(A.lo[i]+A.hi[i])/2,seg=(p,q,col,dash)=>{x.strokeStyle=col;x.setLineDash(dash?[5*disp,4*disp]:[]);x.beginPath();x.moveTo(p[0],p[1]);x.lineTo(q[0],q[1]);x.stroke();x.setLineDash([])};
       seg(TP(A.tmin,mid(A.binAt(.5))),TP(A.tmax,mid(A.binAt(.5))),'#ffffff',true);
-      const n=P.length;seg(P[3],P[n-3],ORANGE);seg(P[1],P[n-1],ORANGE)}}
+      seg(TP(A.tAt(A.ballI),A.lo[A.ballI]),TP(A.tAt(A.ballI),A.hi[A.ballI]),ORANGE);seg(TP(A.tAt(A.heelI),A.lo[A.heelI]),TP(A.tAt(A.heelI),A.hi[A.heelI]),ORANGE)}}
   const small=P.length>6;
   P.forEach((p,i)=>{
     const on=i===shot.sel,r=(small&&!on?6:8)*disp;
@@ -863,8 +873,12 @@ function bindTune(key,shot){
   el.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const p=shot.pts[shot.sel];if(!p)return;const [dx,dy]=b.dataset.d.split(',').map(Number),k=Math.max(1,shot.canvas.width/1000);
     p[0]+=dx*k;p[1]+=dy*k;drawShot(shot);clearTimeout(t);t=setTimeout(()=>shot.onChange(),250)});
 }
-function syncTune(shot){if(!shot.tune)return;const nm=(shot.names&&shot.names[shot.sel])||(shot.kind==='corners'?`Corner ${shot.sel+1}`:`Point ${shot.sel+1}/${shot.pts.length}`);shot.tune.querySelector('.tname').textContent=shot.pts.length?nm:'—'}
-function updatePrompt(shot){shot.chip.textContent=shot.pts.length<shot.needed?`Tap ${shot.labels[shot.pts.length]}`:(shot.markers?'Sock markers found · points placed':(shot.sample?'Sample photo · drag to adjust':'Drag points to adjust'))}
+function syncTune(shot){if(!shot.tune)return;let nm=(shot.names&&shot.names[shot.sel])||(shot.kind==='corners'?`Corner ${shot.sel+1}`:`Point ${shot.sel+1}/${shot.pts.length}`),help='';
+  if(shot.kind==='side')help=SIDE_HELP[nm]||'';
+  if(shot.kind==='meas'&&shot.pts.length){const r=outlineRegion(shot.sel,shot.pts.length);nm=`${r[0]} · ${shot.sel+1}/${shot.pts.length}`;help=r[1]}
+  shot.tune.querySelector('.tname').textContent=shot.pts.length?nm:'—';
+  const hl=shot.kind==='meas'?$('measHelp'):shot.kind==='side'?$('sideHelp'):null;if(hl)hl.innerHTML=help}
+function updatePrompt(shot){if(shot.kind==='meas'&&!shot.auto){shot.chip.textContent='Drag each point onto the edge of your foot';return}shot.chip.textContent=shot.pts.length<shot.needed?`Tap ${shot.labels[shot.pts.length]}`:(shot.markers?'Sock markers found · points placed':(shot.sample?'Sample photo · drag to adjust':'Drag points to adjust'))}
 
 /* green landmark dots on the Arc Dot Sock */
 /* Arc Dot Sock landmarks are triangles of three small green dots: merge nearby dots into one landmark */
@@ -961,31 +975,71 @@ function computeTop(){
   const t=otsu(hist,cnt),mask=new Uint8Array(W*H);
   for(let j=m;j<H-m;j++)for(let i=m;i<W-m;i++)if(gray[j*W+i]<t)mask[j*W+i]=1;
   sockOnly(mask,gray,t,W,H);
-  const {lab,best,n}=largest(mask,W,H);
-  if(n<2000){st.topAuto={error:"We couldn't find your foot. Wear the Dot Sock on white paper and try again."};st.topRes=null;renderTopQuick();return}
-  const fm=new Uint8Array(W*H);for(let p=0;p<W*H;p++)fm[p]=lab[p]===best?1:0;
-  const A=analyzeMask(fm,W,H,null);
-  let touches=false;for(let y=0;y<H&&!touches;y++)for(let x=0;x<W;x++){if(!fm[y*W+x])continue;if(x<m+3||y<m+3||x>W-m-4||y>H-m-4){touches=true;break}}
-  // green sock markers on the ball sides fix where the ball width is taken
-  let ballFrac=null,markers=false;
-  const gb=landmarks(greenBlobs(col.data,W,H,3),14*S).filter(g=>{const t=(g.x/S-A.mx)*A.ux+(g.y/S-A.my)*A.uy;return t>A.tmin&&t<A.tmax});
-  if(gb.length>=2){let pr=null,bs=0;const sv=g=>-(g.x/S-A.mx)*A.uy+(g.y/S-A.my)*A.ux;
-    for(let i=0;i<gb.length;i++)for(let j=i+1;j<gb.length;j++){const sep=Math.abs(sv(gb[i])-sv(gb[j]));if(sep>bs){bs=sep;pr=[gb[i],gb[j]]}}
-    if(pr&&bs>30){const tm=pr.reduce((q,g)=>q+((g.x/S-A.mx)*A.ux+(g.y/S-A.my)*A.uy),0)/2;ballFrac=A.heelStart?(tm-A.tmin)/A.L:(A.tmax-tm)/A.L;markers=true}}
-  // toe shape: where the tip sits across the forefoot (big-toe side = medial)
-  const dHT=A.heelStart?[A.ux,A.uy]:[-A.ux,-A.uy],medV=st.foot==='L'?[-dHT[1],dHT[0]]:[dHT[1],-dHT[0]],msv=medV[0]*-A.uy+medV[1]*A.ux;
-  const bT=A.binAt(.985),b88=A.binAt(.88),b97=A.binAt(.965),hw88=Math.max(1,(A.hi[b88]-A.lo[b88])/2),rel=(((A.lo[bT]+A.hi[bT])/2-(A.lo[b88]+A.hi[b88])/2)*Math.sign(msv))/hw88;
-  const sq=(A.hi[b97]-A.lo[b97])/Math.max(1,A.hi[b88]-A.lo[b88]),toeShape=sq>.72?'Square':rel>.42?'Egyptian':'Greek';
-  const contour=makeContour(A),Hs2m=homography(q,[[0,0],[Wmm,0],[Wmm,Hmm],[0,Hmm]]);
-  const cs=contour.map(p=>applyH(h,p[0]/S,p[1]/S)),xs=cs.map(p=>p[0]),ys=cs.map(p=>p[1]);
-  let bx0=Math.min(...xs),bx1=Math.max(...xs),by0=Math.min(...ys),by1=Math.max(...ys);const mg=.16*Math.max(bx1-bx0,by1-by0);
-  const ox=Math.max(0,Math.floor(bx0-mg)),oy=Math.max(0,Math.floor(by0-mg)),cw=Math.min(shot.img.width,Math.ceil(bx1+mg))-ox,ch=Math.min(shot.img.height,Math.ceil(by1+mg))-oy;
+  const {lab,best,n}=largest(mask,W,H),Hs2m=homography(q,[[0,0],[Wmm,0],[Wmm,Hmm],[0,Hmm]]);
+  let A=null,fm=null,touches=false,ballFrac=null,markers=false;
+  if(n>=2000){fm=new Uint8Array(W*H);for(let p=0;p<W*H;p++)fm[p]=lab[p]===best?1:0;A=analyzeMask(fm,W,H,null);
+    for(let y=0;y<H&&!touches;y++)for(let x=0;x<W;x++){if(!fm[y*W+x])continue;if(x<m+3||y<m+3||x>W-m-4||y>H-m-4){touches=true;break}}
+    // green sock markers on the ball sides fix where the ball width is taken
+    const gb=landmarks(greenBlobs(col.data,W,H,3),14*S).filter(g=>{const t2=(g.x/S-A.mx)*A.ux+(g.y/S-A.my)*A.uy;return t2>A.tmin&&t2<A.tmax});
+    if(gb.length>=2){let pr=null,bs=0;const sv=g=>-(g.x/S-A.mx)*A.uy+(g.y/S-A.my)*A.ux;
+      for(let i=0;i<gb.length;i++)for(let j=i+1;j<gb.length;j++){const sep=Math.abs(sv(gb[i])-sv(gb[j]));if(sep>bs){bs=sep;pr=[gb[i],gb[j]]}}
+      if(pr&&bs>30){const tm=pr.reduce((q2,g)=>q2+((g.x/S-A.mx)*A.ux+(g.y/S-A.my)*A.uy),0)/2;ballFrac=A.heelStart?(tm-A.tmin)/A.L:(A.tmax-tm)/A.L;markers=true}}}
+  // the outline screen shows the user's own photo cropped to the paper, with points starting as a big foot on the sheet
+  const xs=q.map(p=>p[0]),ys=q.map(p=>p[1]),mg=.04*Math.max(Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys));
+  const ox=Math.max(0,Math.floor(Math.min(...xs)-mg)),oy=Math.max(0,Math.floor(Math.min(...ys)-mg)),cw=Math.min(shot.img.width,Math.ceil(Math.max(...xs)+mg))-ox,ch=Math.min(shot.img.height,Math.ceil(Math.max(...ys)+mg))-oy;
   const mc=document.createElement('canvas');mc.width=cw;mc.height=ch;mc.getContext('2d').drawImage(shot.img,-ox,-oy);
-  const pts=cs.map(p=>[p[0]-ox,p[1]-oy]);
-  st.topAuto={L:A.L,ball:A.ball,touches,markers,ballFrac,h,Hs2m,W,H,Wmm,Hmm,fm,off:[ox,oy],contourImg:pts.map(p=>[...p]),toeShape,bf:A.bf};
-  const ms=st.meas;ms.img=mc;ms.canvas.width=cw;ms.canvas.height=ch;ms.pts=pts;ms.needed=pts.length;ms.sel=0;ms.markers=markers;
+  const toImg=mm=>{const r=applyH(h,mm[0],mm[1]);return [r[0]-ox,r[1]-oy]};
+  const edgePts=paperEdge(Wmm,Hmm,OUTLINE_N).map(toImg),autoPts=A?makeContourN(A,OUTLINE_N).map(p=>toImg([p[0]/S,p[1]/S])):null;
+  st.topAuto={L:A?A.L:null,ball:A?A.ball:null,found:!!A,touches,markers,ballFrac,h,Hs2m,W,H,Wmm,Hmm,fm,off:[ox,oy],contourImg:autoPts,edgeImg:edgePts};
+  // start on the detected outline only when it looks like a real foot; otherwise start on the paper edge
+  const plausible=!!(A&&A.L>150&&A.L<320&&A.ball/A.L>.3&&A.ball/A.L<.48&&!touches);
+  const ms=st.meas;ms.img=mc;ms.canvas.width=cw;ms.canvas.height=ch;ms.pts=(plausible?autoPts:edgePts).map(p=>[...p]);ms.needed=ms.pts.length;ms.sel=0;ms.markers=markers;ms.auto=plausible;
+  $('measAuto').textContent=ms.auto?'Start over':'Auto-fit';
   computeMeas();
   renderTopQuick();
+}
+/* starting points: a big FOOT shape filling the paper (toes toward the top of the sheet, mirrored for the left foot).
+   The user drags them in onto their own foot. */
+const OUTLINE_N=16;
+const FOOT_BEZ=[[[0,4],[-30,4],[-34,60],[-38,120]],[[-38,120],[-52,165],[-52,185],[-46,205]],[[-46,205],[-42,235],[-30,250],[-14,250]],
+  [[-14,250],[5,250],[25,238],[36,215]],[[36,215],[48,190],[50,165],[46,150]],[[46,150],[40,100],[38,50],[28,15]],[[28,15],[20,-2],[6,-2],[0,4]]];
+function footTemplate(n){
+  const P=[];FOOT_BEZ.forEach(([a,b,c,d],s2)=>{for(let k=s2?1:0;k<=60;k++){const t=k/60,u=1-t;
+    P.push([u*u*u*a[0]+3*u*u*t*b[0]+3*u*t*t*c[0]+t*t*t*d[0],u*u*u*a[1]+3*u*u*t*b[1]+3*u*t*t*c[1]+t*t*t*d[1]])}});
+  let ti=0;P.forEach((p,i)=>{if(p[1]>P[ti][1])ti=i});
+  const resample=(pts,m2)=>{const Ls=[0];for(let i=1;i<pts.length;i++)Ls.push(Ls[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
+    const out=[];for(let k=0;k<m2;k++){const d=Ls[Ls.length-1]*k/m2;let j=1;while(j<Ls.length-1&&Ls[j]<d)j++;const f=(d-Ls[j-1])/((Ls[j]-Ls[j-1])||1);
+      out.push([pts[j-1][0]+(pts[j][0]-pts[j-1][0])*f,pts[j-1][1]+(pts[j][1]-pts[j-1][1])*f])}return out};
+  const hn=n/2;return resample(P.slice(0,ti+1),hn).concat(resample(P.slice(ti),hn));
+}
+function paperEdge(Wmm,Hmm,n){
+  const i=8,T=footTemplate(n),xs=T.map(p=>p[0]),ys=T.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),port=Hmm>=Wmm;
+  return T.map(([x,y])=>{let fx=(x-x0)/(x1-x0),fy=(y-y0)/(y1-y0);if(st.foot==='L')fx=1-fx;
+    return port?[i+fx*(Wmm-2*i),Hmm-i-fy*(Hmm-2*i)]:[Wmm-i-fy*(Wmm-2*i),i+fx*(Hmm-2*i)]});
+}
+/* auto-fit: the same number of points, sitting on the detected outline (heel, one side, toe, other side) */
+function makeContourN(A,n){
+  const h2=n/2,mid=i=>(A.lo[i]+A.hi[i])/2,FS=[];for(let k=1;k<h2;k++)FS.push(k/h2);
+  const heelP=A.toPx(A.heelStart?A.tmin:A.tmax,mid(A.binAt(0))),toeP=A.toPx(A.heelStart?A.tmax:A.tmin,mid(A.binAt(1)));
+  const sA=FS.map(f=>{const i=A.binAt(f);return A.toPx(A.tAt(i),A.lo[i])}),sB=FS.map(f=>{const i=A.binAt(f);return A.toPx(A.tAt(i),A.hi[i])});
+  return [heelP,...sA,toeP,...sB.reverse()];
+}
+const SIDE_HELP={Heel:'<b>Heel</b> — the back of your heel, right where it touches the floor.',Toe:'<b>Toe</b> — the tip of your big toe, on the floor. Heel to toe is your foot length.',
+  'Toe box':'<b>Toe box</b> — the top of your big toe joint. Shows how tall the front of the shoe needs to be.',Instep:'<b>Instep</b> — the highest point on top of your foot, where the laces sit.',
+  Arch:'<b>Arch</b> — the highest point of the gap under your foot. Shows if your arch is high, normal or flat.'};
+function outlineRegion(i,n){
+  if(i===0)return ['Heel','<b>Heel</b> — the very back of your heel.'];const half=n/2;
+  if(i===half)return ['Toe tip','<b>Toe tip</b> — the end of your longest toe. Heel to toe tip is your foot length.'];
+  const f=i<half?i/half:(n-i)/half;
+  if(f<.28)return ['Heel edge','<b>Heel edge</b> — the side of your heel. Sets your heel width (how snug the back of a shoe feels).'];
+  if(f<.55)return ['Midfoot','<b>Midfoot</b> — the middle of your foot, where the arch is on the inner side.'];
+  if(f<.8)return ['Ball','<b>Ball</b> — the widest part of your foot, behind the toes. This sets your shoe width.'];
+  return ['Toes','<b>Toes</b> — the edge around your toes. Shows how much room the toe box needs.'];
+}
+function toeShapeOf(A){
+  const dHT=A.heelStart?[A.ux,A.uy]:[-A.ux,-A.uy],medV=st.foot==='L'?[-dHT[1],dHT[0]]:[dHT[1],-dHT[0]],msv=medV[0]*-A.uy+medV[1]*A.ux;
+  const bT=A.binAt(.985),b88=A.binAt(.88),b97=A.binAt(.965),hw88=Math.max(1,(A.hi[b88]-A.lo[b88])/2),rel=(((A.lo[bT]+A.hi[bT])/2-(A.lo[b88]+A.hi[b88])/2)*Math.sign(msv))/hw88;
+  const sq=(A.hi[b97]-A.lo[b97])/Math.max(1,A.hi[b88]-A.lo[b88]);return sq>.72?'Square':rel>.42?'Egyptian':'Greek';
 }
 /* The Dot Sock has white dots every ~10 mm. A trouser leg or bare shin seen from above has none, so dark pixels
    farther than ~9 mm from any dot are dropped. Plain socks (few dots found) are left as they are. */
@@ -1040,27 +1094,24 @@ function computeMeas(){
   const Rp=ms.pts.map(p=>{const m=applyH(a.Hs2m,p[0]+a.off[0],p[1]+a.off[1]);return [m[0]*S,m[1]*S]});
   smoothPath(x,Rp);x.fillStyle='#000';x.fill();const d=x.getImageData(0,0,W,H).data,fm=new Uint8Array(W*H);for(let p=0;p<W*H;p++)fm[p]=d[p*4+3]>127?1:0;
   const A=analyzeMask(fm,W,H,a.ballFrac,Rp[0]);if(!A){st.topRes=null;return}
-  // the paired points are the measurements: heel width, midfoot width, ball width; heel→toe sets the axis
-  const n=Rp.length,dd=(i,j)=>Math.hypot(Rp[i][0]-Rp[j][0],Rp[i][1]-Rp[j][1])/S,ti=n/2,ball=dd(3,n-3),heel=dd(1,n-1),waist=dd(2,n-2);
-  const ax=[Rp[ti][0]-Rp[0][0],Rp[ti][1]-Rp[0][1]],al2=ax[0]**2+ax[1]**2,bm=[(Rp[3][0]+Rp[n-3][0])/2-Rp[0][0],(Rp[3][1]+Rp[n-3][1])/2-Rp[0][1]];
-  const ballPct=Math.max(50,Math.min(85,(bm[0]*ax[0]+bm[1]*ax[1])/al2*100));
-  A.ballI=A.binAt(ballPct/100);A.heelI=A.binAt(.17);
+  // ball line: the inner-most and outer-most points of the forefoot (55–85% from the heel)
+  let pm=null,pl=null;const dHT=A.heelStart?[A.ux,A.uy]:[-A.ux,-A.uy],medV=st.foot==='L'?[-dHT[1],dHT[0]]:[dHT[1],-dHT[0]];
+  for(let i=0;i<A.bins;i++){const f=A.heelStart?i/A.bins:1-i/A.bins;if(f<.55||f>.85)continue;for(const sv of [A.lo[i],A.hi[i]]){const q2=[A.mx+A.ux*A.tAt(i)-A.uy*sv,A.my+A.uy*A.tAt(i)+A.ux*sv],m2=q2[0]*medV[0]+q2[1]*medV[1];
+    if(!pm||m2>pm.m)pm={q:q2,m:m2};if(!pl||m2<pl.m)pl={q:q2,m:m2}}}
+  const bl=[pm.q[0]-pl.q[0],pm.q[1]-pl.q[1]],ballAngle=Math.acos(Math.min(1,Math.abs(bl[0]*dHT[0]+bl[1]*dHT[1])/Math.hypot(...bl)))*180/Math.PI;
+  const ball=A.ball,heel=A.heel,waist=A.waist,ballPct=A.ballPct;
   st.measA=A;drawShot(ms);
-  const bl=[Rp[3][0]-Rp[n-3][0],Rp[3][1]-Rp[n-3][1]],ballAngle=Math.acos(Math.min(1,Math.abs(bl[0]*ax[0]+bl[1]*ax[1])/Math.hypot(...bl)/Math.sqrt(al2)))*180/Math.PI;
-  st.topRes={L:A.L,ball,heel,waist,ballPct,ballAngle,toeShape:a.toeShape,touches:a.touches,prof:A.prof.map(q=>({w:q.w*(ball/Math.max(1,A.ball)),c:q.c})),markers:a.markers,foot:st.foot};
+  st.topRes={L:A.L,ball,heel,waist,ballPct,ballAngle,toeShape:toeShapeOf(A),touches:a.touches,prof:A.prof,markers:a.markers,foot:st.foot};
   $('measQuick').innerHTML=`<div><small>Length</small><b>${A.L.toFixed(1)}<em>mm</em></b></div><div><small>Ball</small><b>${ball.toFixed(1)}<em>mm</em></b></div><div><small>Heel</small><b>${heel.toFixed(1)}<em>mm</em></b></div>`;
   const nt=$('measNote');nt.className='note';
   nt.textContent=a.markers?'Ball width is taken at the green sock markers. Drag the outline points onto the edge of your foot.':'The dashed shape is a typical foot fitted to your toes. Drag each point onto your foot edge; the rings show where points usually go.';
   updatePrompt(ms);
 }
 function renderTopQuick(){
-  const r=st.topAuto,el=$('topQuick'),note=$('topNote');
-  if(!r){el.innerHTML='';$('topNext').disabled=true;note.className='note';note.textContent='Tap the four corners of the paper.';return}
-  if(r.error){el.innerHTML='';$('topNext').disabled=true;note.className='note warn';note.textContent=r.error;return}
-  $('topNext').disabled=false;
-  el.innerHTML=`<div><small>Length</small><b>${r.L.toFixed(1)}<em>mm</em></b></div><div><small>Ball width</small><b>${r.ball.toFixed(1)}<em>mm</em></b></div>`;
-  note.className=r.touches?'note warn':'note';
-  note.textContent=r.touches?'Your foot touches the paper edge. Keep it fully inside for best accuracy.':'Paper corners detected. Drag a corner or use the arrows if it is off.';
+  const r=st.topAuto,el=$('topQuick'),note=$('topNote');el.innerHTML='';
+  if(!r){$('topNext').disabled=true;note.className='note';note.textContent='Tap the four corners of the paper.';return}
+  $('topNext').disabled=false;note.className=r.touches?'note warn':'note';
+  note.textContent=r.touches?'Your foot touches the paper edge. Keep it fully inside for best accuracy.':"Check the 4 corners sit on the paper's corners. Drag any that don't, then tap Next.";
 }
 
 /* ===== Side view analysis ===== */
@@ -1314,7 +1365,7 @@ $('scanSample').onclick=async()=>{if(SC.busy)return;if(streams.scan3d){streams.s
 $('scanVideoFile').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f||SC.busy)return;
   if(streams.scan3d){streams.scan3d.getTracks().forEach(t=>t.stop());delete streams.scan3d}clearInterval(SC.timer);resetScan();
   try{busy('Reading video…',0);await framesFromVideoFile(f);await finishScan()}catch(err){$('scanBusy').hidden=true;$('scanNote').hidden=false;$('scanNote').textContent="That video couldn't be read. Try an MP4 or MOV filmed while walking around your foot."}});
-$('optVideo').onclick=()=>go('scanGuide');$('optSeat').onclick=()=>go('seatGuide');$('seatGo').onclick=()=>go('seatScan');$('guideGo').onclick=()=>go('scan3d');
+$('optVideo').onclick=()=>go('scanGuide');$('optSide').onclick=()=>go('shootSide');$('optSeat').onclick=()=>go('seatGuide');$('seatGo').onclick=()=>go('seatScan');$('guideGo').onclick=()=>go('scan3d');
 
 
 /* ===== 3D shape: seated 3-shot scan (no paper) =====
@@ -1718,8 +1769,18 @@ st.meas.ui={vp:$('measVP')};
 st.side=makeShot('sideCanvas','sideChip',5,['the back of the heel','the tip of the big toe','the top of the toe box','the highest point of the instep','the highest point under the arch'],computeSide,'side',['Heel','Toe','Toe box','Instep','Arch']);
 bindPointer(st.top);bindPointer(st.side);bindPointer(st.meas);bindTune('top',st.top);bindTune('side',st.side);bindTune('meas',st.meas);
 setupCam('shootTop','topVP','topCtl','topSheet','topNav',st.top);setupCam('shootSide','sideVP','sideCtl','sideSheet','sideNav',st.side);
-$('topNext').onclick=()=>go('checkTop');$('measNext').onclick=()=>go('shape3d');$('measBack').onclick=()=>{clearShot(st.top);go('shootTop')};
-$('measAuto').onclick=()=>{if(st.topAuto&&st.topAuto.contourImg){st.meas.pts=st.topAuto.contourImg.map(p=>[...p]);computeMeas();refit(st.meas);toast('Outline reset')}};$('sideNext').onclick=()=>go('result');
+$('topNext').onclick=()=>go('checkTop');$('measNext').onclick=()=>{const r=st.topRes,a=st.topAuto,ms=st.meas;if(!r)return;
+  const still=a&&a.edgeImg&&ms.pts.every((p,i)=>Math.hypot(p[0]-a.edgeImg[i][0],p[1]-a.edgeImg[i][1])<3);
+  const odd=r.L<150||r.L>320||r.ball/r.L<.28||r.ball/r.L>.5;
+  if(still||odd){const n=$('measNote');n.className='note warn show';
+    n.textContent=still?'The points are still on the paper edge. Drag each one in onto the edge of your foot, or tap Auto-fit.':`This outline is ${r.L.toFixed(0)} mm long and ${r.ball.toFixed(0)} mm wide, which doesn't look like a foot. Drag the points onto your foot's edge.`;
+    toast(still?'Move the points onto your foot first':'Check the outline first');return}
+  go('shape3d')};$('measBack').onclick=()=>{clearShot(st.top);go('shootTop')};
+$('measAuto').onclick=()=>{const a=st.topAuto,ms=st.meas;if(!a)return;
+  if(ms.auto){ms.pts=a.edgeImg.map(p=>[...p]);ms.auto=false;$('measAuto').textContent='Auto-fit';toast('Points back on the paper edge')}
+  else if(a.contourImg){ms.pts=a.contourImg.map(p=>[...p]);ms.auto=true;$('measAuto').textContent='Start over';toast('Points placed on the detected outline. Check each one.')}
+  else{toast("Couldn't find your foot automatically. Drag the points in.");return}
+  ms.sel=0;computeMeas();refit(st.meas)};$('sideNext').onclick=()=>go('result');
 const resetShots=()=>{clearShot(st.top);clearShot(st.side)};
 function applyFoot(){const L2=st.foot==='L';$('scanFootName').textContent=L2?'left foot':'right foot';$('insoleLetter').textContent=L2?'L':'R';
   $('insoleFlip').setAttribute('transform',L2?'translate(300,0) scale(-1,1)':'');
