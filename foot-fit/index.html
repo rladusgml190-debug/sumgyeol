@@ -205,10 +205,21 @@ details.acc[open] summary::after{content:"–"}
 .busy{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(10,11,12,.92);color:#fff;font-size:14px;text-align:center;padding:24px}
 .busy .bar{width:180px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);overflow:hidden}
 .busy .bar i{display:block;height:100%;width:0;background:#46d184;transition:width .2s}
+.checks{display:flex;flex-wrap:wrap;gap:6px}
+.checks span{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.75)}
+.checks span.ok{background:rgba(70,209,132,.25);color:#7ff0b0}.checks span.bad{background:rgba(255,159,10,.25);color:#ffc46b}
 .ar{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
 #scanChip{font-size:13px;padding:9px 16px;white-space:normal;text-align:center;line-height:1.35;max-width:calc(100% - 32px);transition:background .2s}
 #scanChip.warn{background:rgba(255,159,10,.92);color:#1c1300}
 #scanChip.ok{background:rgba(70,209,132,.95);color:#06170d}
+.fitopts{display:flex;flex-direction:column;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chips small{font-size:11px;color:var(--muted);width:44px}
+.chips button{font-size:12px;font-weight:500;padding:6px 11px;border-radius:999px;background:var(--surface);color:var(--ink)}
+.chips button.on{background:var(--ink);color:var(--surface)}
+.both{font-size:12px;color:var(--muted);background:var(--surface);border-radius:12px;padding:8px 10px}
+.both b{color:var(--ink);font-weight:600}
+.other-foot{align-self:flex-start;font-size:13px;font-weight:600;color:var(--ink);background:var(--mint-soft);padding:8px 14px;border-radius:999px}
 .guide-art{width:100%;height:auto;display:block}
 .howto{margin:0;padding:0;list-style:none;counter-reset:st;display:flex;flex-direction:column;gap:12px}
 .howto li{counter-increment:st;display:grid;grid-template-columns:28px 1fr;gap:2px 12px}
@@ -441,7 +452,7 @@ details.acc[open] summary::after{content:"–"}
       <text x="324" y="222" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="Poppins,sans-serif">Then check the outline</text>
     </svg>
   <ol class="howto">
-    <li><b>Step on the A4 sheet</b><span>Clear floor, nothing else around. Your whole foot sits on the paper.</span></li>
+    <li><b>Stand on the A4 sheet</b><span>Clear floor, nothing else around. Put your weight evenly on both feet, the way you stand in shoes. Feet are a little bigger standing, and later in the day.</span></li>
     <li><b>Keep your trousers out of the frame</b><span>Roll them up or wear shorts so only the Dot Sock is on the paper. A trouser leg looks like part of your foot.</span></li>
     <li><b>Hold the phone straight above</b><span>Chest height, camera facing down. The level turns green when it's flat, then the photo takes itself.</span></li>
     <li><b>Check the outline</b><span>The app traces your foot with 8 points. If one sits off the edge, drag it into place.</span></li>
@@ -477,7 +488,7 @@ details.acc[open] summary::after{content:"–"}
       <text x="324" y="208" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="Poppins,sans-serif">Aim down at the foot</text>
     </svg>
   <ol class="howto">
-    <li><b>Keep your foot still on the paper</b><span>Don't lift it after the top photo. The scan lines up with that photo.</span></li>
+    <li><b>Keep standing on the paper</b><span>Weight on both feet, and don't lift the foot after the top photo. The scan lines up with that photo.</span></li>
     <li><b>Hold the phone at chest height</b><span>Tilt it about 45° so the camera looks down at your foot.</span></li>
     <li><b>Walk one slow circle</b><span>Stay about one step from the paper and keep the whole sheet in view. It takes about 15 seconds.</span></li>
     <li><b>Watch the ring fill up</b><span>Each green segment is a new angle. When all 12 are green, the 3D shape builds by itself.</span></li>
@@ -506,7 +517,7 @@ details.acc[open] summary::after{content:"–"}
       <div class="chip-float" id="scanChip">Point the camera at your foot</div>
       <div class="busy" id="scanBusy" hidden><div id="scanBusyTxt">Building your 3D shape…</div><div class="bar"><i id="scanBusyBar"></i></div></div>
     </div>
-    <div class="review-info"><div class="qstats" id="scanQuick"></div><div class="note warn" id="scanNote" hidden></div></div>
+    <div class="review-info"><div class="qstats" id="scanQuick"></div><div class="checks" id="scanChecks"></div><div class="note warn" id="scanNote" hidden></div></div>
     <div class="cam-nav">
       <div class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></div>
       <button class="navbtn back" data-go="scanGuide" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
@@ -675,6 +686,7 @@ function clearShot(shot){shot.img=null;shot.pts=[];shot.sel=0;shot.sample=false;
 function accept(shot,src,w,h,isSample,preset){
   const id=shot.ui.screenId;if(streams[id]){streams[id].getTracks().forEach(t=>t.stop());delete streams[id]}
   loadInto(shot,src,w,h);shot.sample=isSample;
+  if(shot===st.top)st.measuredAt=new Date();
   shot.pts=preset?preset.map(p=>[...p]):(shot===st.top?autoPaper(shot):autoSide(shot));
   if(shot===st.side){const xs=shot.pts.map(p=>p[0]),ys=shot.pts.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),bw=x1-x0,bh=Math.max(20,y1-y0);
     cropShot(shot,x0-.1*bw,y0-.4*bh,x1+.1*bw,y1+.3*bh)}
@@ -708,6 +720,7 @@ function drawShot(shot){
   if(shot.kind==='side'&&P.length>=2){x.strokeStyle=MINT;x.setLineDash([6*disp,5*disp]);x.beginPath();x.moveTo(P[0][0],P[0][1]);x.lineTo(P[1][0],P[1][1]);x.stroke();x.setLineDash([]);
     if(P.length>=4){x.strokeStyle=ORANGE;x.beginPath();x.moveTo(P[1][0],P[1][1]);x.lineTo(P[2][0],P[2][1]);x.lineTo(P[3][0],P[3][1]);x.stroke()}
     if(P.length>=5){const [a,b]=P,dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy,t=((P[4][0]-a[0])*dx+(P[4][1]-a[1])*dy)/l2;x.strokeStyle='#5aa2ff';x.beginPath();x.moveTo(P[4][0],P[4][1]);x.lineTo(a[0]+t*dx,a[1]+t*dy);x.stroke()}}
+  if(shot.kind==='meas'&&P.length>5&&st.topAuto)drawTemplate(x,P,disp);
   if(shot.kind==='meas'&&P.length>5){smoothPath(x,P);x.fillStyle='rgba(70,209,132,.14)';x.fill();x.strokeStyle=MINT;x.stroke();
     const A=st.measA,a2=st.topAuto;if(A&&a2&&a2.h){const TP=(t2,sv)=>{const q=A.toPx(t2,sv),r2=applyH(a2.h,q[0]/S,q[1]/S);return [r2[0]-a2.off[0],r2[1]-a2.off[1]]};const mid=i=>(A.lo[i]+A.hi[i])/2,seg=(p,q,col,dash)=>{x.strokeStyle=col;x.setLineDash(dash?[5*disp,4*disp]:[]);x.beginPath();x.moveTo(p[0],p[1]);x.lineTo(q[0],q[1]);x.stroke();x.setLineDash([])};
       seg(TP(A.tmin,mid(A.binAt(.5))),TP(A.tmax,mid(A.binAt(.5))),'#ffffff',true);
@@ -725,6 +738,22 @@ function drawShot(shot){
       x.fillStyle='#fff';x.fillText(nm,tx+5*disp,ty+1*disp)}
   });
   syncTune(shot);
+}
+/* typical foot shape, fitted to your toe and ball points, drawn behind the outline as a guide (works even when
+   a trouser leg hides the heel). Hollow rings show where each of the 8 points usually belongs. */
+const TEMPLATE=(()=>{const c=document.createElement('canvas').getContext('2d'),p=new Path2D('M0,4 C-30,4 -34,60 -38,120 C-52,165 -52,185 -46,205 C-42,235 -30,250 -14,250 C5,250 25,238 36,215 C48,190 50,165 46,150 C40,100 38,50 28,15 C20,-2 6,-2 0,4Z');
+  const side=y=>{let l=null,r=null;for(let x=-60;x<=60;x+=.5)if(c.isPointInPath(p,x,y)){if(l===null)l=x;r=x}return [l,r]};const L=[],R=[];let bw=0;
+  for(let y=1;y<=249;y+=4){const [l,r]=side(y);if(l===null)continue;L.push([y/250,l/250]);R.push([y/250,r/250]);bw=Math.max(bw,(r-l)/250)}
+  return {poly:[[0,0],...R,[1,-14/250],...L.reverse()],side,bw}})();
+function drawTemplate(x,P,disp){
+  const n=P.length,T=P[n/2],B=[(P[3][0]+P[n-3][0])/2,(P[3][1]+P[n-3][1])/2],bf=st.topAuto.bf||.7;
+  let d=[T[0]-B[0],T[1]-B[1]];const dl=Math.hypot(...d);if(dl<5)return;d=[d[0]/dl,d[1]/dl];const len=dl/(1-bf),H=[T[0]-d[0]*len,T[1]-d[1]*len];
+  const m=st.foot==='L'?[-d[1],d[0]]:[d[1],-d[0]],kw=Math.hypot(P[3][0]-P[n-3][0],P[3][1]-P[n-3][1])/(TEMPLATE.bw*len);
+  const map=(u,v)=>[H[0]+d[0]*u*len-m[0]*v*len*kw,H[1]+d[1]*u*len-m[1]*v*len*kw];
+  x.save();x.beginPath();TEMPLATE.poly.forEach((q,i)=>{const r=map(q[0],q[1]);i?x.lineTo(...r):x.moveTo(...r)});x.closePath();
+  x.fillStyle='rgba(41,151,255,.12)';x.fill();x.setLineDash([7*disp,5*disp]);x.lineWidth=2.5*disp;x.strokeStyle='#2997ff';x.stroke();x.setLineDash([3*disp,3*disp]);x.lineWidth=2*disp;
+  const targets=[[0,0]];[.17,.45,bf].forEach(u=>{const [l]=TEMPLATE.side(u*250);targets.push([u,l/250])});targets.push([1,-14/250]);[bf,.45,.17].forEach(u=>{const [,r]=TEMPLATE.side(u*250);targets.push([u,r/250])});
+  targets.forEach(q=>{const r=map(q[0],q[1]);x.beginPath();x.arc(r[0],r[1],10*disp,0,7);x.stroke()});x.restore();
 }
 /* drag with offset (finger never hides the point) + magnifier */
 const loupe=$('loupe');
@@ -866,13 +895,17 @@ function computeTop(){
   if(gb.length>=2){let pr=null,bs=0;const sv=g=>-(g.x/S-A.mx)*A.uy+(g.y/S-A.my)*A.ux;
     for(let i=0;i<gb.length;i++)for(let j=i+1;j<gb.length;j++){const sep=Math.abs(sv(gb[i])-sv(gb[j]));if(sep>bs){bs=sep;pr=[gb[i],gb[j]]}}
     if(pr&&bs>30){const tm=pr.reduce((q,g)=>q+((g.x/S-A.mx)*A.ux+(g.y/S-A.my)*A.uy),0)/2;ballFrac=A.heelStart?(tm-A.tmin)/A.L:(A.tmax-tm)/A.L;markers=true}}
+  // toe shape: where the tip sits across the forefoot (big-toe side = medial)
+  const dHT=A.heelStart?[A.ux,A.uy]:[-A.ux,-A.uy],medV=st.foot==='L'?[-dHT[1],dHT[0]]:[dHT[1],-dHT[0]],msv=medV[0]*-A.uy+medV[1]*A.ux;
+  const bT=A.binAt(.985),b88=A.binAt(.88),b97=A.binAt(.965),hw88=Math.max(1,(A.hi[b88]-A.lo[b88])/2),rel=(((A.lo[bT]+A.hi[bT])/2-(A.lo[b88]+A.hi[b88])/2)*Math.sign(msv))/hw88;
+  const sq=(A.hi[b97]-A.lo[b97])/Math.max(1,A.hi[b88]-A.lo[b88]),toeShape=sq>.72?'Square':rel>.42?'Egyptian':'Greek';
   const contour=makeContour(A),Hs2m=homography(q,[[0,0],[Wmm,0],[Wmm,Hmm],[0,Hmm]]);
   const cs=contour.map(p=>applyH(h,p[0]/S,p[1]/S)),xs=cs.map(p=>p[0]),ys=cs.map(p=>p[1]);
   let bx0=Math.min(...xs),bx1=Math.max(...xs),by0=Math.min(...ys),by1=Math.max(...ys);const mg=.16*Math.max(bx1-bx0,by1-by0);
   const ox=Math.max(0,Math.floor(bx0-mg)),oy=Math.max(0,Math.floor(by0-mg)),cw=Math.min(shot.img.width,Math.ceil(bx1+mg))-ox,ch=Math.min(shot.img.height,Math.ceil(by1+mg))-oy;
   const mc=document.createElement('canvas');mc.width=cw;mc.height=ch;mc.getContext('2d').drawImage(shot.img,-ox,-oy);
   const pts=cs.map(p=>[p[0]-ox,p[1]-oy]);
-  st.topAuto={L:A.L,ball:A.ball,touches,markers,ballFrac,h,Hs2m,W,H,Wmm,Hmm,fm,off:[ox,oy],contourImg:pts.map(p=>[...p])};
+  st.topAuto={L:A.L,ball:A.ball,touches,markers,ballFrac,h,Hs2m,W,H,Wmm,Hmm,fm,off:[ox,oy],contourImg:pts.map(p=>[...p]),toeShape,bf:A.bf};
   const ms=st.meas;ms.img=mc;ms.canvas.width=cw;ms.canvas.height=ch;ms.pts=pts;ms.needed=pts.length;ms.sel=0;ms.markers=markers;
   computeMeas();
   renderTopQuick();
@@ -916,7 +949,7 @@ function analyzeMask(fm,W,H,ballFrac,heelHint){
 }
 /* editable outline: heel, one side, toe, other side */
 function makeContour(A){
-  const bf=Math.max(.62,Math.min(.76,A.ballPct/100)),FS=[.17,.45,bf],mid=i=>(A.lo[i]+A.hi[i])/2,hb=A.binAt(0),tb=A.binAt(1);
+  const bf=Math.max(.62,Math.min(.76,A.ballPct/100)),FS=[.17,.45,bf];A.bf=bf;const mid=i=>(A.lo[i]+A.hi[i])/2,hb=A.binAt(0),tb=A.binAt(1);
   const heelP=A.toPx(A.heelStart?A.tmin:A.tmax,mid(hb)),toeP=A.toPx(A.heelStart?A.tmax:A.tmin,mid(tb));
   const sideA=FS.map(f=>{const i=A.binAt(f);return A.toPx(A.tAt(i),A.lo[i])}),sideB=FS.map(f=>{const i=A.binAt(f);return A.toPx(A.tAt(i),A.hi[i])});
   return [heelP,...sideA,toeP,...sideB.reverse()];
@@ -936,10 +969,11 @@ function computeMeas(){
   const ballPct=Math.max(50,Math.min(85,(bm[0]*ax[0]+bm[1]*ax[1])/al2*100));
   A.ballI=A.binAt(ballPct/100);A.heelI=A.binAt(.17);
   st.measA=A;drawShot(ms);
-  st.topRes={L:A.L,ball,heel,waist,ballPct,touches:a.touches,prof:A.prof.map(q=>({w:q.w*(ball/Math.max(1,A.ball)),c:q.c})),markers:a.markers,foot:st.foot};
+  const bl=[Rp[3][0]-Rp[n-3][0],Rp[3][1]-Rp[n-3][1]],ballAngle=Math.acos(Math.min(1,Math.abs(bl[0]*ax[0]+bl[1]*ax[1])/Math.hypot(...bl)/Math.sqrt(al2)))*180/Math.PI;
+  st.topRes={L:A.L,ball,heel,waist,ballPct,ballAngle,toeShape:a.toeShape,touches:a.touches,prof:A.prof.map(q=>({w:q.w*(ball/Math.max(1,A.ball)),c:q.c})),markers:a.markers,foot:st.foot};
   $('measQuick').innerHTML=`<div><small>Length</small><b>${A.L.toFixed(1)}<em>mm</em></b></div><div><small>Ball</small><b>${ball.toFixed(1)}<em>mm</em></b></div><div><small>Heel</small><b>${heel.toFixed(1)}<em>mm</em></b></div>`;
   const nt=$('measNote');nt.className='note';
-  nt.textContent=a.markers?'Ball width is taken at the green sock markers. Drag the outline points onto the edge of your foot.':'Drag the outline points onto the edge of your foot. Length, ball and heel update as you go.';
+  nt.textContent=a.markers?'Ball width is taken at the green sock markers. Drag the outline points onto the edge of your foot.':'The dashed shape is a typical foot fitted to your toes. Drag each point onto your foot edge; the rings show where points usually go.';
   updatePrompt(ms);
 }
 function renderTopQuick(){
@@ -969,7 +1003,7 @@ const ellipsePerim=(a,b)=>{const h=((a-b)/(a+b))**2;return Math.PI*(a+b)*(1+3*h/
    Every frame finds the A4 sheet, which gives the camera position (homography → pose). The foot silhouette
    against the white paper then carves a voxel block that starts as the outline from the top photo (shape from
    silhouette). Heights and girths are read from the carved block. */
-const SC={frames:[],sectors:new Array(12).fill(0),timer:null,stream:null,busy:false,f:null};
+const SC={diag:{},frames:[],sectors:new Array(12).fill(0),timer:null,stream:null,busy:false,f:null};
 function paperQuad(g,w,h){
   const hist=new Array(256).fill(0);for(let i=0;i<w*h;i++)hist[g[i]]++;
   // paper is the brightest large surface: stay well above a mid-tone floor
@@ -1027,7 +1061,7 @@ function readFrame(src,sw,shh){
   const k=Math.min(1,480/Math.max(sw,shh)),w=Math.round(sw*k),h=Math.round(shh*k),cv=document.createElement('canvas');cv.width=w;cv.height=h;
   const x=cv.getContext('2d',{willReadFrequently:true});x.drawImage(src,0,0,w,h);const d=x.getImageData(0,0,w,h).data,g=new Uint8Array(w*h);
   for(let i=0;i<w*h;i++)g[i]=(d[i*4]*.299+d[i*4+1]*.587+d[i*4+2]*.114)|0;
-  SC.why=null;const pq=paperQuad(g,w,h);if(!pq){SC.why='nopaper';return null}
+  SC.why=null;SC.diag=SC.diag||{};SC.diag.paper=false;SC.diag.foot=null;const pq=paperQuad(g,w,h);if(!pq){SC.why='nopaper';return null}SC.diag.paper=true;
   // paper mask: bright pixels in big bright regions (white sock dots are small, so they stay "foot")
   const m=new Uint8Array(w*h);for(let i=0;i<w*h;i++)m[i]=g[i]>pq.t?1:0;
   const lab=new Int32Array(w*h),sizes=[0],stack=[];let cur=0;
@@ -1044,8 +1078,8 @@ function readFrame(src,sw,shh){
   cand.sort((p,q)=>q.iou-p.iou);best=cand[0];
   // keep the same rotation as the last good frame when it is still plausible (walking around changes it smoothly)
   if(SC.lastQ){const dist=c=>[0,1,2,3].reduce((s2,i)=>{const q=applyH(c.H,R[i][0],R[i][1]),o=SC.lastQ[i];return s2+Math.hypot(q[0]-o[0],q[1]-o[1])},0);
-    const near=[...cand].sort((p,q)=>dist(p)-dist(q))[0];if(near.rec>.75&&dist(near)<w*.6)best=near}
-  if(best.rec<.75||(!SC.lastQ&&cand[1]&&best.iou-cand[1].iou<.06)){SC.why='nofoot';return null}
+    const near=[...cand].sort((p,q)=>dist(p)-dist(q))[0];if(near.rec>.62&&dist(near)<w*.6)best=near}
+  SC.diag.foot=best.rec;if(best.rec<.62||(!SC.lastQ&&cand[1]&&best.iou-cand[1].iou<.03)){SC.why='nofoot';return null}
   SC.lastQ=R.map(c=>applyH(best.H,c[0],c[1]));
 
   const ca=applyH(best.H,0,0),cb=applyH(best.H,a.Wmm,0),cc=applyH(best.H,a.Wmm,a.Hmm),cd=applyH(best.H,0,a.Hmm),area=Math.abs((ca[0]*cb[1]-cb[0]*ca[1])+(cb[0]*cc[1]-cc[0]*cb[1])+(cc[0]*cd[1]-cd[0]*cc[1])+(cd[0]*ca[1]-ca[0]*cd[1]))/2;
@@ -1060,7 +1094,7 @@ function readFrame(src,sw,shh){
 function frameAzimuth(fr,f){const P=poseFromH(fr.H,f,fr.w/2,fr.h/2),a=st.topAuto,dx=P.C[0]-a.Wmm/2,dy=P.C[1]-a.Hmm/2;
   return {az:Math.atan2(dy,dx),el:Math.atan2(P.C[2],Math.hypot(dx,dy)),P}}
 function addFrame(fr){
-  const f=SC.f||.75*Math.max(fr.w,fr.h),{az,el}=frameAzimuth(fr,f);if(el<.3)return 'low';if(el>1.3)return 'steep';
+  const f=SC.f||.75*Math.max(fr.w,fr.h),{az,el}=frameAzimuth(fr,f);SC.diag.el=el;if(el<.24)return 'low';if(el>1.38)return 'steep';
   const sec=((Math.round(az/(Math.PI/6))%12)+12)%12;if(SC.sectors[sec]>=2)return 'done';
   SC.sectors[sec]++;SC.frames.push(fr);return true}
 const SCAN_MSG={nopaper:"Can't see the whole white sheet. Step back a little so all four corners are in view.",
@@ -1069,6 +1103,10 @@ const SCAN_MSG={nopaper:"Can't see the whole white sheet. Step back a little so 
   low:'The phone is too low. Raise it to chest height and aim down at the foot.',done:'This angle is done. Keep walking to the next grey segment.',
   fast:'Moving too fast. Walk more slowly.',tiltDown:'Tilt the phone down more, to about 45°.',tiltUp:'Tilt the phone up a little, to about 45°.',
   ok:'Got it. Keep walking slowly.',start:'Line the paper up with the frame and start walking.'};
+function showChecks(){const d=SC.diag||{},el=d.el!=null?Math.round(d.el*180/Math.PI):null,tb=tilt.seen?Math.round(tilt.beta):null;
+  const item=(ok,txt)=>`<span class="${ok==null?'':ok?'ok':'bad'}">${txt}</span>`;
+  $('scanChecks').innerHTML=item(d.paper,'Paper '+(d.paper?'✓':'✗'))+item(d.foot==null?null:d.foot>=.62,'Foot '+(d.foot==null?'–':Math.round(d.foot*100)+'%'))
+    +item(el==null?null:el>=14&&el<=79,'View '+(el==null?'–':el+'°'))+item(tb==null?null:tb>=22&&tb<=72,'Tilt '+(tb==null?'–':tb+'°'))}
 function scanSay(code){const c=$('scanChip');c.textContent=SCAN_MSG[code]||code;c.className='chip-float '+(code==='ok'?'ok':code==='start'?'':'warn')}
 /* live overlay: the sheet and your foot outline projected onto the camera view, or a guide frame before the sheet is found */
 function drawAR(fr){
@@ -1106,13 +1144,13 @@ async function startScan3d(){
     const mc=SC.mc||(SC.mc=document.createElement('canvas'));mc.width=48;mc.height=64;const mx=mc.getContext('2d',{willReadFrequently:true});mx.drawImage(video,0,0,48,64);
     const md=mx.getImageData(0,0,48,64).data;let diff=0;if(SC.prev){for(let i=0;i<md.length;i+=4)diff+=Math.abs(md[i+1]-SC.prev[i]);diff/=48*64}SC.prev=new Uint8Array(md.length);for(let i=0;i<md.length;i+=4)SC.prev[i]=md[i+1];
     const fr=readFrame(video,video.videoWidth,video.videoHeight);drawAR(fr);
-    if(!fr){scanSay(SC.why||'nopaper');return}
-    if(diff>22){scanSay('fast');return}
+    if(!fr){scanSay(SC.why||'nopaper');showChecks();return}
+    SC.fast=diff>45?(SC.fast||0)+1:0;if(SC.fast>=2){scanSay('fast');return}
     if(tilt.seen){if(tilt.beta<22){scanSay('tiltUp');return}if(tilt.beta>72){scanSay('tiltDown');return}}
     fr.fs.forEach(v=>{if(v>.4*Math.max(fr.w,fr.h)&&v<2.5*Math.max(fr.w,fr.h))(SC.fl=SC.fl||[]).push(v)});
     if(SC.fl&&SC.fl.length>3){const s2=[...SC.fl].sort((a,b)=>a-b);SC.f=s2[s2.length>>1]}
     const r=addFrame(fr);if(r===true){scanSay('ok');if(navigator.vibrate)try{navigator.vibrate(15)}catch(e){}}else scanSay(r);
-    drawRing();if(SC.sectors.every(v=>v))finishScan();
+    drawRing();showChecks();if(SC.sectors.filter(v=>v).length>=10)finishScan();
   },300);
   requestAnimationFrame(drawRing);
 }
@@ -1251,10 +1289,13 @@ $('lidarFile').addEventListener('change',async e=>{const f=e.target.files[0];e.t
   catch(err){toast(err.message||"That file couldn't be read. Export OBJ or PLY and try again.")}});
 
 /* ===== Results ===== */
+const ALLOW={dress:8,everyday:10,running:12,hiking:14},SOCKADD={thin:0,regular:1,thick:2.5};
+st.fit={type:'everyday',sock:'regular'};try{Object.assign(st.fit,JSON.parse(localStorage.getItem('arc-fit')||'{}'))}catch(e){}
+st.feet={};
 function classify(t,s){
   if(!t||t.error)return null;const wr=t.ball/t.L,width=wr<.375?'Narrow':wr>.405?'Wide':'Regular';
   let instep=null;if(s){const ir=s.hi/t.L;instep=ir<.235?'Low':ir>.275?'High':'Regular'}
-  return {t,s,width,instep,size:Math.ceil((t.L+5)/5)*5};
+  return {t,s,width,instep,size:Math.ceil((t.L+ALLOW[st.fit.type]+SOCKADD[st.fit.sock])/5)*5};
 }
 function showResult(){
   const c=classify(st.topRes,st.sideRes);if(!c){go('home');return}
@@ -1266,36 +1307,56 @@ function showResult(){
   if(c.instep==='High')tips.push('Your instep is high. Choose lace-ups with a separate tongue and skip tight slip-ons.');
   if(c.instep==='Low')tips.push('Your instep is low. Lace one eyelet tighter or add a thicker insole to fill the gap.');
   if(!tips.length)tips.push('Length, width and instep are all in the standard range. Most standard lasts should fit you well.');
-  const usM=7+(c.size-250)/10,eu=40+(c.size-250)/10*1.5,uk=usM-.5,t0=c.t,s0=c.s;
+  const t0=c.t,s0=c.s;st.lastC=c;
+  st.feet[st.foot]={L:t0.L,ball:t0.ball,at:st.measuredAt};
+  if(t0.toeShape)tips.push({Egyptian:'Your big toe is the longest (Egyptian toe shape). Tapered toe boxes that follow the big toe suit you.',Greek:'Your second toe reaches as far as or past the big toe (Greek shape). Size to that toe and pick a rounder, higher toe box.',Square:'Your first toes are almost the same length (square shape). Wide, square or round toe boxes will feel best.'}[t0.toeShape]);
+  if(t0.ballAngle&&t0.ballAngle<72)tips.push('Your ball line is strongly angled, so the forefoot flexes on a slant. Shoes with a flexible, angled flex groove will bend where your foot bends.');
+  if(st.measuredAt&&st.measuredAt.getHours()<12)tips.push('Measured in the morning. Feet swell during the day, so check again in the afternoon before buying.');
   const pct=(v,lo,hi)=>Math.max(4,Math.min(96,(v-lo)/(hi-lo)*100));
   const scale=(l,r,v,lo,hi)=>`<div class="scale"><div class="band"><i style="left:${pct(v,lo,hi)}%"></i></div><div class="ends"><span>${l}</span><b>${r}</b></div></div>`;
   $('details').innerHTML=`<span class="label">Your feet details</span>
-    <div class="measure-line"><svg viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1" y="2" width="20" height="10" rx="1.5"/><path d="M5 2v4M9 2v3M13 2v4M17 2v3"/></svg>${(t0.L/10).toFixed(1)} cm long · ${(t0.ball/10).toFixed(1)} cm wide</div>
+    <div class="measure-line"><svg viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1" y="2" width="20" height="10" rx="1.5"/><path d="M5 2v4M9 2v3M13 2v4M17 2v3"/></svg>${(t0.L/10).toFixed(1)} cm long · ${(t0.ball/10).toFixed(1)} cm wide${t0.toeShape?' · '+t0.toeShape+' toes':''}</div>
     ${scale('Narrow','Wide',t0.ball/t0.L,.345,.435)}
     ${s0?scale('Low instep','High instep',s0.hi/t0.L,.2,.31):''}
     ${s0&&s0.archH!=null?scale('Flat','Arched',s0.archH,0,22):''}
     ${scale('Slim heel','Broad heel',t0.heel/t0.ball,.58,.74)}`;
-  $('sizeCard').innerHTML=`<span class="label">Recommended size</span>
-    <div class="big"><b>${c.size}</b><span>mm</span></div>
-    <div class="ruler"><div class="ticks"></div><div class="ticks major"></div><div class="knob" style="left:${pct(c.size,220,300)}%"></div>
-      <div class="vals"><span>EU ${eu.toFixed(1)}</span><span>US M ${usM.toFixed(1)}</span><span>US W ${(usM+1.5).toFixed(1)}</span><span>UK ${uk.toFixed(1)}</span></div></div>
-    <div class="tags"><span class="tag ${c.width==='Regular'?'':'warn'}">${c.width} width</span><span class="tag ${c.instep==='Regular'?'':'warn'}">${c.instep?c.instep+' instep':'Instep not measured'}</span></div>
-    <p class="advice">${tips.join(' ')}</p>`;
+  st.lastTips=tips;renderFit();
   const t=c.t,s=c.s,stat=(k,v,u,est)=>`<div class="stat${est?' est':''}"><small>${k}</small><b>${v}<em>${u}</em></b></div>`;
   let h=stat('Length',t.L.toFixed(1),'mm')+stat('Ball width',t.ball.toFixed(1),'mm')+stat('Heel width',t.heel.toFixed(1),'mm')+(t.waist?stat('Midfoot width',t.waist.toFixed(1),'mm'):'')+stat('Width ratio',(t.ball/t.L*100).toFixed(1),'%');
   if(s)h+=stat('Instep height',s.hi.toFixed(1),'mm')+stat('Toe box height',s.hb.toFixed(1),'mm')+stat('Instep slope',s.slope.toFixed(1),'°')+stat('Toe spring',s.toeAng.toFixed(1),'°')
     +(s.archH!=null?stat('Arch height',s.archH.toFixed(1),'mm'):'')+(s.girth?stat('Ball girth',s.girth.toFixed(0),'mm'):stat('Ball girth (est.)',ellipsePerim(t.ball/2,s.hb).toFixed(0),'mm',true))
     +(s.girthInstep?stat('Instep girth',s.girthInstep.toFixed(0),'mm'):'')+stat('Ball position',t.ballPct.toFixed(0),'%');
+  h+=(t.ballAngle?stat('Ball line angle',t.ballAngle.toFixed(0),'°'):'')+(t.toeShape?stat('Toe shape',t.toeShape,''):'');
   $('stats').innerHTML=h;
-  const rows=LASTS.map(l=>{const k=c.size/250,dB=l.ball*k-t.ball,dI=s?l.instep*k-s.hi:null;
-    let sc=100-Math.max(0,-dB)*9-Math.max(0,dB-5)*4;if(dI!==null)sc-=Math.max(0,-dI)*7+Math.max(0,dI-6)*3;return {l,dB,dI,sc:Math.max(0,Math.round(sc))}}).sort((a,b)=>b.sc-a.sc);
-  const fmt=v=>(v>0?'+':'')+v.toFixed(1)+' mm',lab=(name,d,lo,hi)=>d===null?`${name} —`:d<lo?`<span class="bad">${name} tight ${fmt(d)}</span>`:d>hi?`<span class="warn">${name} roomy ${fmt(d)}</span>`:`<span class="ok">${name} good ${fmt(d)}</span>`;
-  $('matches').innerHTML=rows.map(r=>`<div class="match"><span class="nm">${r.l.name}</span><span class="sc">${r.sc}</span><span class="bar"><i style="width:${r.sc}%"></i></span><span class="det">${lab('Width',r.dB,0,5)} · ${lab('Instep',r.dI,0,6)}</span></div>`).join('');
   requestAnimationFrame(()=>{big.build(t,s);
     const sc=st.scanView?st.scanView():null;big.setScan(sc);$('scanBtn').hidden=!sc;
     big.showScan(false);big.setWire(true);$('meshBtn').classList.add('on');$('solidBtn').classList.remove('on');$('scanBtn').classList.remove('on')});
 }
 
+/* size card + last matching: allowance by shoe type and sock, sized to the longer foot */
+function renderFit(){
+  const c0=st.lastC;if(!c0)return;const t=c0.t,s=c0.s,other=st.feet[st.foot==='L'?'R':'L'];
+  const Lmax=Math.max(t.L,other?other.L:0),allow=ALLOW[st.fit.type]+SOCKADD[st.fit.sock],size=Math.ceil((Lmax+allow)/5)*5;
+  const usM=7+(size-250)/10,eu=40+(size-250)/10*1.5,uk=usM-.5,pct=(v,lo,hi)=>Math.max(4,Math.min(96,(v-lo)/(hi-lo)*100));
+  const chip=(k,v,lab)=>`<button data-k="${k}" data-v="${v}" class="${st.fit[k]===v?'on':''}">${lab}</button>`;
+  const me=st.foot==='L'?'Left':'Right',oth=st.foot==='L'?'Right':'Left';
+  $('sizeCard').innerHTML=`<span class="label">Recommended size</span>
+    <div class="big"><b>${size}</b><span>mm</span></div>
+    <div class="ruler"><div class="ticks"></div><div class="ticks major"></div><div class="knob" style="left:${pct(size,220,300)}%"></div>
+      <div class="vals"><span>EU ${eu.toFixed(1)}</span><span>US M ${usM.toFixed(1)}</span><span>US W ${(usM+1.5).toFixed(1)}</span><span>UK ${uk.toFixed(1)}</span></div></div>
+    <div class="fitopts"><div class="chips"><small>Shoes</small>${chip('type','dress','Dress')}${chip('type','everyday','Everyday')}${chip('type','running','Running')}${chip('type','hiking','Hiking')}</div>
+      <div class="chips"><small>Socks</small>${chip('sock','thin','Thin')}${chip('sock','regular','Regular')}${chip('sock','thick','Thick')}</div></div>
+    <div class="both">${other?`${me} <b>${t.L.toFixed(1)} mm</b> · ${oth} <b>${other.L.toFixed(1)} mm</b>. Sized for the longer foot, plus ${allow.toFixed(1)} mm toe room.`:`Foot length ${t.L.toFixed(1)} mm plus ${allow.toFixed(1)} mm toe room for ${st.fit.type} shoes. Most people have one foot slightly bigger.`}</div>
+    ${other?'':`<button class="other-foot" id="otherFoot">Scan your ${oth.toLowerCase()} foot too →</button>`}
+    <div class="tags"><span class="tag ${c0.width==='Regular'?'':'warn'}">${c0.width} width</span><span class="tag ${c0.instep==='Regular'?'':'warn'}">${c0.instep?c0.instep+' instep':'Instep not measured'}</span>${t.toeShape?`<span class="tag">${t.toeShape} toes</span>`:''}</div>
+    <p class="advice">${(st.lastTips||[]).join(' ')}</p>`;
+  $('sizeCard').querySelectorAll('.chips button').forEach(b=>b.onclick=()=>{st.fit[b.dataset.k]=b.dataset.v;try{localStorage.setItem('arc-fit',JSON.stringify(st.fit))}catch(e){}renderFit()});
+  const of=$('otherFoot');if(of)of.onclick=()=>{st.foot=st.foot==='L'?'R':'L';resetShots();st.sideRes=null;st.scanView=null;applyFoot();go('topGuide')};
+  const rows=LASTS.map(l=>{const k=size/250,dB=l.ball*k-t.ball,dI=s?l.instep*k-s.hi:null;
+    let sc=100-Math.max(0,-dB)*9-Math.max(0,dB-5)*4;if(dI!==null)sc-=Math.max(0,-dI)*7+Math.max(0,dI-6)*3;return {l,dB,dI,sc:Math.max(0,Math.round(sc))}}).sort((a,b)=>b.sc-a.sc);
+  const fmt=v=>(v>0?'+':'')+v.toFixed(1)+' mm',lab=(name,d,lo,hi)=>d===null?`${name} —`:d<lo?`<span class="bad">${name} tight ${fmt(d)}</span>`:d>hi?`<span class="warn">${name} roomy ${fmt(d)}</span>`:`<span class="ok">${name} good ${fmt(d)}</span>`;
+  $('matches').innerHTML=rows.map(r=>`<div class="match"><span class="nm">${r.l.name}</span><span class="sc">${r.sc}</span><span class="bar"><i style="width:${r.sc}%"></i></span><span class="det">${lab('Width',r.dB,0,5)} · ${lab('Instep',r.dI,0,6)}</span></div>`).join('');
+}
 /* ===== 3D foot viewer ===== */
 function heightCurve(f,s,L){
   const hi=s?s.hi:L*.26,hb=s?s.hb:L*.13,fi=s?Math.min(.75,Math.max(.3,s.ai/L)):.52,fb=s?Math.min(.9,Math.max(fi+.08,s.ab/L)):.73;
@@ -1391,7 +1452,7 @@ function makeViewer(canvas,opts){
   V.reset=()=>{V.rx=-.42;V.ry=.75;V.dist=opts.dist;V.auto=true};
   V.scanObj=null;V.showScan=on=>{(V.parts||[]).forEach(m=>m.visible=!on);if(V.scanObj)V.scanObj.visible=!!on};
   V.setScan=obj=>{if(V.scanObj){root.remove(V.scanObj);V.scanObj.geometry&&V.scanObj.geometry.dispose()}V.scanObj=obj;if(obj){obj.visible=false;root.add(obj)}};
-  V.setWire=w=>{V.wire=w;(V.parts||[]).forEach(m=>{m.material.wireframe=w;m.material.color.set(css(w?'--girth':'--model'))})};
+  V.setWire=w=>{V.wire=w;(V.parts||[]).forEach(m=>{m.material.wireframe=w;m.material.color.set(css(w?'--girth':'--model'));if(m.userData.fine&&m.userData.coarse)m.geometry=w?m.userData.coarse:m.userData.fine})};
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   (function loop(){requestAnimationFrame(loop);if(!canvas.offsetParent)return;
     const w=canvas.clientWidth,h=canvas.clientHeight,pr=renderer.getPixelRatio();if(canvas.width!==Math.round(w*pr)||canvas.height!==Math.round(h*pr)){renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
@@ -1407,6 +1468,9 @@ function makeViewer(canvas,opts){
     if(med<0){const ix=geo.index.array;for(let i=0;i<ix.length;i+=3){const t2=ix[i+1];ix[i+1]=ix[i+2];ix[i+2]=t2}}
     const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(css(V.wire?'--girth':'--model')),roughness:.58,metalness:0,wireframe:V.wire,side:THREE.DoubleSide});
     V.parts=[];V.mesh=new THREE.Mesh(geo,mat);root.add(V.mesh);V.parts.push(V.mesh);
+    // a coarser copy reads better as a wireframe
+    const cg=surfaceNets(F.d,F.box,L/42),ca=cg.attributes.position.array,cn=cg.attributes.normal.array;for(let i=0;i<ca.length;i+=3){ca[i]-=L/2;ca[i+2]*=med;cn[i+2]*=med}
+    V.mesh.userData={fine:geo,coarse:cg};if(V.wire)V.mesh.geometry=cg;
     const mint=new THREE.Color(css('--girth')),R0=L*.6;
     const disc=new THREE.Mesh(new THREE.CircleGeometry(R0,96),new THREE.MeshBasicMaterial({color:mint,transparent:true,opacity:.1,depthWrite:false}));disc.rotation.x=-Math.PI/2;disc.position.y=-.4;disc.scale.set(1,.62,1);root.add(disc);
     const plat=new THREE.Mesh(new THREE.RingGeometry(R0-1.6,R0,128),new THREE.MeshBasicMaterial({color:mint,side:THREE.DoubleSide}));plat.rotation.x=-Math.PI/2;plat.position.y=-.3;plat.scale.set(1,.62,1);root.add(plat);
@@ -1444,7 +1508,7 @@ function renderRecs(){
   $('recSummary').textContent=`Average error vs. tape: length ${mae('L','tL')}, ball width ${mae('B','tB')}, instep ${mae('I','tI')}.`;
 }
 $('saveRec').onclick=()=>{const t=st.topRes;if(!t||t.error)return;const n=id=>{const v=parseFloat($(id).value);return isNaN(v)?null:v};
-  recs.push({side:st.foot,who:$('who').value.trim(),L:t.L,B:t.ball,I:st.sideRes?st.sideRes.hi:null,tL:n('tapeLen'),tB:n('tapeBall'),tI:n('tapeInstep'),at:new Date().toISOString()});saveRecs();toast('Scan saved')};
+  recs.push({toe:t.toeShape||'',time:st.measuredAt?st.measuredAt.toISOString():'',side:st.foot,who:$('who').value.trim(),L:t.L,B:t.ball,I:st.sideRes?st.sideRes.hi:null,tL:n('tapeLen'),tB:n('tapeBall'),tI:n('tapeInstep'),at:new Date().toISOString()});saveRecs();toast('Scan saved')};
 $('clearRec').onclick=()=>{const b=$('clearRec');if(b.dataset.armed){recs=[];saveRecs();renderRecs();delete b.dataset.armed;b.textContent='Clear history';toast('History cleared')}
   else{b.dataset.armed=1;b.textContent='Tap again to clear';setTimeout(()=>{delete b.dataset.armed;b.textContent='Clear history'},3000)}};
 $('copyCsv').onclick=async()=>{const csv='name,app_length,tape_length,app_ball,tape_ball,app_instep,tape_instep,date\n'+recs.map(r=>[r.who,r.L?.toFixed(1),r.tL,r.B?.toFixed(1),r.tB,r.I?.toFixed(1),r.tI,r.at].map(v=>v??'').join(',')).join('\n');
