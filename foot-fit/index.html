@@ -207,17 +207,17 @@ details.acc[open] summary::after{content:"–"}
     <button class="link" id="demoBtn">See sample scan</button>
   </div>
   <h1 class="title">Find shoes that<br><b>actually fit</b></h1>
-  <div class="stage hero3d"><canvas id="heroCanvas"></canvas><span class="rotate-pill">‹ › Drag to rotate</span></div>
-  <div class="needs">
-    <div class="need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 8h6M9 12h6"/></svg></span><div><b>A4 paper on the floor</b><span>Used as a size reference</span></div></div>
-    <div class="need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6v8l3.5 3.5a3 3 0 0 1-2.1 5.1H10a4 4 0 0 1-4-4V14l3-3z"/></svg></span><div><b>Dot Sock</b><span>Places the points for you</span></div></div>
-    <div class="need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="3"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l1.5-3h5L16 7"/></svg></span><div><b>Top and side photo</b><span>About one minute</span></div></div>
-  </div>
   <div class="sock">
     <svg viewBox="0 0 80 110" aria-hidden="true"><path d="M22 4h30v52l18 18a14 14 0 0 1-10 24H30a20 20 0 0 1-20-20V62l12-12z" fill="#1d2026"/>
       <g fill="#fff" opacity=".85"><circle cx="30" cy="14" r="1.6"/><circle cx="42" cy="14" r="1.6"/><circle cx="30" cy="26" r="1.6"/><circle cx="42" cy="26" r="1.6"/><circle cx="30" cy="38" r="1.6"/><circle cx="42" cy="38" r="1.6"/><circle cx="24" cy="62" r="1.6"/><circle cx="36" cy="62" r="1.6"/><circle cx="48" cy="62" r="1.6"/><circle cx="24" cy="74" r="1.6"/><circle cx="48" cy="74" r="1.6"/><circle cx="60" cy="74" r="1.6"/><circle cx="24" cy="86" r="1.6"/><circle cx="36" cy="86" r="1.6"/><circle cx="48" cy="86" r="1.6"/></g>
       <g fill="#46d184"><circle cx="16" cy="56" r="4"/><circle cx="36" cy="74" r="4"/><circle cx="62" cy="88" r="4"/><circle cx="36" cy="44" r="4"/></g></svg>
     <div><b>Arc Dot Sock</b><p>A dark sock with a white dot grid and green landmark dots. The app finds the green dots and places the measuring points for you.</p></div>
+  </div>
+  <div class="stage hero3d"><canvas id="heroCanvas"></canvas><span class="rotate-pill">‹ › Drag to rotate</span></div>
+  <div class="needs">
+    <div class="need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 8h6M9 12h6"/></svg></span><div><b>A4 paper on the floor</b><span>Used as a size reference</span></div></div>
+    <div class="need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6v8l3.5 3.5a3 3 0 0 1-2.1 5.1H10a4 4 0 0 1-4-4V14l3-3z"/></svg></span><div><b>Arc Dot Sock</b><span>Places the points for you</span></div></div>
+    <div class="need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="3"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l1.5-3h5L16 7"/></svg></span><div><b>Top and side photo</b><span>About one minute</span></div></div>
   </div>
   <div class="row-h"><span class="label">Recent scans</span><button class="link" id="copyCsv" hidden>Copy CSV</button></div>
   <div class="list" id="recList"></div>
@@ -278,15 +278,19 @@ details.acc[open] summary::after{content:"–"}
         <button class="sample" data-role="sample">Use sample</button>
       </div>
       <h2>Scan <b>right foot</b></h2>
-      <p>Paper inside the corners, foot on the insole. Hold the phone level, straight above.</p>
+      <p>Paper inside the corners, foot on the insole. Hold still and it captures by itself.</p>
     </div>
     <div class="viewport" id="topVP">
-      <svg class="guide" viewBox="0 0 300 400" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <svg class="guide" id="topGuide" viewBox="0 0 300 400" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs><clipPath id="fillClip"><rect id="fillRect" x="40" y="350" width="220" height="0"/></clipPath></defs>
         <g fill="none" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linecap="round"><path d="M55 58v-22h22M223 36h22v22M245 346v22h-22M77 368H55v-22"/></g>
-        <g transform="translate(150,350) scale(.98,-.98)"><path d="M0,4 C-30,4 -34,60 -38,120 C-52,165 -52,185 -46,205 C-42,235 -30,250 -14,250 C5,250 25,238 36,215 C48,190 50,165 46,150 C40,100 38,50 28,15 C20,-2 6,-2 0,4Z" fill="rgba(70,209,132,.55)" stroke="rgba(255,255,255,.5)" stroke-width="1"/></g>
-        <text x="146" y="170" fill="rgba(255,255,255,.55)" font-size="34" font-weight="300" text-anchor="middle" font-family="Poppins,sans-serif">R</text>
+        <rect id="paperBox" x="55" y="36" width="190" height="332" fill="none"/>
+        <g transform="translate(150,350) scale(.98,-.98)"><path id="insole" d="M0,4 C-30,4 -34,60 -38,120 C-52,165 -52,185 -46,205 C-42,235 -30,250 -14,250 C5,250 25,238 36,215 C48,190 50,165 46,150 C40,100 38,50 28,15 C20,-2 6,-2 0,4Z" fill="rgba(70,209,132,.38)" stroke="rgba(255,255,255,.5)" stroke-width="1"/></g>
+        <g clip-path="url(#fillClip)"><g transform="translate(150,350) scale(.98,-.98)"><path d="M0,4 C-30,4 -34,60 -38,120 C-52,165 -52,185 -46,205 C-42,235 -30,250 -14,250 C5,250 25,238 36,215 C48,190 50,165 46,150 C40,100 38,50 28,15 C20,-2 6,-2 0,4Z" fill="rgba(70,209,132,.9)"/></g></g>
+        <text x="146" y="165" fill="rgba(255,255,255,.7)" font-size="34" font-weight="300" text-anchor="middle" font-family="Poppins,sans-serif">R</text>
+        <text id="scanPct" x="146" y="200" fill="#fff" font-size="15" font-weight="600" text-anchor="middle" font-family="Poppins,sans-serif"></text>
         <g stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".9"><path d="M134 268l12-6 12 6M134 276l12-6 12 6"/></g>
-        <text x="146" y="296" fill="#fff" font-size="11" text-anchor="middle" font-family="Poppins,sans-serif">Step on</text>
+        <text id="scanTxt" x="146" y="296" fill="#fff" font-size="11" text-anchor="middle" font-family="Poppins,sans-serif">Step on</text>
       </svg>
       <canvas id="topCanvas" hidden></canvas>
       <div class="chip-float" id="topChip" hidden></div>
@@ -316,10 +320,10 @@ details.acc[open] summary::after{content:"–"}
     <div class="cam-head">
       <div class="top">
         <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 7h11a13 13 0 0 1 0 26H9z" fill="#46d184"/><path d="M15 15l7 5-7 5z" fill="#151617"/></svg>Arc</div>
-        <button class="sample" id="measAuto">Auto-place</button>
+        <button class="sample" id="measAuto">Reset outline</button>
       </div>
-      <h2>Check the <b>measure points</b></h2>
-      <p>Your photo is flattened to true scale. Drag Heel, Toe and both Ball points onto the edge of your foot.</p>
+      <h2>Shape your <b>foot outline</b></h2>
+      <p>Your photo is flattened to true scale. Drag the points onto the edge of your foot.</p>
     </div>
     <div class="viewport" id="measVP">
       <svg class="guide" viewBox="0 0 10 10" style="display:none" aria-hidden="true"></svg>
@@ -333,7 +337,7 @@ details.acc[open] summary::after{content:"–"}
     </div>
     <div class="cam-nav" id="measNav">
       <div class="dots"><i class="done"></i><i class="on"></i><i></i><i></i></div>
-      <button class="navbtn back" data-go="shootTop" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <button class="navbtn back" id="measBack" aria-label="Retake"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
       <button class="navbtn next go" id="measNext">Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     </div>
   </div>
@@ -366,7 +370,7 @@ details.acc[open] summary::after{content:"–"}
     </div>
     <div class="cam-nav" id="sideCtl">
       <div class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></div>
-      <button class="navbtn back" data-go="shootTop" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <button class="navbtn back" data-go="checkTop" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
       <label class="navbtn back" aria-label="Choose from library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg><input type="file" accept="image/*" data-role="album"></label>
       <label class="capture shutter"><span class="ring"></span>Capture<input type="file" accept="image/*" capture="environment" data-role="camera"></label>
     </div>
@@ -420,7 +424,45 @@ async function openCam(vpId,screenId){
     const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920}},audio:false});
     if($(screenId).hidden){s.getTracks().forEach(t=>t.stop());return}
     streams[screenId]=s;video.srcObject=s;video.hidden=false;shutter.dataset.live='1';
+    if(screenId==='shootTop')startAutoScan();
   }catch(e){video.hidden=true;delete shutter.dataset.live}
+}
+/* ===== Auto capture: when a foot fills the insole on white paper and holds still, the insole fills up and the photo is taken ===== */
+let autoTimer=null,autoProg=0,prevFrame=null;
+function setScanUI(pct,msg){
+  const top=350-250*.98*pct;const r=$('fillRect');r.setAttribute('y',top);r.setAttribute('height',350-top);
+  $('scanPct').textContent=pct>0?Math.round(pct*100)+'%':'';$('scanTxt').textContent=msg;
+}
+function stopAutoScan(){clearInterval(autoTimer);autoTimer=null;autoProg=0;prevFrame=null;setScanUI(0,'Step on')}
+function startAutoScan(){
+  stopAutoScan();const scr=$('shootTop'),video=scr.querySelector('video'),inner=scr.querySelector('.cam-inner');
+  const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
+  autoTimer=setInterval(()=>{
+    if(scr.hidden||st.top.img||!streams.shootTop||!video.videoWidth){if(scr.hidden||st.top.img)stopAutoScan();return}
+    const R=inner.getBoundingClientRect(),vw=video.videoWidth,vh=video.videoHeight,s0=Math.max(R.width/vw,R.height/vh);
+    const sw=R.width/s0,sh=R.height/s0,sx=(vw-sw)/2,sy=(vh-sh)/2,k=140/R.width,W=140,H=Math.round(R.height*k);
+    cv.width=W;cv.height=H;cx.drawImage(video,sx,sy,sw,sh,0,0,W,H);
+    const d=cx.getImageData(0,0,W,H).data,g=new Uint8Array(W*H);for(let q=0;q<W*H;q++)g[q]=(d[q*4]*.299+d[q*4+1]*.587+d[q*4+2]*.114)|0;
+    const box=el=>{const b=$(el).getBoundingClientRect();return [(b.left-R.left)*k,(b.top-R.top)*k,b.width*k,b.height*k]};
+    const [fx,fy,fw,fh]=box('insole'),[px,py,pw,ph]=box('paperBox');
+    const hist=new Array(256).fill(0);let n=0;for(let y=Math.max(0,py|0);y<Math.min(H,py+ph);y++)for(let x=Math.max(0,px|0);x<Math.min(W,px+pw);x++){hist[g[y*W+x]]++;n++}
+    const t=otsu(hist,n);let fIn=0,fN=0,pB=0,pN=0;
+    const ecx=fx+fw/2,ecy=fy+fh/2,ea=fw*.4,eb=fh*.42;
+    for(let y=Math.max(0,py|0);y<Math.min(H,py+ph);y++)for(let x=Math.max(0,px|0);x<Math.min(W,px+pw);x++){
+      const v=g[y*W+x],inE=((x-ecx)/ea)**2+((y-ecy)/eb)**2<=1;
+      if(inE){fN++;if(v<t)fIn++}else if(x<fx||x>fx+fw||y<fy||y>fy+fh){pN++;if(v>=t)pB++}}
+    let diff=0;if(prevFrame&&prevFrame.length===g.length){for(let q=0;q<g.length;q+=3)diff+=Math.abs(g[q]-prevFrame[q]);diff/=g.length/3}else diff=99;prevFrame=g;
+    const foot=fIn/Math.max(1,fN),paper=pB/Math.max(1,pN),contrast=(()=>{let a=0,b=0,na=0,nb=0;for(let q=0;q<256;q++){if(q<t){a+=q*hist[q];na+=hist[q]}else{b+=q*hist[q];nb+=hist[q]}}return na&&nb?b/nb-a/na:0})();
+    let msg;
+    if(contrast<45||paper<.55){msg='Show the white paper';autoProg=Math.max(0,autoProg-.06)}
+    else if(foot<.55){msg='Step on the insole';autoProg=Math.max(0,autoProg-.06)}
+    else if(diff>14){msg='Hold still';autoProg=Math.max(0,autoProg-.02)}
+    else{msg='Scanning…';autoProg=Math.min(1,autoProg+.045)}
+    setScanUI(autoProg,msg);
+    if(autoProg>=1){const c=document.createElement('canvas');c.width=vw;c.height=vh;c.getContext('2d').drawImage(video,0,0);stopAutoScan();
+      if(navigator.vibrate)try{navigator.vibrate(40)}catch(e){}
+      accept(st.top,c,vw,vh,false);toast('Captured automatically')}
+  },120);
 }
 function setupCam(screenId,vpId,ctlId,sheetId,navId,shot){
   const scr=$(screenId),vp=$(vpId),shutter=scr.querySelector('.shutter'),video=scr.querySelector('video');
@@ -437,6 +479,7 @@ function setupCam(screenId,vpId,ctlId,sheetId,navId,shot){
   }));
   scr.querySelector('[data-role=sample]').onclick=()=>{const s=shot===st.top?sampleTop():sampleSide();accept(shot,s.c,s.c.width,s.c.height,true,s.pts||undefined)};
   scr.querySelector('[data-role=retake]').onclick=()=>{clearShot(shot);openCam(vpId,screenId)};
+  if(screenId==='shootTop')scr.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',stopAutoScan));
 }
 function setReview(shot,on){
   const u=shot.ui;u.ctl.hidden=on;u.nav.hidden=!on;u.sheet.hidden=!on;shot.canvas.hidden=!on;shot.chip.hidden=!on;
@@ -449,6 +492,7 @@ function accept(shot,src,w,h,isSample,preset){
   loadInto(shot,src,w,h);shot.sample=isSample;
   shot.pts=preset?preset.map(p=>[...p]):(shot===st.top?autoPaper(shot):autoSide(shot));
   setReview(shot,true);updatePrompt(shot);fitCanvas(shot);shot.onChange();
+  if(shot===st.top&&!st.silent&&st.topAuto&&!st.topAuto.error)go('checkTop');
 }
 function fitCanvas(shot){
   if(!shot.img||shot.canvas.hidden)return false;const vp=shot.ui.vp,W=vp.clientWidth-36,H=vp.clientHeight-20;if(W<=0||H<=0)return false;
@@ -466,15 +510,20 @@ function loadInto(shot,source,w,h){
 const MINT='#46d184',ORANGE='#ff9f0a';
 function drawShot(shot){
   const c=shot.canvas,x=c.getContext('2d');if(!shot.img)return;x.drawImage(shot.img,0,0);
-  const rw=c.getBoundingClientRect().width,disp=rw?c.width/rw:c.width/360,r=8*disp,lw=2*disp,P=shot.pts;
+  const rw=c.getBoundingClientRect().width,disp=rw?c.width/rw:c.width/360,lw=2*disp,P=shot.pts;
   x.lineWidth=lw;x.font=`600 ${Math.round(11*disp)}px Poppins,-apple-system,sans-serif`;x.lineJoin='round';
   if(shot.kind==='corners'&&P.length>1){x.strokeStyle=MINT;x.fillStyle='rgba(70,209,132,.16)';x.beginPath();ordered(P).forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));if(P.length===4){x.closePath();x.fill()}x.stroke()}
   if(shot.kind==='side'&&P.length>=2){x.strokeStyle=MINT;x.setLineDash([6*disp,5*disp]);x.beginPath();x.moveTo(P[0][0],P[0][1]);x.lineTo(P[1][0],P[1][1]);x.stroke();x.setLineDash([]);
-    if(P.length>=4){x.strokeStyle=ORANGE;x.beginPath();x.moveTo(P[1][0],P[1][1]);x.lineTo(P[2][0],P[2][1]);x.lineTo(P[3][0],P[3][1]);x.stroke()}}
-  if(shot.kind==='meas'&&P.length===4){x.strokeStyle=MINT;x.beginPath();x.moveTo(P[0][0],P[0][1]);x.lineTo(P[1][0],P[1][1]);x.stroke();
-    x.strokeStyle=ORANGE;x.beginPath();x.moveTo(P[2][0],P[2][1]);x.lineTo(P[3][0],P[3][1]);x.stroke()}
+    if(P.length>=4){x.strokeStyle=ORANGE;x.beginPath();x.moveTo(P[1][0],P[1][1]);x.lineTo(P[2][0],P[2][1]);x.lineTo(P[3][0],P[3][1]);x.stroke()}
+    if(P.length>=5){const [a,b]=P,dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy,t=((P[4][0]-a[0])*dx+(P[4][1]-a[1])*dy)/l2;x.strokeStyle='#5aa2ff';x.beginPath();x.moveTo(P[4][0],P[4][1]);x.lineTo(a[0]+t*dx,a[1]+t*dy);x.stroke()}}
+  if(shot.kind==='meas'&&P.length>5){smoothPath(x,P);x.fillStyle='rgba(70,209,132,.14)';x.fill();x.strokeStyle=MINT;x.stroke();
+    const A=st.measA;if(A){const mid=i=>(A.lo[i]+A.hi[i])/2,seg=(p,q,col,dash)=>{x.strokeStyle=col;x.setLineDash(dash?[5*disp,4*disp]:[]);x.beginPath();x.moveTo(p[0],p[1]);x.lineTo(q[0],q[1]);x.stroke();x.setLineDash([])};
+      seg(A.toPx(A.tmin,mid(A.binAt(.5))),A.toPx(A.tmax,mid(A.binAt(.5))),'#ffffff',true);
+      seg(A.toPx(A.tAt(A.ballI),A.lo[A.ballI]),A.toPx(A.tAt(A.ballI),A.hi[A.ballI]),ORANGE);
+      seg(A.toPx(A.tAt(A.heelI),A.lo[A.heelI]),A.toPx(A.tAt(A.heelI),A.hi[A.heelI]),ORANGE)}}
+  const small=P.length>6;
   P.forEach((p,i)=>{
-    const on=i===shot.sel;
+    const on=i===shot.sel,r=(small&&!on?6:8)*disp;
     x.fillStyle='rgba(0,0,0,.28)';x.beginPath();x.arc(p[0],p[1]+disp,r+2*disp,0,7);x.fill();
     x.fillStyle=on?MINT:'#fff';x.beginPath();x.arc(p[0],p[1],r,0,7);x.fill();
     x.fillStyle=on?'#fff':MINT;x.beginPath();x.arc(p[0],p[1],1.6*disp,0,7);x.fill();
@@ -517,7 +566,7 @@ function bindTune(key,shot){
   el.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const p=shot.pts[shot.sel];if(!p)return;const [dx,dy]=b.dataset.d.split(',').map(Number),k=Math.max(1,shot.canvas.width/1000);
     p[0]+=dx*k;p[1]+=dy*k;drawShot(shot);clearTimeout(t);t=setTimeout(()=>shot.onChange(),250)});
 }
-function syncTune(shot){if(!shot.tune)return;const nm=(shot.names&&shot.names[shot.sel])||(shot.kind==='corners'?`Corner ${shot.sel+1}`:`Point ${shot.sel+1}`);shot.tune.querySelector('.tname').textContent=shot.pts.length?nm:'—'}
+function syncTune(shot){if(!shot.tune)return;const nm=(shot.names&&shot.names[shot.sel])||(shot.kind==='corners'?`Corner ${shot.sel+1}`:`Point ${shot.sel+1}/${shot.pts.length}`);shot.tune.querySelector('.tname').textContent=shot.pts.length?nm:'—'}
 function updatePrompt(shot){shot.chip.textContent=shot.pts.length<shot.needed?`Tap ${shot.labels[shot.pts.length]}`:(shot.markers?'Sock markers found · points placed':(shot.sample?'Sample photo · drag to adjust':'Drag points to adjust'))}
 
 /* green landmark dots on the Arc Dot Sock */
@@ -563,13 +612,15 @@ function autoSide(shot){
   let floorY=h;for(let y=h-1;y>h*.35;y--){let c=0;for(let x=0;x<w;x++)c+=mask[y*w+x];if(c>w*.85)floorY=y;else if(floorY<h)break}
   for(let y=Math.max(0,floorY-1);y<h;y++)for(let x=0;x<w;x++)mask[y*w+x]=0;
   const {lab,best,n}=largest(mask,w,h),W=shot.img.width,H=shot.img.height;
-  if(n<w*h*.02)return [[W*.12,H*.78],[W*.88,H*.78],[W*.68,H*.6],[W*.42,H*.45]];
+  if(n<w*h*.02)return [[W*.12,H*.78],[W*.88,H*.78],[W*.68,H*.6],[W*.42,H*.45],[W*.4,H*.74]];
   let ytop=1e9,yb=-1;for(let p=0;p<w*h;p++)if(lab[p]===best){const y=(p/w)|0;if(y>yb)yb=y;if(y<ytop)ytop=y}
   if(floorY<h)yb=floorY;
   let x0=1e9,x1=-1;const band=Math.max(2,(yb-ytop)*.18);
   for(let p=0;p<w*h;p++)if(lab[p]===best){const x=p%w,y=(p/w)|0;if(y>=yb-band){if(x<x0)x0=x;if(x>x1)x1=x}}
   const topAt=f=>{const xs=Math.round(x0+f*(x1-x0));for(let y=0;y<h;y++)if(lab[y*w+xs]===best)return y;return yb};
-  const pts=[[x0/k,yb/k],[x1/k,yb/k],[(x0+.72*(x1-x0))/k,topAt(.72)/k],[(x0+.5*(x1-x0))/k,topAt(.5)/k]];
+  const bottomAt=f=>{const xs=Math.round(x0+f*(x1-x0));for(let y=yb-1;y>ytop;y--)if(lab[y*w+xs]===best)return y;return yb};
+  let ax=.42,ay=yb;for(let f=.3;f<=.55;f+=.02){const y=bottomAt(f);if(y<ay){ay=y;ax=f}}
+  const pts=[[x0/k,yb/k],[x1/k,yb/k],[(x0+.72*(x1-x0))/k,topAt(.72)/k],[(x0+.5*(x1-x0))/k,topAt(.5)/k],[(x0+ax*(x1-x0))/k,ay/k]];
   // Arc Dot Sock: the two highest green dots are the toe-box and instep landmarks
   const sc=Math.min(1,500/Math.max(W,H)),cw=Math.round(W*sc),ch=Math.round(H*sc),cv=document.createElement('canvas');cv.width=cw;cv.height=ch;
   const cx=cv.getContext('2d');cx.drawImage(shot.img,0,0,cw,ch);
@@ -608,50 +659,66 @@ function computeTop(){
   for(let j=m;j<H-m;j++)for(let i=m;i<W-m;i++)if(gray[j*W+i]<t)mask[j*W+i]=1;
   const {lab,best,n}=largest(mask,W,H);
   if(n<2000){st.topAuto={error:"We couldn't find your foot. Wear the Dot Sock on white paper and try again."};st.topRes=null;renderTopQuick();return}
-  let mx=0,my=0;const P=[];for(let p=0;p<W*H;p++)if(lab[p]===best){const x=(p%W)/S,y=((p/W)|0)/S;P.push(x,y);mx+=x;my+=y}
-  const N=P.length/2;mx/=N;my/=N;let sxx=0,syy=0,sxy=0;
+  const fm=new Uint8Array(W*H);for(let p=0;p<W*H;p++)fm[p]=lab[p]===best?1:0;
+  const A=analyzeMask(fm,W,H,null);
+  let touches=false;for(let y=0;y<H&&!touches;y++)for(let x=0;x<W;x++){if(!fm[y*W+x])continue;if(x<m+3||y<m+3||x>W-m-4||y>H-m-4){touches=true;break}}
+  // green sock markers on the ball sides fix where the ball width is taken
+  let ballFrac=null,markers=false;
+  const gb=greenBlobs(col.data,W,H,8).filter(g=>{const t=(g.x/S-A.mx)*A.ux+(g.y/S-A.my)*A.uy;return t>A.tmin&&t<A.tmax});
+  if(gb.length>=2){let pr=null,bs=0;const sv=g=>-(g.x/S-A.mx)*A.uy+(g.y/S-A.my)*A.ux;
+    for(let i=0;i<gb.length;i++)for(let j=i+1;j<gb.length;j++){const sep=Math.abs(sv(gb[i])-sv(gb[j]));if(sep>bs){bs=sep;pr=[gb[i],gb[j]]}}
+    if(pr&&bs>30){const tm=pr.reduce((q,g)=>q+((g.x/S-A.mx)*A.ux+(g.y/S-A.my)*A.uy),0)/2;ballFrac=A.heelStart?(tm-A.tmin)/A.L:(A.tmax-tm)/A.L;markers=true}}
+  const contour=makeContour(A);
+  for(let p=0;p<W*H;p++)if(fm[p]){const o=p*4;col.data[o]=col.data[o]*.8+70*.2;col.data[o+1]=col.data[o+1]*.8+209*.2;col.data[o+2]=col.data[o+2]*.8+132*.2}
+  const mc=document.createElement('canvas');mc.width=W;mc.height=H;mc.getContext('2d').putImageData(col,0,0);
+  st.topAuto={L:A.L,ball:A.ball,touches,markers,ballFrac,contour};
+  const ms=st.meas;ms.img=mc;ms.canvas.width=W;ms.canvas.height=H;ms.pts=contour.map(q=>[...q]);ms.needed=contour.length;ms.sel=0;ms.markers=markers;
+  computeMeas();
+  renderTopQuick();
+}
+/* foot outline analysis on a flattened mask (1px = 1/S mm) */
+function analyzeMask(fm,W,H,ballFrac){
+  let mx=0,my=0;const P=[];for(let p=0;p<W*H;p++)if(fm[p]){const x=(p%W)/S,y=((p/W)|0)/S;P.push(x,y);mx+=x;my+=y}
+  const N=P.length/2;if(N<50)return null;mx/=N;my/=N;let sxx=0,syy=0,sxy=0;
   for(let i=0;i<P.length;i+=2){const dx=P[i]-mx,dy=P[i+1]-my;sxx+=dx*dx;syy+=dy*dy;sxy+=dx*dy}
   const ang=.5*Math.atan2(2*sxy,sxx-syy),ux=Math.cos(ang),uy=Math.sin(ang);
   let tmin=1e9,tmax=-1e9;const T=new Float32Array(N),Sv=new Float32Array(N);
   for(let i=0;i<N;i++){const dx=P[2*i]-mx,dy=P[2*i+1]-my;T[i]=dx*ux+dy*uy;Sv[i]=-dx*uy+dy*ux;if(T[i]<tmin)tmin=T[i];if(T[i]>tmax)tmax=T[i]}
   const L=tmax-tmin+1/S,bins=Math.ceil(L)+1,lo=new Float32Array(bins).fill(1e9),hi=new Float32Array(bins).fill(-1e9);
   for(let i=0;i<N;i++){const b=Math.floor(T[i]-tmin);if(Sv[i]<lo[b])lo[b]=Sv[i];if(Sv[i]>hi[b])hi[b]=Sv[i]}
+  for(let i=0;i<bins;i++)if(!(hi[i]>lo[i])){const j=i>0?i-1:i+1;lo[i]=lo[j]<1e8?lo[j]:0;hi[i]=hi[j]>-1e8?hi[j]:0}
   const wid=[...lo].map((l,i)=>hi[i]>l?hi[i]-l+1/S:0);
-  const avg=(a,b)=>{let s=0;for(let i=a;i<b;i++)s+=wid[i];return s/(b-a)};
-  const e15=Math.floor(bins*.15),heelStart=avg(0,e15)<avg(bins-e15,bins),fromHeel=i=>heelStart?i:bins-1-i;
-  let ball=0,ballI=0;for(let i=0;i<bins;i++)if(wid[i]>ball){ball=wid[i];ballI=i}
-  let heel=0;for(let i=0;i<bins;i++)if(fromHeel(i)<bins*.2)heel=Math.max(heel,wid[i]);
-  const prof=[];for(let s=0;s<=60;s++){const f=s/60,b=Math.min(bins-1,Math.round(heelStart?f*(bins-1):(1-f)*(bins-1)));
-    let w=wid[b],c=(lo[b]+hi[b])/2;if(!(w>0)){w=0;c=0}prof.push({w,c:heelStart?c:-c})}
-  const touches=P.some((v,i)=>i%2===0?(v<m/S+1||v>Wmm-m/S-1):(v<m/S+1||v>Hmm-m/S-1));
-  // measure points on the flattened image (px = mm*S)
-  const toPx=(t,sv)=>[(mx+ux*t-uy*sv)*S,(my+uy*t+ux*sv)*S],tAt=i=>tmin+i+.5,mid=i=>(lo[i]+hi[i])/2;
-  const hb=heelStart?0:bins-1,tb=heelStart?bins-1:0;
-  let bI=ballI,markers=false;
-  const gb=greenBlobs(col.data,W,H,8).filter(b=>{const x=b.x/S-mx,y=b.y/S-my,t=x*ux+y*uy;return t>tmin&&t<tmax});
-  if(gb.length>=2){let best=null,bs=0;for(let i=0;i<gb.length;i++)for(let j=i+1;j<gb.length;j++){const sv=(g)=>-(g.x/S-mx)*uy+(g.y/S-my)*ux,sep=Math.abs(sv(gb[i])-sv(gb[j]));if(sep>bs){bs=sep;best=[gb[i],gb[j]]}}
-    if(best&&bs>30){const tm=best.reduce((a,g)=>a+((g.x/S-mx)*ux+(g.y/S-my)*uy),0)/2;bI=Math.max(0,Math.min(bins-1,Math.round(tm-tmin-.5)));markers=true}}
-  const autoPts=[toPx(tmin+(heelStart?0:L),mid(hb)),toPx(tmin+(heelStart?L:0),mid(tb)),toPx(tAt(bI),lo[bI]),toPx(tAt(bI),hi[bI])];
-  if(!heelStart){const t=autoPts[2];autoPts[2]=autoPts[3];autoPts[3]=t}
-  // flattened image with a soft tint on the detected foot
-  for(let p=0;p<W*H;p++)if(lab[p]===best){const o=p*4;col.data[o]=col.data[o]*.75+70*.25;col.data[o+1]=col.data[o+1]*.75+209*.25;col.data[o+2]=col.data[o+2]*.75+132*.25}
-  const mc=document.createElement('canvas');mc.width=W;mc.height=H;mc.getContext('2d').putImageData(col,0,0);
-  st.topAuto={L,ball,heel,touches,prof,autoPts,markers};
-  const ms=st.meas;ms.img=mc;ms.canvas.width=W;ms.canvas.height=H;ms.pts=autoPts.map(p=>[...p]);ms.sel=0;ms.markers=markers;
-  computeMeas();
-  renderTopQuick();
+  const avg=(a,b)=>{let s2=0;for(let i=a;i<b;i++)s2+=wid[i];return s2/Math.max(1,b-a)};
+  const e15=Math.max(1,Math.floor(bins*.15)),heelStart=avg(0,e15)<avg(bins-e15,bins),fromHeel=i=>heelStart?i:bins-1-i,binAt=f=>Math.max(0,Math.min(bins-1,Math.round(heelStart?f*(bins-1):(1-f)*(bins-1))));
+  let ball=0,ballI=0;
+  if(ballFrac!=null){const c0=binAt(ballFrac);for(let i=Math.max(0,c0-5);i<=Math.min(bins-1,c0+5);i++)if(wid[i]>ball){ball=wid[i];ballI=i}}
+  else for(let i=0;i<bins;i++)if(fromHeel(i)>bins*.45&&wid[i]>ball){ball=wid[i];ballI=i}
+  let heel=0,heelI=0;for(let i=0;i<bins;i++)if(fromHeel(i)<bins*.25&&wid[i]>heel){heel=wid[i];heelI=i}
+  let waist=1e9,waistI=binAt(.45);for(let f=.38;f<=.52;f+=.01){const i=binAt(f);if(wid[i]>0&&wid[i]<waist){waist=wid[i];waistI=i}}
+  const prof=[];for(let k=0;k<=60;k++){const i=binAt(k/60);let w=wid[i],c=(lo[i]+hi[i])/2;if(!(w>0)){w=0;c=0}prof.push({w,c:heelStart?c:-c})}
+  const tAt=i=>tmin+i+.5,toPx=(t,sv)=>[(mx+ux*t-uy*sv)*S,(my+uy*t+ux*sv)*S];
+  return {L,ball,heel,waist,ballI,heelI,waistI,ballPct:fromHeel(ballI)/bins*100,prof,mx,my,ux,uy,tmin,tmax,lo,hi,bins,heelStart,binAt,tAt,toPx};
 }
+/* editable outline: heel, one side, toe, other side */
+function makeContour(A){
+  const FS=[.06,.16,.3,.45,.6,.72,.82,.91],mid=i=>(A.lo[i]+A.hi[i])/2,hb=A.binAt(0),tb=A.binAt(1);
+  const heelP=A.toPx(A.heelStart?A.tmin:A.tmax,mid(hb)),toeP=A.toPx(A.heelStart?A.tmax:A.tmin,mid(tb));
+  const sideA=FS.map(f=>{const i=A.binAt(f);return A.toPx(A.tAt(i),A.lo[i])}),sideB=FS.map(f=>{const i=A.binAt(f);return A.toPx(A.tAt(i),A.hi[i])});
+  return [heelP,...sideA,toeP,...sideB.reverse()];
+}
+function smoothPath(x,pts){const n=pts.length;x.beginPath();x.moveTo(pts[0][0],pts[0][1]);
+  for(let i=0;i<n;i++){const p0=pts[(i-1+n)%n],p1=pts[i],p2=pts[(i+1)%n],p3=pts[(i+2)%n];
+    x.bezierCurveTo(p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6,p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6,p2[0],p2[1])}x.closePath()}
 function computeMeas(){
-  const a=st.topAuto,ms=st.meas;if(!a||a.error||ms.pts.length<4){st.topRes=null;return}
-  drawShot(ms);
-  const [he,to,bi,bo]=ms.pts,d=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1])/S;
-  const L=d(he,to),ball=d(bi,bo),k=ball/a.ball;
-  const ax=[to[0]-he[0],to[1]-he[1]],al=Math.hypot(...ax),bm=[(bi[0]+bo[0])/2-he[0],(bi[1]+bo[1])/2-he[1]];
-  const ballPct=Math.max(40,Math.min(85,(bm[0]*ax[0]+bm[1]*ax[1])/al/al*100));
-  st.topRes={L,ball,heel:a.heel*k,ballPct,touches:a.touches,prof:a.prof.map(p=>({w:p.w*k,c:p.c*k})),markers:a.markers};
-  $('measQuick').innerHTML=`<div><small>Length</small><b>${L.toFixed(1)}<em>mm</em></b></div><div><small>Ball width</small><b>${ball.toFixed(1)}<em>mm</em></b></div>`;
+  const a=st.topAuto,ms=st.meas;if(!a||a.error||ms.pts.length<6){st.topRes=null;return}
+  const W=ms.canvas.width,H=ms.canvas.height,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  smoothPath(x,ms.pts);x.fillStyle='#000';x.fill();const d=x.getImageData(0,0,W,H).data,fm=new Uint8Array(W*H);for(let p=0;p<W*H;p++)fm[p]=d[p*4+3]>127?1:0;
+  const A=analyzeMask(fm,W,H,a.ballFrac);if(!A){st.topRes=null;return}
+  st.measA=A;drawShot(ms);
+  st.topRes={L:A.L,ball:A.ball,heel:A.heel,waist:A.waist,ballPct:A.ballPct,touches:a.touches,prof:A.prof,markers:a.markers};
+  $('measQuick').innerHTML=`<div><small>Length</small><b>${A.L.toFixed(1)}<em>mm</em></b></div><div><small>Ball</small><b>${A.ball.toFixed(1)}<em>mm</em></b></div><div><small>Heel</small><b>${A.heel.toFixed(1)}<em>mm</em></b></div>`;
   const n=$('measNote');n.className='note';
-  n.textContent=a.markers?'Ball points placed from the green sock markers. Check that they sit on the edge of the foot.':'Mint line is length, orange line is ball width. Drag points or use the arrows to fine-tune.';
+  n.textContent=a.markers?'Ball width is taken at the green sock markers. Drag the outline points onto the edge of your foot.':'Drag the outline points onto the edge of your foot. Length, ball and heel update as you go.';
   updatePrompt(ms);
 }
 function renderTopQuick(){
@@ -667,13 +734,13 @@ function renderTopQuick(){
 /* ===== Side view analysis ===== */
 function computeSide(){
   const shot=st.side;drawShot(shot);const L=st.topRes&&!st.topRes.error?st.topRes.L:250;
-  if(shot.pts.length<4){st.sideRes=null;$('sideNext').disabled=true;return}
+  if(shot.pts.length<5){st.sideRes=null;$('sideNext').disabled=true;return}
   $('sideNext').disabled=false;
-  const sn=$('sideNote');if(sn)sn.textContent=shot.markers?'Toe box and instep placed from the green sock markers. Check heel and toe on the floor line.':'Drag each point onto the exact spot. A magnifier shows what is under your finger.';
-  const [heel,toe,box,inst]=shot.pts,dx=toe[0]-heel[0],dy=toe[1]-heel[1],d=Math.hypot(dx,dy),k=L/d,ux=dx/d,uy=dy/d;
+  const sn=$('sideNote');if(sn)sn.textContent=shot.markers?'Toe box and instep placed from the green sock markers. Check heel, toe and arch.':'Drag each point onto the exact spot. A magnifier shows what is under your finger.';
+  const [heel,toe,box,inst,arch]=shot.pts,dx=toe[0]-heel[0],dy=toe[1]-heel[1],d=Math.hypot(dx,dy),k=L/d,ux=dx/d,uy=dy/d;
   const along=p=>((p[0]-heel[0])*ux+(p[1]-heel[1])*uy)*k,height=p=>Math.abs((p[0]-heel[0])*uy-(p[1]-heel[1])*ux)*k;
   const hb=height(box),hi=height(inst),ab=along(box),ai=along(inst);
-  st.sideRes={hb,hi,ab,ai,L,slope:Math.atan2(hi-hb,Math.abs(ab-ai))*180/Math.PI,toeAng:Math.atan2(hb,Math.abs(L-ab))*180/Math.PI};
+  st.sideRes={hb,hi,ab,ai,L,archH:height(arch),slope:Math.atan2(hi-hb,Math.abs(ab-ai))*180/Math.PI,toeAng:Math.atan2(hb,Math.abs(L-ab))*180/Math.PI};
 }
 const ellipsePerim=(a,b)=>{const h=((a-b)/(a+b))**2;return Math.PI*(a+b)*(1+3*h/(10+Math.sqrt(4-3*h)))};
 
@@ -699,6 +766,7 @@ function showResult(){
     <div class="measure-line"><svg viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1" y="2" width="20" height="10" rx="1.5"/><path d="M5 2v4M9 2v3M13 2v4M17 2v3"/></svg>${(t0.L/10).toFixed(1)} cm long · ${(t0.ball/10).toFixed(1)} cm wide</div>
     ${scale('Narrow','Wide',t0.ball/t0.L,.345,.435)}
     ${s0?scale('Low instep','High instep',s0.hi/t0.L,.2,.31):''}
+    ${s0?scale('Flat','Arched',s0.archH,0,22):''}
     ${scale('Slim heel','Broad heel',t0.heel/t0.ball,.58,.74)}`;
   $('sizeCard').innerHTML=`<span class="label">Recommended size</span>
     <div class="big"><b>${c.size}</b><span>mm</span></div>
@@ -707,9 +775,9 @@ function showResult(){
     <div class="tags"><span class="tag ${c.width==='Regular'?'':'warn'}">${c.width} width</span><span class="tag ${c.instep==='Regular'?'':'warn'}">${c.instep?c.instep+' instep':'Instep not measured'}</span></div>
     <p class="advice">${tips.join(' ')}</p>`;
   const t=c.t,s=c.s,stat=(k,v,u,est)=>`<div class="stat${est?' est':''}"><small>${k}</small><b>${v}<em>${u}</em></b></div>`;
-  let h=stat('Length',t.L.toFixed(1),'mm')+stat('Ball width',t.ball.toFixed(1),'mm')+stat('Heel width',t.heel.toFixed(1),'mm')+stat('Width ratio',(t.ball/t.L*100).toFixed(1),'%');
+  let h=stat('Length',t.L.toFixed(1),'mm')+stat('Ball width',t.ball.toFixed(1),'mm')+stat('Heel width',t.heel.toFixed(1),'mm')+(t.waist?stat('Midfoot width',t.waist.toFixed(1),'mm'):'')+stat('Width ratio',(t.ball/t.L*100).toFixed(1),'%');
   if(s)h+=stat('Instep height',s.hi.toFixed(1),'mm')+stat('Toe box height',s.hb.toFixed(1),'mm')+stat('Instep slope',s.slope.toFixed(1),'°')+stat('Toe spring',s.toeAng.toFixed(1),'°')
-    +stat('Ball girth (est.)',ellipsePerim(t.ball/2,s.hb).toFixed(0),'mm',true)+stat('Ball position',t.ballPct.toFixed(0),'%');
+    +stat('Arch height',s.archH.toFixed(1),'mm')+stat('Ball girth (est.)',ellipsePerim(t.ball/2,s.hb).toFixed(0),'mm',true)+stat('Ball position',t.ballPct.toFixed(0),'%');
   $('stats').innerHTML=h;
   const rows=LASTS.map(l=>{const k=c.size/250,dB=l.ball*k-t.ball,dI=s?l.instep*k-s.hi:null;
     let sc=100-Math.max(0,-dB)*9-Math.max(0,dB-5)*4;if(dI!==null)sc-=Math.max(0,-dI)*7+Math.max(0,dI-6)*3;return {l,dB,dI,sc:Math.max(0,Math.round(sc))}}).sort((a,b)=>b.sc-a.sc);
@@ -741,7 +809,7 @@ function makeViewer(canvas,opts){
   const up=e=>{ptrs.delete(e.pointerId);if(!ptrs.size)drag=null};canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
   if(opts.zoom)canvas.addEventListener('wheel',e=>{e.preventDefault();V.auto=false;V.dist=Math.min(1600,Math.max(380,V.dist*(1+e.deltaY*.001)))},{passive:false});
   V.reset=()=>{V.rx=-.42;V.ry=.75;V.dist=opts.dist;V.auto=true};
-  V.setWire=w=>{V.wire=w;if(V.mesh){V.mesh.material.wireframe=w;V.mesh.material.color.set(css(w?'--girth':'--model'))}};
+  V.setWire=w=>{V.wire=w;(V.parts||[]).forEach(m=>{m.material.wireframe=w;m.material.color.set(css(w?'--girth':'--model'))})};
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   (function loop(){requestAnimationFrame(loop);if(!canvas.offsetParent)return;
     const w=canvas.clientWidth,h=canvas.clientHeight,pr=renderer.getPixelRatio();if(canvas.width!==Math.round(w*pr)||canvas.height!==Math.round(h*pr)){renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
@@ -749,20 +817,44 @@ function makeViewer(canvas,opts){
     camera.position.set(V.dist*Math.cos(V.rx)*Math.sin(V.ry),-V.dist*Math.sin(V.rx),V.dist*Math.cos(V.rx)*Math.cos(V.ry));camera.lookAt(0,35,0);renderer.render(scene,camera)})();
   V.build=(t,s)=>{
     while(root.children.length){const o=root.children.pop();o.geometry&&o.geometry.dispose()}
-    const L=t.L,prof=t.prof,NS=prof.length,M=48,pos=[],idx=[];
-    const W=prof.map(p=>p.w),C=prof.map(p=>p.c);for(let i=1;i<NS;i++)if(!W[i]){W[i]=W[i-1]*.9;C[i]=C[i-1]}
-    const sm=a=>a.map((v,i)=>(a[Math.max(0,i-1)]+2*v+a[Math.min(a.length-1,i+1)])/4),Ws=sm(sm(W)),Cs=sm(sm(C));
-    for(let i=0;i<NS;i++){const f=i/(NS-1),x=f*L-L/2;
-      const taper=f<.05||f>.95?Math.sqrt(Math.max(0,Math.sin(Math.min(f,1-f)/.05*Math.PI/2))):1;
-      const w=Ws[i]/2*taper,h=heightCurve(f,s,L),c=Cs[i];
+    const L=t.L,FB=.86,M=64,pos=[],idx=[];
+    // upsample the measured outline, smooth it, and use it for the foot body (toes are added separately)
+    const P0=t.prof,NS=121,W=[],C=[];
+    for(let i=0;i<NS;i++){const u=i/(NS-1)*FB*(P0.length-1),i0=Math.floor(u),i1=Math.min(P0.length-1,i0+1),fr=u-i0;
+      let w0=P0[i0].w,w1=P0[i1].w;if(!w0)w0=w1;if(!w1)w1=w0;W.push(w0+(w1-w0)*fr);C.push(P0[i0].c+(P0[i1].c-P0[i0].c)*fr)}
+    for(let i=1;i<NS;i++)if(!W[i]){W[i]=W[i-1];C[i]=C[i-1]}
+    const sm=a=>a.map((v,i)=>{let s2=0,n=0;for(let k=-3;k<=3;k++){const q=a[Math.max(0,Math.min(a.length-1,i+k))];s2+=q;n++}return s2/n}),Ws=sm(sm(W)),Cs=sm(sm(C));
+    const fTip=P0.length>5?(P0[Math.round(.97*(P0.length-1))].c-P0[Math.round(.7*(P0.length-1))].c):1,med=fTip>=0?1:-1; // big-toe side
+    const hi0=s?s.hi:L*.26;
+    for(let i=0;i<NS;i++){const fb=i/(NS-1),f=fb*FB,x=f*L-L/2;
+      const taper=fb<.06?Math.sqrt(Math.max(0,Math.sin(fb/.06*Math.PI/2))):fb>.9?Math.pow(Math.max(0,Math.cos((fb-.9)/.1*Math.PI/2)),.6):1;
+      const w=Ws[i]/2*Math.max(taper,.0001),h=heightCurve(f,s,L),c=Cs[i];
+      const arch=10*Math.exp(-(((f-.45)/.13)**2)); // medial arch lift
       for(let j=0;j<M;j++){const a=j/M*Math.PI*2,ca=Math.cos(a),sa=Math.sin(a);
-        const z=c+w*Math.sign(ca)*Math.pow(Math.abs(ca),.75),y=sa>=0?3+(h*taper-3)*Math.pow(sa,.85):3-3*Math.pow(-sa,.5);pos.push(x,Math.max(0,y),z)}}
+        const z=c+w*Math.sign(ca)*Math.pow(Math.abs(ca),.7);
+        const side=Math.sign(ca)*med; // +1 medial, -1 lateral
+        let y=sa>=0?4+(h*Math.max(taper,.35)-4)*Math.pow(sa,.8):4-4*Math.pow(-sa,.45);
+        if(sa<.35&&side>0)y+=arch*Math.pow(Math.abs(ca),2)*(sa<0?1:1-sa/.35);
+        pos.push(x,Math.max(0,y),z)}}
     for(let i=0;i<NS-1;i++)for(let j=0;j<M;j++){const a=i*M+j,b=i*M+(j+1)%M,c2=(i+1)*M+j,d=(i+1)*M+(j+1)%M;idx.push(a,c2,b,b,c2,d)}
-    const ci=pos.length/3;pos.push(-L/2,heightCurve(0,s,L)*.2,Cs[0]);for(let j=0;j<M;j++)idx.push(ci,j,(j+1)%M);
-    const ce=pos.length/3;pos.push(L/2,1,Cs[NS-1]);for(let j=0;j<M;j++)idx.push(ce,(NS-1)*M+(j+1)%M,(NS-1)*M+j);
+    const ci=pos.length/3;pos.push(-L/2,heightCurve(0,s,L)*.3,Cs[0]);for(let j=0;j<M;j++)idx.push(ci,j,(j+1)%M);
+    const ce=pos.length/3;pos.push(FB*L-L/2,heightCurve(FB,s,L)*.4,Cs[NS-1]);for(let j=0;j<M;j++)idx.push(ce,(NS-1)*M+(j+1)%M,(NS-1)*M+j);
     const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();
-    const mat=new THREE.MeshPhysicalMaterial({color:new THREE.Color(css(V.wire?'--girth':'--model')),roughness:.55,metalness:0,clearcoat:.25,clearcoatRoughness:.5,wireframe:V.wire,side:THREE.DoubleSide});
-    V.mesh=new THREE.Mesh(geo,mat);root.add(V.mesh);
+    const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(css(V.wire?'--girth':'--model')),roughness:.62,metalness:0,wireframe:V.wire,side:THREE.DoubleSide});
+    V.parts=[];const add=m=>{root.add(m);V.parts.push(m);return m};
+    V.mesh=add(new THREE.Mesh(geo,mat));
+    // ankle: an oval stump rising from the heel, cut flat like a scan
+    const hw=(t.heel||t.ball*.66),ankH=hi0*1.4,ankle=new THREE.Mesh(new THREE.CylinderGeometry(1,1.08,1,64,8,false),mat);
+    ankle.scale.set(L*.15,ankH,hw*.5);ankle.position.set(-L/2+L*.2,ankH/2+2,Cs[Math.round(.2/FB*(NS-1))]-med*hw*.04);add(ankle);
+    const cap=new THREE.Mesh(new THREE.CircleGeometry(1,64),mat);cap.rotation.x=-Math.PI/2;cap.scale.set(L*.15,hw*.5,1);cap.position.set(ankle.position.x,ankH+2,ankle.position.z);add(cap);
+    const heelBall=new THREE.Mesh(new THREE.SphereGeometry(1,48,32),mat);heelBall.scale.set(L*.13,hi0*.62,hw*.49);heelBall.position.set(-L/2+L*.125,hi0*.55,Cs[Math.round(.12/FB*(NS-1))]);add(heelBall);
+    // five toes, big toe on the medial side
+    const iT=Math.round(.82/FB*(NS-1)),wf=Ws[Math.min(NS-1,iT)]*1.02,cz=Cs[Math.min(NS-1,iT)],edge=cz+med*wf/2;
+    const TW=[25,15.5,14.5,13.5,12.5],TH=[20,15,14,13,11.5],TL=[.165,.135,.12,.105,.095],TO=[0,-.018,-.05,-.09,-.14];
+    const tws=TW.map(v=>v*wf/TW.reduce((a,b)=>a+b,0));let cum=0;
+    TW.forEach((_,k)=>{const w=tws[k],z=edge-med*(cum+w/2);cum+=w;const len=TL[k]*L,tip=L/2+TO[k]*L,hk=TH[k]*Math.min(1.15,Math.max(.8,(s?s.hb:L*.13)/32));
+      const toe=new THREE.Mesh(new THREE.SphereGeometry(1,40,28),mat);toe.scale.set(len/2,hk/2,w/2*1.04);toe.position.set(tip-len/2,hk/2+.5,z);toe.rotation.z=-.06;add(toe)});
+
     const mint=new THREE.Color(css('--girth')),R0=L*.6;
     const disc=new THREE.Mesh(new THREE.CircleGeometry(R0,96),new THREE.MeshBasicMaterial({color:mint,transparent:true,opacity:.1,depthWrite:false}));disc.rotation.x=-Math.PI/2;disc.position.y=-.4;disc.scale.set(1,.62,1);root.add(disc);
     const plat=new THREE.Mesh(new THREE.RingGeometry(R0-1.6,R0,128),new THREE.MeshBasicMaterial({color:mint,side:THREE.DoubleSide}));plat.rotation.x=-Math.PI/2;plat.position.y=-.3;plat.scale.set(1,.62,1);root.add(plat);
@@ -772,8 +864,8 @@ function makeViewer(canvas,opts){
     const lm=c=>new THREE.LineBasicMaterial({color:new THREE.Color(css(c))}),ln=(pts,c)=>root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(...p))),lm(c)));
     const wmax=Math.max(...Ws)/2,zl=Math.min(...Cs)-wmax-14;
     ln([[-L/2,.5,zl],[L/2,.5,zl]],'--len');ln([[-L/2,.5,zl-6],[-L/2,.5,zl+6]],'--len');ln([[L/2,.5,zl-6],[L/2,.5,zl+6]],'--len');
-    const bi=Math.round(t.ballPct/100*(NS-1)),ring=[];for(let j=0;j<=M;j++){const k=(bi*M+(j%M))*3;ring.push([pos[k],pos[k+1]+.2,pos[k+2]])}ln(ring,'--girth');
-    const fi=s?s.ai/L:.52,hv=heightCurve(fi,s,L),xi=fi*L-L/2,zi=Cs[Math.round(fi*(NS-1))]+wmax+18;
+    const bi=Math.min(NS-1,Math.round(t.ballPct/100/FB*(NS-1))),ring=[];for(let j=0;j<=M;j++){const k=(bi*M+(j%M))*3;ring.push([pos[k],pos[k+1]+.2,pos[k+2]])}ln(ring,'--girth');
+    const fi=s?s.ai/L:.52,hv=heightCurve(fi,s,L),xi=fi*L-L/2,zi=Cs[Math.min(NS-1,Math.round(fi/FB*(NS-1)))]+wmax+18;
     ln([[xi,0,zi],[xi,hv,zi]],'--inst');ln([[xi,hv,zi],[xi,hv,zi-18]],'--inst');
   };
   return V;
@@ -816,24 +908,24 @@ function sampleTop(){const c=document.createElement('canvas');c.width=900;c.heig
 function sampleSide(){const c=document.createElement('canvas');c.width=1200;c.height=600;const x=c.getContext('2d');
   x.fillStyle='#e6e2dc';x.fillRect(0,0,1200,600);x.fillStyle='#857766';x.fillRect(0,470,1200,130);const hx=150,gy=470;
   x.fillStyle='#24272e';x.beginPath();x.moveTo(hx,gy);x.bezierCurveTo(hx-12,gy-40,hx-8,gy-170,hx+40,gy-260);x.lineTo(hx+150,gy-265);
-  x.bezierCurveTo(hx+260,gy-250,hx+420,gy-200,hx+560,gy-140);x.bezierCurveTo(hx+700,gy-110,hx+820,gy-95,hx+880,gy-75);x.bezierCurveTo(hx+905,gy-55,hx+905,gy-15,hx+900,gy);x.closePath();x.fill();x.save();x.clip();
+  x.bezierCurveTo(hx+260,gy-250,hx+420,gy-200,hx+560,gy-140);x.bezierCurveTo(hx+700,gy-110,hx+820,gy-95,hx+880,gy-75);x.bezierCurveTo(hx+905,gy-55,hx+905,gy-15,hx+900,gy);x.lineTo(hx+640,gy);x.bezierCurveTo(hx+540,gy-34,hx+300,gy-34,hx+210,gy);x.closePath();x.fill();x.save();x.clip();
   x.fillStyle='rgba(255,255,255,.7)';for(let yy=gy-260;yy<gy;yy+=36)for(let xx=hx-20;xx<hx+920;xx+=36){x.beginPath();x.arc(xx+((yy/36|0)%2?18:0),yy+14,4,0,7);x.fill()}x.restore();
   x.fillStyle='#3be07c';[[hx+690,gy-104],[hx+468,gy-222],[hx+600,gy-40]].forEach(([a,b])=>{x.beginPath();x.arc(a,b,13,0,7);x.fill()});
   return {c,pts:null}}
 
 /* ===== Wiring ===== */
 st.top=makeShot('topCanvas','topChip',4,['a paper corner','a paper corner','a paper corner','a paper corner'],computeTop,'corners');
-st.meas=makeShot('measCanvas','measChip',4,['the heel','the toe tip','the inner ball','the outer ball'],computeMeas,'meas',['Heel','Toe','Ball in','Ball out']);
+st.meas=makeShot('measCanvas','measChip',18,Array(18).fill('an outline point'),computeMeas,'meas',null);
 st.meas.ui={vp:$('measVP')};
-st.side=makeShot('sideCanvas','sideChip',4,['the back of the heel','the tip of the big toe','the top of the toe box','the highest point of the instep'],computeSide,'side',['Heel','Toe','Toe box','Instep']);
+st.side=makeShot('sideCanvas','sideChip',5,['the back of the heel','the tip of the big toe','the top of the toe box','the highest point of the instep','the highest point under the arch'],computeSide,'side',['Heel','Toe','Toe box','Instep','Arch']);
 bindPointer(st.top);bindPointer(st.side);bindPointer(st.meas);bindTune('top',st.top);bindTune('side',st.side);bindTune('meas',st.meas);
 setupCam('shootTop','topVP','topCtl','topSheet','topNav',st.top);setupCam('shootSide','sideVP','sideCtl','sideSheet','sideNav',st.side);
-$('topNext').onclick=()=>go('checkTop');$('measNext').onclick=()=>go('shootSide');
-$('measAuto').onclick=()=>{if(st.topAuto&&st.topAuto.autoPts){st.meas.pts=st.topAuto.autoPts.map(p=>[...p]);computeMeas();toast('Points reset to auto')}};$('sideNext').onclick=()=>go('result');
+$('topNext').onclick=()=>go('checkTop');$('measNext').onclick=()=>go('shootSide');$('measBack').onclick=()=>{clearShot(st.top);go('shootTop')};
+$('measAuto').onclick=()=>{if(st.topAuto&&st.topAuto.contour){st.meas.pts=st.topAuto.contour.map(p=>[...p]);computeMeas();toast('Outline reset')}};$('sideNext').onclick=()=>go('result');
 const resetShots=()=>{clearShot(st.top);clearShot(st.side)};
 $('startBtn').onclick=()=>{resetShots();go('shootTop')};
 $('againBtn').onclick=()=>{resetShots();go('shootTop')};
-function loadSample(){const a=sampleTop(),b=sampleSide();accept(st.top,a.c,a.c.width,a.c.height,true,a.pts);accept(st.side,b.c,b.c.width,b.c.height,true)}
+function loadSample(){st.silent=true;const a=sampleTop(),b=sampleSide();accept(st.top,a.c,a.c.width,a.c.height,true,a.pts);accept(st.side,b.c,b.c.width,b.c.height,true);st.silent=false}
 $('demoBtn').onclick=()=>{resetShots();loadSample();go('result')};
 loadSample();hero.build(st.topRes,st.sideRes);resetShots();
 renderRecs();
