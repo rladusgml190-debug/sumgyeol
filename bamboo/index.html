@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>대나무숲</title>
+<meta name="description" content="임금님 귀는 당나귀 귀. 꾹 누르고 크게 외치면, 대나무숲이 메아리로 돌려줘요.">
+<meta property="og:title" content="대나무숲">
+<meta property="og:description" content="임금님 귀는 당나귀 귀. 꾹 누르고 크게 외치면, 대나무숲이 메아리로 돌려줘요.">
+<meta property="og:image" content="https://rladusgml190-debug.github.io/sumgyeol/bamboo/og.png">
+<meta property="og:url" content="https://rladusgml190-debug.github.io/sumgyeol/bamboo/">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap">
+<style>
+/* Layout: one full-bleed WebGL bamboo grove; screen 1 = name + one-line how-to over a misted scrim, screen 2 = the grove with only a hold-to-shout button.
+   Single deliberate look (misty daylight grove), so colors are set explicitly rather than themed. */
+*{box-sizing:border-box}
+:root{
+  --mist:#b9cdb8; --ink:#f4f8ef; --ink-soft:rgba(244,248,239,.82); --shade:rgba(14,28,16,.55);
+  --hot:#e0623f; --glass:rgba(18,34,20,.32); --glass-line:rgba(244,248,239,.35);
+  --f-display:"Gowun Batang","Nanum Myeongjo",serif;
+  --f-body:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%;margin:0}
+body{background:var(--mist);color:var(--ink);font-family:var(--f-body);overflow:hidden;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.screen{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;box-sizing:border-box;
+  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));
+  padding-block:calc(28px + env(safe-area-inset-top,0px)) calc(28px + env(safe-area-inset-bottom,0px));
+  transition:opacity 1.2s ease,visibility 1.2s}
+.screen[aria-hidden="true"]{opacity:0;visibility:hidden;pointer-events:none}
+/* screen 1 */
+#intro{justify-content:flex-end;background:linear-gradient(180deg,rgba(185,205,184,.15) 0%,rgba(185,205,184,.05) 40%,rgba(12,26,14,.62) 100%)}
+.intro-inner{max-width:560px;display:flex;flex-direction:column;gap:14px;text-shadow:0 2px 18px var(--shade)}
+.eyebrow{font-size:13px;letter-spacing:.18em;color:var(--ink-soft)}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(56px,17vw,108px);line-height:1;margin:0;letter-spacing:.02em}
+.howto{font-size:17px;line-height:1.6;margin:0;color:var(--ink);max-width:26em;text-wrap:balance}
+.enter{align-self:flex-start;margin-top:10px;font-family:var(--f-display);font-weight:700;font-size:17px;color:#16301a;
+  background:var(--ink);border:0;border-radius:999px;padding:14px 26px;cursor:pointer;box-shadow:0 8px 30px rgba(10,24,12,.3)}
+.enter:focus-visible,.mic:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
+/* screen 2 */
+#forest{justify-content:space-between;align-items:center;pointer-events:none}
+.tag{align-self:flex-start;font-family:var(--f-display);font-size:15px;color:var(--ink-soft);text-shadow:0 1px 10px var(--shade)}
+.dock{display:flex;flex-direction:column;align-items:center;gap:14px;pointer-events:auto}
+.status{margin:0;min-height:1.5em;font-size:15px;text-align:center;max-width:22em;line-height:1.5;text-shadow:0 1px 12px var(--shade);text-wrap:balance}
+.mic{position:relative;width:104px;height:104px;border-radius:50%;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;
+  font-family:var(--f-display);font-weight:700;font-size:15px;line-height:1.3;color:var(--ink);
+  background:var(--glass);border:1.5px solid var(--glass-line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:0 0 0 calc(var(--lvl,0)*40px) rgba(224,98,63,.28),0 10px 34px rgba(8,20,10,.35);transition:box-shadow .08s,background .25s,transform .2s}
+.mic.rec{background:rgba(224,98,63,.75);border-color:transparent;transform:scale(1.06)}
+.mic:disabled{opacity:.45;cursor:default}
+.fail{position:fixed;inset:0;z-index:3;display:grid;place-items:center;padding:24px;text-align:center;background:var(--mist);color:#1d3320;font-size:16px}
+@media (prefers-reduced-motion: reduce){.screen{transition:none}}
+</style>
+</head>
+<body>
+
+<canvas id="scene" aria-hidden="true"></canvas>
+
+<section class="screen" id="intro" aria-hidden="false">
+  <div class="intro-inner">
+    <span class="eyebrow">임금님 귀는 당나귀 귀</span>
+    <h1>대나무숲</h1>
+    <p class="howto">버튼을 꾹 누른 채 하고 싶은 말을 크게 외치고, 손을 떼면 숲이 메아리로 돌려줘요.</p>
+    <button class="enter" id="enter" type="button">숲으로 들어가기</button>
+  </div>
+</section>
+
+<section class="screen" id="forest" aria-hidden="true">
+  <span class="tag">대나무숲</span>
+  <div class="dock">
+    <p class="status" id="status" aria-live="polite">바람이 불고 있어요. 준비되면 꾹 누르고 외쳐요.</p>
+    <button class="mic" id="mic" type="button">누른 채로<br>외치기</button>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(()=>{
+if(!window.THREE){document.body.insertAdjacentHTML('beforeend','<div class="fail">숲을 그리는 그래픽을 불러오지 못했어요. 잠시 뒤 다시 열어 주세요.</div>');return}
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const mobile=matchMedia('(pointer:coarse)').matches;
+const Q=mobile?0.7:1;
+const rand=(a,b)=>a+Math.random()*(b-a);
+
+/* ================= renderer / scene ================= */
+const canvas=document.getElementById('scene');
+let renderer;
+try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'})}
+catch(e){document.body.insertAdjacentHTML('beforeend','<div class="fail">이 기기에서는 3D 숲을 그릴 수 없어요 (WebGL 미지원).</div>');return}
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,mobile?1.6:2));
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+
+const scene=new THREE.Scene();
+const FOG=new THREE.Color(0xb7cbb5);
+scene.fog=new THREE.FogExp2(FOG,0.045);
+scene.background=FOG;
+const camera=new THREE.PerspectiveCamera(58,1,0.1,400);
+const CAM=new THREE.Vector3(0,1.6,6);camera.position.copy(CAM);
+
+/* sky dome */
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(300,32,16),new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,
+  uniforms:{top:{value:new THREE.Color(0xf1f7ee)},hor:{value:FOG}},
+  vertexShader:'varying vec3 vP;void main(){vP=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+  fragmentShader:'uniform vec3 top;uniform vec3 hor;varying vec3 vP;void main(){float h=clamp(vP.y,0.,1.);gl_FragColor=vec4(mix(hor,top,pow(h,.6)),1.);}'})));
+
+/* lights */
+scene.add(new THREE.HemisphereLight(0xe4f0de,0x4a3d26,0.85));
+const sun=new THREE.DirectionalLight(0xfff0d2,2.6);
+const SUNDIR=new THREE.Vector3(18,40,10).normalize();
+sun.castShadow=true;sun.shadow.mapSize.set(mobile?1024:2048,mobile?1024:2048);
+Object.assign(sun.shadow.camera,{left:-22,right:22,top:22,bottom:-22,near:1,far:140});
+sun.shadow.bias=-0.0006;sun.shadow.normalBias=0.03;
+scene.add(sun,sun.target);
+sun.position.copy(CAM).addScaledVector(SUNDIR,70);sun.target.position.set(0,0,-8);
+
+/* ================= wind shader patch (shared) ================= */
+const U={uTime:{value:0},uWind:{value:.2},uH:{value:15}};
+function windPatch(mat,leaf){
+  mat.onBeforeCompile=s=>{
+    Object.assign(s.uniforms,U);
+    s.vertexShader='uniform float uTime;uniform float uWind;uniform float uH;\n'+s.vertexShader.replace('#include <project_vertex>',`
+      vec4 mvPosition=vec4(transformed,1.0);
+      #ifdef USE_INSTANCING
+        mvPosition=instanceMatrix*mvPosition;
+      #endif
+      float hN=clamp(mvPosition.y/uH,0.0,1.4);
+      float ph=mvPosition.x*0.17+mvPosition.z*0.11;
+      float bend=hN*hN;
+      vec2 sw=vec2(sin(uTime*0.9+ph)+0.45*sin(uTime*2.1+ph*1.7),0.55*cos(uTime*0.72+ph*1.3));
+      mvPosition.xz+=sw*(0.18+uWind)*bend*1.5;
+      mvPosition.x+=uWind*bend*2.6;
+      ${leaf?'mvPosition.y+=sin(uTime*8.0+ph*21.0+position.x*24.0)*0.03*(0.25+uWind)*hN;mvPosition.z+=cos(uTime*6.5+ph*17.0)*0.02*(0.25+uWind)*hN;':''}
+      mvPosition=modelViewMatrix*mvPosition;
+      gl_Position=projectionMatrix*mvPosition;`);
+  };
+  return mat;
+}
+function depthFor(leaf){const m=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking});if(leaf)m.side=THREE.DoubleSide;return windPatch(m,leaf)}
+
+/* ================= procedural textures ================= */
+function barkTexture(){
+  const c=document.createElement('canvas');c.width=128;c.height=1024;const g=c.getContext('2d');
+  const gr=g.createLinearGradient(0,0,128,0);gr.addColorStop(0,'#3d5e2a');gr.addColorStop(.35,'#6f9447');gr.addColorStop(.6,'#5a7f39');gr.addColorStop(1,'#34522a');
+  g.fillStyle=gr;g.fillRect(0,0,128,1024);
+  for(let i=0;i<260;i++){g.fillStyle=`rgba(${Math.random()<.5?'210,220,150':'30,50,20'},${rand(.03,.1)})`;g.fillRect(rand(0,128),rand(0,1024),rand(.5,2.2),rand(30,260))}
+  const nodes=15,step=1024/nodes;
+  for(let n=0;n<nodes;n++){const y=n*step+step*.5;
+    const b=g.createLinearGradient(0,y-26,0,y+4);b.addColorStop(0,'rgba(230,236,215,0)');b.addColorStop(1,'rgba(230,236,215,.38)');g.fillStyle=b;g.fillRect(0,y-26,128,30);
+    g.fillStyle='rgba(28,40,18,.75)';g.fillRect(0,y+4,128,3);
+    g.fillStyle='rgba(170,190,120,.55)';g.fillRect(0,y+7,128,4);
+    g.fillStyle='rgba(40,60,25,.35)';g.fillRect(0,y+11,128,6)}
+  const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=4;return t}
+function groundTexture(){
+  const c=document.createElement('canvas');c.width=c.height=512;const g=c.getContext('2d');
+  g.fillStyle='#5b4a30';g.fillRect(0,0,512,512);
+  for(let i=0;i<9000;i++){const v=rand(0,1);g.fillStyle=`rgba(${v<.4?'40,30,18':v<.75?'120,98,60':'150,140,80'},${rand(.15,.5)})`;g.fillRect(rand(0,512),rand(0,512),rand(1,3),rand(1,3))}
+  for(let i=0;i<700;i++){g.save();g.translate(rand(0,512),rand(0,512));g.rotate(rand(0,7));
+    g.fillStyle=['#8a7444','#a08a52','#6d5a33','#5f6a35','#b49c5e'][i%5];g.globalAlpha=rand(.35,.85);
+    g.beginPath();g.ellipse(0,0,rand(7,15),rand(1.4,2.6),0,0,7);g.fill();g.restore()}
+  const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(36,36);t.anisotropy=8;return t}
+function shaftTexture(){
+  const c=document.createElement('canvas');c.width=64;c.height=256;const g=c.getContext('2d');
+  const v=g.createLinearGradient(0,0,0,256);v.addColorStop(0,'rgba(255,248,225,0)');v.addColorStop(.25,'rgba(255,248,225,.9)');v.addColorStop(1,'rgba(255,248,225,0)');
+  g.fillStyle=v;g.fillRect(0,0,64,256);g.globalCompositeOperation='destination-in';
+  const h=g.createLinearGradient(0,0,64,0);h.addColorStop(0,'rgba(0,0,0,0)');h.addColorStop(.5,'rgba(0,0,0,1)');h.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=h;g.fillRect(0,0,64,256);
+  return new THREE.CanvasTexture(c)}
+
+/* ================= ground ================= */
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(260,260),new THREE.MeshStandardMaterial({map:groundTexture(),roughness:1,metalness:0}));
+ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+
+/* ================= leaf geometry ================= */
+function leafGeometry(){
+  const xs=[0,.1,.28,.5,.74,1],ws=[0,.075,.105,.09,.05,0],pos=[],idx=[];
+  xs.forEach((x,i)=>{const y=-.2*x*x,w=ws[i];pos.push(x,y-.012*w*10,w, x,y+.012,0, x,y-.012*w*10,-w)});
+  for(let i=0;i<xs.length-1;i++){const a=i*3,b=(i+1)*3;idx.push(a,b,a+1, a+1,b,b+1, a+1,b+1,a+2, a+2,b+1,b+2)}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();return g}
+const LEAF=leafGeometry();
+
+/* ================= bamboo forest ================= */
+const STALKS=Math.round(1050*Q),CL=7,LPC=6;
+const stalkGeo=new THREE.CylinderGeometry(.82,1,1,14,28,true);stalkGeo.translate(0,.5,0);
+const bark=barkTexture();
+const stalkMat=windPatch(new THREE.MeshStandardMaterial({map:bark,roughness:.38,metalness:0}),false);
+const stalks=new THREE.InstancedMesh(stalkGeo,stalkMat,STALKS);
+stalks.customDepthMaterial=depthFor(false);stalks.castShadow=stalks.receiveShadow=true;
+
+const branchGeo=new THREE.CylinderGeometry(.6,1,1,4,1,true);branchGeo.translate(0,.5,0);
+const branchMat=windPatch(new THREE.MeshStandardMaterial({color:0x6b7a3c,roughness:.6}),false);
+const branches=new THREE.InstancedMesh(branchGeo,branchMat,STALKS*CL);branches.castShadow=true;branches.customDepthMaterial=depthFor(false);
+
+const leafMat=windPatch(new THREE.MeshStandardMaterial({color:0xffffff,side:THREE.DoubleSide,roughness:.55,metalness:0,emissive:0x0d1f06,emissiveIntensity:.6}),true);
+const leaves=new THREE.InstancedMesh(LEAF,leafMat,STALKS*CL*LPC);
+leaves.customDepthMaterial=depthFor(true);leaves.castShadow=true;leaves.receiveShadow=true;
+
+const m4=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler(),p=new THREE.Vector3(),s=new THREE.Vector3(),col=new THREE.Color(),UP=new THREE.Vector3(0,1,0);
+let si=0,bi=0,li=0;
+const STALK_POS=[];
+while(si<STALKS){
+  const near=Math.random()<.45;
+  const x=near?rand(-9,9):rand(-24,24),z=near?rand(-10,8.5):rand(-36,9);
+  const dc=Math.hypot(x-CAM.x,z-CAM.z);if(dc<1.5)continue;
+  if(Math.abs(x)<.6&&z>-1.5&&z<CAM.z+1)continue; // narrow gap in front of the viewer
+  const h=rand(11,19),r=rand(.045,.11);
+  e.set(rand(-.04,.04),rand(0,6.28),rand(-.04,.04));q.setFromEuler(e);
+  const sm=new THREE.Matrix4().compose(p.set(x,0,z),q,s.set(r,h,r));stalks.setMatrixAt(si,sm);
+  const age=Math.random();col.setHSL(age<.12?.16:rand(.25,.3),age<.12?.45:rand(.25,.45),age<.12?rand(.55,.7):rand(.62,.82));stalks.setColorAt(si,col);
+  STALK_POS.push([x,z,r]);
+  for(let c=0;c<CL;c++){
+    const f=rand(.5,.96),a=rand(0,6.28),L=rand(.5,1.4);
+    const P=new THREE.Vector3(0,f,0).applyMatrix4(sm);
+    const dir=new THREE.Vector3(Math.cos(a),rand(.15,.55),Math.sin(a)).normalize();
+    q.setFromUnitVectors(UP,dir);m4.compose(P,q,s.set(.012,L,.012));branches.setMatrixAt(bi++,m4);
+    for(let l=0;l<LPC;l++){
+      const t=rand(.35,1.05);
+      p.copy(P).addScaledVector(dir,L*t).add(new THREE.Vector3(rand(-.08,.08),rand(-.06,.06),rand(-.08,.08)));
+      e.set(rand(-.6,.6),-a+rand(-.9,.9),rand(-1.15,-.35),'YZX');q.setFromEuler(e);
+      const ls=rand(.2,.33);m4.compose(p,q,s.set(ls,ls,ls*rand(.9,1.2)));leaves.setMatrixAt(li,m4);
+      const dry=Math.random();
+      if(dry<.06)col.setHSL(rand(.11,.14),.55,rand(.38,.5));else col.setHSL(rand(.22,.29),rand(.42,.62),rand(.2,.36));
+      leaves.setColorAt(li++,col)}
+  }
+  si++;
+}
+scene.add(stalks,branches,leaves);
+
+/* fallen leaves on the ground */
+const LITTER=Math.round(3200*Q);
+const litter=new THREE.InstancedMesh(LEAF,new THREE.MeshStandardMaterial({color:0xffffff,side:THREE.DoubleSide,roughness:.9}),LITTER);
+litter.receiveShadow=true;
+for(let i=0;i<LITTER;i++){const x=rand(-22,22),z=rand(-32,10);
+  e.set(-Math.PI/2+rand(-.15,.15),rand(0,6.28),rand(-.2,.2),'YXZ');q.setFromEuler(e);const ls=rand(.2,.32);
+  m4.compose(p.set(x,.02+rand(0,.03),z),q,s.set(ls,ls,ls));litter.setMatrixAt(i,m4);
+  col.setHSL(rand(.08,.15),rand(.35,.55),rand(.22,.42));litter.setColorAt(i,col)}
+scene.add(litter);
+
+/* light shafts */
+const shaftTex=shaftTexture(),shafts=[];
+for(let i=0;i<7;i++){
+  const mat=new THREE.MeshBasicMaterial({map:shaftTex,transparent:true,opacity:.07,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide,fog:false});
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(rand(.8,2.2),46),mat);
+  m.position.set(rand(-12,12),14,rand(-26,-4));m.quaternion.setFromUnitVectors(UP,SUNDIR);
+  m.userData.o=rand(.04,.1);m.userData.ph=rand(0,6);shafts.push(m);scene.add(m)}
+
+/* falling leaves (CPU) */
+const FALL=Math.round(70*Q),fallMesh=new THREE.InstancedMesh(LEAF,new THREE.MeshStandardMaterial({color:0xffffff,side:THREE.DoubleSide,roughness:.6}),FALL);
+const fall=[];for(let i=0;i<FALL;i++){fall.push({p:new THREE.Vector3(rand(-14,14),rand(1,16),rand(-20,5)),r:new THREE.Euler(rand(0,6),rand(0,6),rand(0,6)),spin:new THREE.Vector3(rand(-2,2),rand(-2,2),rand(-2,2)),v:rand(.35,.9),ph:rand(0,6)});
+  col.setHSL(rand(.12,.27),.5,rand(.28,.42));fallMesh.setColorAt(i,col)}
+fallMesh.castShadow=true;scene.add(fallMesh);
+
+/* ================= echo words as sprites flying between stalks ================= */
+async function wordSprite(text){
+  try{await document.fonts.load('700 120px "Gowun Batang"')}catch(_){}
+  const c=document.createElement('canvas'),g=c.getContext('2d');g.font='700 120px "Gowun Batang","Nanum Myeongjo",serif';
+  const w=Math.ceil(g.measureText(text).width)+80;c.width=w;c.height=200;
+  g.font='700 120px "Gowun Batang","Nanum Myeongjo",serif';g.textBaseline='middle';
+  g.shadowColor='rgba(255,240,210,.9)';g.shadowBlur=28;g.fillStyle='#fffaf0';g.fillText(text,40,104);
+  g.shadowBlur=0;g.fillText(text,40,104);
+  const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;
+  return {tex:t,aspect:w/200}}
+const flyers=[];
+const ECHO=[{d:3.5,o:1,y:2.1},{d:7,o:.75,y:2.9},{d:11,o:.52,y:2.4},{d:16,o:.34,y:3.3}];
+async function flyWords(text,gap){
+  const {tex,aspect}=await wordSprite(text);
+  ECHO.forEach((E,i)=>setTimeout(()=>{
+    const mat=new THREE.SpriteMaterial({map:tex,transparent:true,opacity:0,depthWrite:false,fog:true});
+    const sp=new THREE.Sprite(mat);const hgt=.9+E.d*.03;sp.scale.set(hgt*aspect,hgt,1);
+    const fwd=new THREE.Vector3();camera.getWorldDirection(fwd);fwd.y=0;fwd.normalize();const right=new THREE.Vector3(-fwd.z,0,fwd.x);
+    const half=Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*E.d*camera.aspect+hgt*aspect*.6+2;
+    const center=camera.position.clone().addScaledVector(fwd,E.d);center.y=E.y;
+    const dir=i%2?-1:1;
+    flyers.push({sp,mat,center,right,half,dir,t0:clock.elapsedTime,dur:reduce?1.2:3.4+i*.6,o:E.o});
+    scene.add(sp);pulse+=.9*E.o;
+  },i*gap*1000));
+}
+
+/* ================= camera + look ================= */
+let yaw=0,pitch=.18,lookYaw=0,lookPitch=0,drag=null;
+canvas.addEventListener('pointerdown',ev=>{drag={x:ev.clientX,y:ev.clientY,y0:lookYaw,p0:lookPitch}});
+addEventListener('pointermove',ev=>{if(!drag)return;lookYaw=THREE.MathUtils.clamp(drag.y0-(ev.clientX-drag.x)*.004,-.9,.9);lookPitch=THREE.MathUtils.clamp(drag.p0+(ev.clientY-drag.y)*.003,-.25,.75)});
+addEventListener('pointerup',()=>drag=null);
+
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=w<h?60:48;camera.updateProjectionMatrix()}
+addEventListener('resize',resize);resize();
+
+/* ================= wind state shared by picture and sound ================= */
+let micLevel=0,pulse=0,gustSmooth=.3,nextGust=0,gustTarget=.3;
+function gustAt(t){if(t>nextGust){gustTarget=Math.random()<.3?rand(.6,1):rand(.15,.45);nextGust=t+rand(2.5,7)}
+  gustSmooth+=(gustTarget-gustSmooth)*.012;return gustSmooth}
+
+const clock=new THREE.Clock();
+const fwdTmp=new THREE.Vector3(),tgt=new THREE.Vector3();
+function frame(){
+  const dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;
+  const g=gustAt(t);pulse*=.975;
+  const wind=(.08+g*.38+micLevel*1.1+pulse*.5)*(reduce?.35:1);
+  U.uTime.value=t;U.uWind.value+= (wind-U.uWind.value)*.06;
+  sound(g);
+  /* camera */
+  const bob=reduce?0:Math.sin(t*.35)*.04;
+  yaw+=(lookYaw+Math.sin(t*.05)*.12-yaw)*.05;const pt=pitch+lookPitch;
+  camera.position.set(CAM.x+Math.sin(t*.07)*.4+(Math.random()-.5)*micLevel*.04,CAM.y+bob+(Math.random()-.5)*micLevel*.04,CAM.z);
+  tgt.set(Math.sin(yaw),Math.tan(pt)*1.0,-Math.cos(yaw)).add(camera.position);camera.lookAt(tgt);
+  /* shafts shimmer */
+  for(const m of shafts){m.material.opacity=m.userData.o*(.7+.3*Math.sin(t*.6+m.userData.ph))*(1-U.uWind.value*.3)}
+  /* falling leaves */
+  for(let i=0;i<FALL;i++){const f=fall[i];
+    f.p.y-=f.v*dt;f.p.x+=(Math.sin(t*1.3+f.ph)*.4+U.uWind.value*3)*dt;f.p.z+=Math.cos(t*.9+f.ph)*.3*dt;
+    f.r.x+=f.spin.x*dt;f.r.y+=f.spin.y*dt;f.r.z+=f.spin.z*dt;
+    if(f.p.y<.05||f.p.x>18){f.p.set(rand(-16,10),rand(10,16),rand(-20,5))}
+    q.setFromEuler(f.r);m4.compose(f.p,q,s.set(.26,.26,.26));fallMesh.setMatrixAt(i,m4)}
+  fallMesh.instanceMatrix.needsUpdate=true;
+  /* flyers */
+  for(let i=flyers.length-1;i>=0;i--){const F=flyers[i],k=(t-F.t0)/F.dur;
+    if(k>=1){scene.remove(F.sp);F.mat.dispose();flyers.splice(i,1);continue}
+    const e2=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    F.sp.position.copy(F.center).addScaledVector(F.right,F.dir*(-F.half+2*F.half*e2));F.sp.position.y+=Math.sin(k*Math.PI)*.5;
+    F.mat.opacity=F.o*Math.min(1,k*6,(1-k)*6)}
+  renderer.render(scene,camera);requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+
+/* ================= sound ================= */
+let ac,master,windG,windF,rustleG,reverb,lastSnd=0;
+function noiseBuffer(sec,brown){const b=ac.createBuffer(2,ac.sampleRate*sec,ac.sampleRate);
+  for(let c=0;c<2;c++){const d=b.getChannelData(c);let l=0;for(let i=0;i<d.length;i++){const w=Math.random()*2-1;if(brown){l=(l+.02*w)/1.02;d[i]=l*3.2}else d[i]=w}}return b}
+function initAudio(){if(ac)return;ac=new (window.AudioContext||window.webkitAudioContext)();
+  master=ac.createGain();master.gain.value=0;master.connect(ac.destination);
+  master.gain.setTargetAtTime(1,ac.currentTime,1.5);
+  const w=ac.createBufferSource();w.buffer=noiseBuffer(4,true);w.loop=true;
+  windF=ac.createBiquadFilter();windF.type='lowpass';windF.frequency.value=500;windF.Q.value=.7;
+  windG=ac.createGain();windG.gain.value=.3;w.connect(windF).connect(windG).connect(master);w.start();
+  const r=ac.createBufferSource();r.buffer=noiseBuffer(3,false);r.loop=true;
+  const hp=ac.createBiquadFilter();hp.type='bandpass';hp.frequency.value=4200;hp.Q.value=.6;
+  rustleG=ac.createGain();rustleG.gain.value=0;r.connect(hp).connect(rustleG).connect(master);r.start();
+  const len=ac.sampleRate*3.2,ir=ac.createBuffer(2,len,ac.sampleRate);
+  for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6)}
+  reverb=ac.createConvolver();reverb.buffer=ir;reverb.connect(master)}
+function sound(g){if(!ac||ac.currentTime-lastSnd<.07)return;lastSnd=ac.currentTime;const n=ac.currentTime,w=U.uWind.value;
+  windG.gain.setTargetAtTime(.18+g*.55+pulse*.25,n,.4);windF.frequency.setTargetAtTime(280+g*900+pulse*600,n,.5);
+  rustleG.gain.setTargetAtTime((.015+Math.pow(Math.min(w,1.2),1.6)*.07)*(.45+Math.random()*.9),n,.05)}
+function playEcho(buf){const now=ac.currentTime+.05,gap=Math.min(1.7,Math.max(.75,buf.duration*.9));
+  ECHO.forEach((E,i)=>{const src=ac.createBufferSource();src.buffer=buf;
+    const f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=9500/(1+i*1.5);
+    const gn=ac.createGain();gn.gain.value=i?E.o*.85:1;src.connect(f).connect(gn);let out=gn;
+    if(ac.createStereoPanner){const pn=ac.createStereoPanner();pn.pan.value=i?(i%2?-1:1)*Math.min(.9,.45+i*.15):0;gn.connect(pn);out=pn}
+    out.connect(master);if(i){const wet=ac.createGain();wet.gain.value=.3+.15*i;out.connect(wet).connect(reverb)}
+    src.start(now+i*gap)});return gap}
+
+/* ================= screens ================= */
+const intro=document.getElementById('intro'),forest=document.getElementById('forest');
+document.getElementById('enter').addEventListener('click',()=>{
+  initAudio();if(ac.state==='suspended')ac.resume();
+  intro.setAttribute('aria-hidden','true');forest.setAttribute('aria-hidden','false');
+  pitch=.12;pulse=.6;setTimeout(()=>document.getElementById('mic').focus({preventScroll:true}),900)});
+
+/* ================= hold-to-shout ================= */
+const mic=document.getElementById('mic'),status=document.getElementById('status');
+let stream,rec,chunks,analyser,raf,recog,heard='',holding=false,startAt=0;
+const after=['숲이 다 받아 갔어요. 또 외쳐도 돼요.','대나무가 대신 흔들려 줬어요.','이제 숲만 알고 있어요.','속이 좀 시원해졌어요?'];
+const blocked=(denied)=>{status.textContent=denied?'마이크 사용이 허용되지 않았어요. 주소창 옆 자물쇠 아이콘에서 마이크를 허용하고 다시 눌러 주세요.':'이 브라우저에서는 마이크를 쓸 수 없어요. 크롬이나 사파리 최신 버전으로 열어 주세요.';if(!denied)mic.disabled=true};
+async function start(ev){ev.preventDefault();ev.stopPropagation();if(holding||mic.disabled)return;holding=true;
+  try{initAudio();if(ac.state==='suspended')await ac.resume();
+    stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:false,autoGainControl:false}})}
+  catch(err){holding=false;blocked(true);return}
+  if(!holding){stream.getTracks().forEach(t=>t.stop());return}
+  chunks=[];rec=new MediaRecorder(stream);rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);rec.onstop=finish;rec.start();startAt=performance.now();
+  const src=ac.createMediaStreamSource(stream);analyser=ac.createAnalyser();analyser.fftSize=512;src.connect(analyser);
+  const arr=new Uint8Array(analyser.fftSize);
+  (function meter(){analyser.getByteTimeDomainData(arr);let m=0;for(const v of arr)m=Math.max(m,Math.abs(v-128));
+    const lvl=Math.min(1,m/80);micLevel+=(lvl-micLevel)*.3;mic.style.setProperty('--lvl',micLevel);raf=requestAnimationFrame(meter)})();
+  heard='';const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR){try{recog=new SR();recog.lang='ko-KR';recog.interimResults=true;recog.onresult=e=>{heard=[...e.results].map(r=>r[0].transcript).join(' ')};recog.start()}catch(_){recog=null}}
+  mic.classList.add('rec');mic.innerHTML='듣고<br>있어요';status.textContent='크게! 다 외쳤으면 손을 떼요.'}
+function stop(){if(!holding)return;holding=false;if(!rec)return;
+  cancelAnimationFrame(raf);micLevel=0;mic.style.setProperty('--lvl',0);mic.classList.remove('rec');mic.innerHTML='누른 채로<br>외치기';
+  try{recog&&recog.stop()}catch(_){}
+  setTimeout(()=>{rec.state!=='inactive'&&rec.stop();stream.getTracks().forEach(t=>t.stop())},150)}
+async function finish(){
+  if(performance.now()-startAt<450){status.textContent='너무 짧았어요. 꾹 누른 채로 외쳐요.';return}
+  try{const buf=await ac.decodeAudioData(await new Blob(chunks).arrayBuffer());chunks=null;
+    const gap=playEcho(buf);status.textContent='메아리가 숲을 지나가요…';
+    setTimeout(()=>{const text=(heard||'').trim();flyWords(text?(/[!?.~]$/.test(text)?text:text+'!'):'아아아아!',gap)},350);
+    setTimeout(()=>status.textContent=after[Math.floor(Math.random()*after.length)],gap*4000+1800)}
+  catch(err){status.textContent='녹음을 읽지 못했어요. 한 번만 다시 외쳐요.'}}
+mic.addEventListener('pointerdown',start);
+['pointerup','pointercancel','pointerleave'].forEach(n=>mic.addEventListener(n,stop));
+mic.addEventListener('keydown',e=>{if((e.key===' '||e.key==='Enter')&&!e.repeat)start(e)});
+mic.addEventListener('keyup',e=>{if(e.key===' '||e.key==='Enter')stop()});
+mic.addEventListener('contextmenu',e=>e.preventDefault());
+if(!navigator.mediaDevices||!window.MediaRecorder)blocked(false);
+})();
+</script>
+</body>
+</html>
